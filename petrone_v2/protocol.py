@@ -284,6 +284,7 @@ class LightFlagsDrone(Enum):
     ArmGreen            = 0x08
     ArmBlue             = 0x04
 
+    TailGreen           = 0x02
 
 
 class LightModeController(Enum):

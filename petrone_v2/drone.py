@@ -262,7 +262,7 @@ class Drone:
         data.command.commandType    = commandType
         data.command.option         = option
 
-        data.irData      = irData
+        data.irData         = irData
 
         return self.transfer(header, data)
 
@@ -556,7 +556,7 @@ class Drone:
 
         data = LightEventColorsCommand()
 
-        data.event.mode     = lightEvent.value
+        data.event.event    = lightEvent.value
         data.event.interval = interval
         data.event.repeat   = repeat
 
