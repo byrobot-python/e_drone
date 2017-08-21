@@ -222,7 +222,7 @@ class Command(ISerializable):
 
 
     def toArray(self):
-        return pack('<BB', self.commandType, self.option)
+        return pack('<BB', self.commandType.value, self.option)
 
 
     @classmethod
@@ -233,6 +233,7 @@ class Command(ISerializable):
             return None
         
         data.commandType, data.option = unpack('<BB', dataarray)
+        data.commandType = CommandType(data.commandType)
         return data
 
 
@@ -242,7 +243,7 @@ class Command(ISerializable):
 # Light Start
 
 
-class LightDroneMode(Enum):
+class LightModeDrone(Enum):
     
     None_               = 0x00
 
@@ -271,7 +272,7 @@ class LightDroneMode(Enum):
 
 
 
-class LightDroneFlags(Enum):
+class LightFlagsDrone(Enum):
     
     None_               = 0x00
 
@@ -285,7 +286,7 @@ class LightDroneFlags(Enum):
 
 
 
-class LightControllerMode(Enum):
+class LightModeController(Enum):
     
     None_               = 0x00
 
@@ -300,7 +301,7 @@ class LightControllerMode(Enum):
 
 
 
-class LightControllerFlags(Enum):
+class LightFlagsController(Enum):
     
     None_               = 0x00
 
@@ -483,7 +484,7 @@ class Colors(Enum):
     Yellow                 = 139
     YellowGreen            = 140
     
-    EndOfColor             = 141
+    EndOfType              = 141
 
 
 
@@ -978,7 +979,7 @@ class LightEventColorCommand(ISerializable):
             return None
 
         indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataarray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Color.getSize();         data.command    = Color.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(dataarray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
         return data
 
@@ -1015,7 +1016,7 @@ class LightEventColorCommandIr(ISerializable):
             return None
 
         indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataarray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Color.getSize();         data.command    = Color.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(dataarray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 4;                       data.irData     = unpack('<I', dataArray[indexStart:indexEnd])
         return data
