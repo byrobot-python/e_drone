@@ -1,0 +1,20 @@
+빌드
+> python setup.py sdist
+
+휠 빌드
+> python setup.py bdist_wheel
+
+PYPI 등록
+> twine upload dist/*
+
+
+프로젝트 삭제
+> pip uninstall petrone_v2
+
+
+프로젝트 설치
+> pip install petrone_v2
+> pip --no-cache-dir install petrone_v2
+
+PyPI 경로
+https://pypi.python.org/pypi/petrone_v2
