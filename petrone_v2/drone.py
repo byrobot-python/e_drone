@@ -607,9 +607,6 @@ class Drone:
         data.irData      = irData
 
         return self.transfer(header, data)
-    
-
-
 
 
 # Light End
@@ -804,4 +801,216 @@ class Drone:
 
 
 # Display End
+
+
+
+# Buzzer Start
+
+
+    def sendBuzzer(self, mode, value, time):
+        
+        if ( (not isinstance(mode, BuzzerMode)) or (not isinstance(value, int)) or (not isinstance(time, int)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Buzzer
+        header.length   = Buzzer.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Controller
+        
+        data = Buzzer()
+
+        data.mode       = mode
+        data.value      = value
+        data.time       = time
+
+        return self.transfer(header, data)
+
+
+
+    def sendBuzzerMute(self, time):
+        
+        if ( (not isinstance(time, int)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Buzzer
+        header.length   = Buzzer.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Controller
+        
+        data = Buzzer()
+
+        data.mode       = BuzzerMode.Mute
+        data.value      = BuzzerScale.Mute.value
+        data.time       = time
+
+        return self.transfer(header, data)
+
+
+
+    def sendBuzzerMuteReserve(self, time):
+        
+        if ( (not isinstance(time, int)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Buzzer
+        header.length   = Buzzer.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Controller
+        
+        data = Buzzer()
+
+        data.mode       = BuzzerMode.MuteReserve
+        data.value      = BuzzerScale.Mute.value
+        data.time       = time
+
+        return self.transfer(header, data)
+
+
+
+    def sendBuzzerScale(self, scale, time):
+        
+        if ( (not isinstance(scale, BuzzerScale)) or (not isinstance(time, int)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Buzzer
+        header.length   = Buzzer.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Controller
+        
+        data = Buzzer()
+
+        data.mode       = BuzzerMode.Scale
+        data.value      = scale.value
+        data.time       = time
+
+        return self.transfer(header, data)
+
+
+
+    def sendBuzzerScaleReserve(self, scale, time):
+        
+        if ( (not isinstance(scale, BuzzerScale)) or (not isinstance(time, int)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Buzzer
+        header.length   = Buzzer.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Controller
+        
+        data = Buzzer()
+
+        data.mode       = BuzzerMode.ScaleReserve
+        data.value      = scale.value
+        data.time       = time
+
+        return self.transfer(header, data)
+
+
+
+    def sendBuzzerHz(self, hz, time):
+        
+        if ( (not isinstance(hz, int)) or (not isinstance(time, int)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Buzzer
+        header.length   = Buzzer.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Controller
+        
+        data = Buzzer()
+
+        data.mode       = BuzzerMode.Hz
+        data.value      = hz
+        data.time       = time
+
+        return self.transfer(header, data)
+
+
+
+    def sendBuzzerHzReserve(self, hz, time):
+        
+        if ( (not isinstance(hz, int)) or (not isinstance(time, int)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Buzzer
+        header.length   = Buzzer.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Controller
+        
+        data = Buzzer()
+
+        data.mode       = BuzzerMode.HzReserve
+        data.value      = hz
+        data.time       = time
+
+        return self.transfer(header, data)
+
+
+# Buzzer End
+
+
+
+# Vibrator Start
+
+
+    def sendVibrator(self, on, off, total):
+        
+        if ( (not isinstance(on, int)) or (not isinstance(off, int)) or (not isinstance(total, int)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Vibrator
+        header.length   = Vibrator.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Controller
+        
+        data = Vibrator()
+
+        data.mode       = VibratorMode.Instantally
+        data.on         = on
+        data.off        = off
+        data.total      = total
+
+        return self.transfer(header, data)
+
+
+
+    def sendVibratorReserve(self, on, off, total):
+        
+        if ( (not isinstance(on, int)) or (not isinstance(off, int)) or (not isinstance(total, int)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Vibrator
+        header.length   = Vibrator.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Controller
+        
+        data = Vibrator()
+
+        data.mode       = VibratorMode.Continually
+        data.on         = on
+        data.off        = off
+        data.total      = total
+
+        return self.transfer(header, data)
+
+
+# Vibrator End
 
