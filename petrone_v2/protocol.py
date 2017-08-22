@@ -1524,7 +1524,7 @@ class VibratorMode(Enum):
     Instantally         = 1     # 즉시 적용
     Continually         = 2     # 예약
 
-    EndOfType
+    EndOfType           = 3
 
 
 
@@ -1562,3 +1562,167 @@ class Vibrator(ISerializable):
 
 # Vibrator End
 
+
+
+# Joystick Start
+
+
+class JoystickDirection(Enum):
+
+    None_   = 0         # 정의하지 않은 영역(무시함)
+
+    VT      = 0x10      #   위(세로)
+    VM      = 0x20      # 중앙(세로)
+    VB      = 0x40      # 아래(세로)
+
+    HL      = 0x01      #   왼쪽(가로)
+    HM      = 0x02      #   중앙(가로)
+    HR      = 0x04      # 오른쪽(가로)
+
+    TL = 0x11;  TM = 0x12;  TR = 0x14
+    ML = 0x21;  CN = 0x22;  MR = 0x24
+    BL = 0x41;  BM = 0x42;  BR = 0x44
+
+
+
+class JoystickEvent(Enum):
+
+    None_       = 0     # 이벤트 없음
+    
+    In          = 1     # 특정 영역에 진입
+    Stay        = 2     # 특정 영역에서 상태 유지
+    Out         = 3     # 특정 영역에서 벗어남
+    
+    EndOfType   = 4
+
+
+
+class JoystickBlock(ISerializable):
+
+    def __init__(self):
+        self.x          = 0
+        self.y          = 0
+        self.direction  = 0
+        self.event      = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 4
+
+
+    def toArray(self):
+        return pack('<BBBB', self.x, self.y, self.direction.value, self.event.value)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = JoystickBlock()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.x, data.y, data.direction, data.event = unpack('<BBBB', dataarray)
+        data.direction  = JoystickDirection(data.direction)
+        data.event      = JoystickEvent(data.event)
+
+        return data
+
+
+
+class Joystick(ISerializable):
+
+    def __init__(self):
+        self.left       = JoystickBlock()
+        self.right      = JoystickBlock()
+
+
+    @classmethod
+    def getSize(cls):
+        return JoystickBlock().getSize() * 2
+
+
+    def toArray(self):
+        dataArray = []
+        dataArray.extend(self.left.toArray())
+        dataArray.extend(self.right.toArray())
+        return dataArray
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = Joystick()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        indexStart = 0;        indexEnd  = JoystickBlock.getSize();     data.left   = JoystickBlock.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += JoystickBlock.getSize();     data.right  = JoystickBlock.parse(dataarray[indexStart:indexEnd])
+
+        return data
+
+
+# Joystick End
+
+
+
+# Button Start
+
+
+class ButtonFlagController(Enum):
+
+    None_           = 0x0000
+    
+    FrontLeft       = 0x0001
+    FrontRight      = 0x0002
+    
+    MidTurnLeft     = 0x0004
+    MidTurnRight    = 0x0008
+    
+    MidUp           = 0x0010
+    MidLeft         = 0x0020
+    MidRight        = 0x0040
+    MidDown         = 0x0080
+    
+    RearLeft        = 0x0100
+    RearRight       = 0x0200
+
+
+
+class ButtonFlagDrone(Enum):
+
+    None_           = 0x0000
+    
+    Reset           = 0x0001
+
+
+
+class Button(ISerializable):
+
+    def __init__(self):
+        self.button     = 0
+        self.event      = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 3
+
+
+    def toArray(self):
+        return pack('<HB', self.button, self.event)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = Button()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.button, data.event = unpack('<HB', dataarray)
+        
+        return data
+
+
+# Button End
