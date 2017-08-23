@@ -80,11 +80,12 @@ class DataType(Enum):
 
     # 상태 설정
     State           = 0x40      # 드론의 상태(비행 모드 방위기준 배터리량)
-    Attitude        = 0x41      # 드론의 자세(Angle)(Vector)
-    GyroBias        = 0x42      # 자이로 바이어스 값(Vector)
-    TrimAll         = 0x43      # 전체 트림
-    TrimFlight      = 0x44      # 비행 트림
-    TrimDrive       = 0x45      # 주행 트림
+    Attitude        = 0x41      # 드론의 자세(Angle)
+    AccelBias       = 0x42      # 엑셀 바이어스 값
+    GyroBias        = 0x43      # 자이로 바이어스 값
+    TrimAll         = 0x44      # 전체 트림
+    TrimFlight      = 0x45      # 비행 트림
+    TrimDrive       = 0x46      # 주행 트림
 
     # Sensor raw data
     Imu             = 0x50      # IMU Raw
@@ -456,6 +457,35 @@ class Command(ISerializable):
         
         data.commandType, data.option = unpack('<BB', dataarray)
         data.commandType = CommandType(data.commandType)
+        return data
+
+
+
+class Pairing(ISerializable):
+
+    def __init__(self):
+        self.addressLocal   = 0
+        self.addressRemote  = 0
+        self.channel        = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 5
+
+
+    def toArray(self):
+        return pack('<HHB', self.addressLocal, self.addressRemote, self.channel)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = Pairing()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.addressLocal, data.addressRemote, data.channel = unpack('<HHB', dataarray)
         return data
 
 
@@ -2216,6 +2246,36 @@ class CountDrive(ISerializable):
 
 
 # Sensor Start
+
+
+class Vector(ISerializable):
+
+    def __init__(self):
+        self.x      = 0
+        self.y      = 0
+        self.z      = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 6
+
+
+    def toArray(self):
+        return pack('<hhh', self.x, self.y, self.z)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = Vector()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.x, data.y, data.z = unpack('<hhh', dataarray)
+        
+        return data
+
 
 
 class Attitude(ISerializable):

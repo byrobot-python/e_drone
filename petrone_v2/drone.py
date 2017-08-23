@@ -18,21 +18,25 @@ from petrone_v2.crc import *
 
 class Drone:
 
-
 # BaseFunctions Start
 
     def __init__(self):
         
-        self.serialport      = None
-        self.bufferReceive   = []
-        self.bufferHandler   = []
-        self.index           = 0
+        self.serialport                 = None
+        self.bufferReceive              = []
+        self.bufferHandler              = []
+        self.index                      = 0
 
-        self.threadLock      = threading.Lock()
-        self.flagThreadRun   = False
+        self.threadLock                 = threading.Lock()
+        self.flagThreadRun              = False
 
-        self.receiver        = Receiver()
-        self.storage         = Storage()
+        self.receiver                   = Receiver()
+
+        self.storageDrone               = StorageDrone()
+        self.storageDroneCount          = StorageDroneCount()
+        self.storageController          = StorageController()
+        self.storageControllerCount     = StorageControllerCount()
+
 
 
     def _receiving(self):
@@ -43,6 +47,7 @@ class Drone:
             self.threadLock.release()        # Free lock to release next thread
 
             sleep(0.001)
+
 
 
     def open(self, portname):
@@ -59,12 +64,14 @@ class Drone:
             Thread(target=self._receiving, args=()).start()
 
 
+
     def close(self):
         self.flagThreadRun = False
         sleep(0.002)
         while (self.serialport.isOpen() == True):
             self.serialport.close()
             sleep(0.002)
+
 
 
     def makeTransferDataArray(self, header, data):
@@ -88,6 +95,7 @@ class Drone:
         return dataArray
 
 
+
     def transfer(self, header, data):
         if (self.serialport == None) or (self.serialport.isOpen() == False):
             return
@@ -97,6 +105,7 @@ class Drone:
         self.serialport.write(dataArray)
 
         return dataArray
+
 
 
     def check(self):
@@ -120,8 +129,148 @@ class Drone:
 
 
     def handler(self, header, dataArray):
-        if header.dataType == DataType.Ack:
-            self.storage.countAck += 1
+        if      header.from_ == DeviceType.Drone:
+            self._handlerDrone(header, dataArray)
+        elif    header.from_ == DeviceType.Controller:
+            self._handlerController(header, dataArray)
+
+        return header.dataType
+
+
+
+    def _handlerDrone(self, header, dataArray):
+        if      header.dataType == DataType.Ack:
+            self.storageDrone.ack       = Ack.parse(dataArray);
+            self.storageDroneCount.ack  += 1
+
+        elif    header.dataType == DataType.Message:
+            self.storageDrone.message       = dataArray.decode()
+            self.storageDroneCount.message  += 1
+
+        elif    header.dataType == DataType.Information:
+            self.storageDrone.information       = Information.parse(dataArray)
+            self.storageDroneCount.information  += 1
+
+        elif    header.dataType == DataType.Address:
+            self.storageDrone.address       = Address.parse(dataArray)
+            self.storageDroneCount.address  += 1
+
+
+        elif    header.dataType == DataType.State:
+            self.storageDrone.state         = State.parse(dataArray)
+            self.storageDroneCount.state    += 1
+
+        elif    header.dataType == DataType.Attitude:
+            self.storageDrone.attitude          = Attitude.parse(dataArray)
+            self.storageDroneCount.attitude     += 1
+
+        elif    header.dataType == DataType.AccelBias:
+            self.storageDrone.accelBias         = Vector.parse(dataArray)
+            self.storageDroneCount.accelBias    += 1
+
+        elif    header.dataType == DataType.GyroBias:
+            self.storageDrone.gyroBias          = Attitude.parse(dataArray)
+            self.storageDroneCount.gyroBias     += 1
+
+        elif    header.dataType == DataType.TrimFlight:
+            self.storageDrone.trimFlight        = TrimFlight.parse(dataArray)
+            self.storageDroneCount.trimFlight   += 1
+
+        elif    header.dataType == DataType.TrimDrive:
+            self.storageDrone.trimDrive         = TrimDrive.parse(dataArray)
+            self.storageDroneCount.trimDrive    += 1
+
+
+        elif    header.dataType == DataType.Imu:
+            self.storageDrone.imu       = Imu.parse(dataArray)
+            self.storageDroneCount.imu  += 1
+
+        elif    header.dataType == DataType.Pressure:
+            self.storageDrone.pressure      = Pressure.parse(dataArray)
+            self.storageDroneCount.pressure += 1
+
+        elif    header.dataType == DataType.Battery:
+            self.storageDrone.battery       = Battery.parse(dataArray)
+            self.storageDroneCount.battery  += 1
+
+        elif    header.dataType == DataType.Range:
+            self.storageDrone.range         = Range.parse(dataArray)
+            self.storageDroneCount.range    += 1
+
+        elif    header.dataType == DataType.ImageFlow:
+            self.storageDrone.imageFlow = ImageFlow.parse(dataArray)
+            self.storageDroneCount.imageFlow    += 1
+
+
+        elif    header.dataType == DataType.Button:
+            self.storageDrone.button        = Button.parse(dataArray)
+            self.storageDroneCount.button   += 1
+
+
+        elif    header.dataType == DataType.IrMessage:
+            irMessage = IrMessage.parse(dataArray)
+
+            if  irMessage.direction == Direction.Front:
+                self.storageDrone.irMessageFront        = irMessage
+                self.storageDroneCount.irMessageFront   += 1
+            else:
+                self.storageDrone.irMessageRear         = irMessage
+                self.storageDroneCount.irMessageRear    += 1
+
+
+        elif    header.dataType == DataType.CountFlight:
+            self.storageDrone.countFlight       = CountFlight.parse(dataArray)
+            self.storageDroneCount.countFlight  += 1
+
+        elif    header.dataType == DataType.CountDrive:
+            self.storageDrone.countDrive        = CountDrive.parse(dataArray)
+            self.storageDroneCount.countDrive   += 1
+
+
+        elif    header.dataType == DataType.Pairing:
+            self.storageDrone.pairing       = Pairing.parse(dataArray)
+            self.storageDroneCount.pairing  += 1
+
+        elif    header.dataType == DataType.Rssi:
+            self.storageDrone.rssi          = Rssi.parse(dataArray)
+            self.storageDroneCount.rssi     += 1
+
+
+
+    def _handlerController(self, header, dataArray):
+        if      header.dataType == DataType.Ack:
+            self.storageController.ack          = Ack.parse(dataArray);
+            self.storageControllerCount.ack     += 1
+
+        elif    header.dataType == DataType.Message:
+            self.storageController.message          = dataArray.decode()
+            self.storageControllerCount.message     += 1
+
+        elif    header.dataType == DataType.Information:
+            self.storageController.information      = Information.parse(dataArray)
+            self.storageControllerCount.information += 1
+
+        elif    header.dataType == DataType.Address:
+            self.storageController.address          = Address.parse(dataArray)
+            self.storageControllerCount.address     += 1
+
+
+        elif    header.dataType == DataType.Button:
+            self.storageController.button           = Button.parse(dataArray)
+            self.storageControllerCount.button      += 1
+
+        elif    header.dataType == DataType.Joystick:
+            self.storageController.joystick         = Joystick.parse(dataArray)
+            self.storageControllerCount.joystick    += 1
+
+
+        elif    header.dataType == DataType.Pairing:
+            self.storageController.pairing      = Pairing.parse(dataArray)
+            self.storageControllerCount.pairing += 1
+
+        elif    header.dataType == DataType.Rssi:
+            self.storageController.rssi         = Rssi.parse(dataArray)
+            self.storageControllerCount.rssi    += 1
 
 
 # BaseFunctions End
