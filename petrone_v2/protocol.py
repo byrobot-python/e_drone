@@ -395,12 +395,12 @@ class Information(ISerializable):
         if len(dataarray) != cls.getSize():
             return None
         
-        indexStart = 0;        indexEnd = 1;                        data.modeUpdate     = ModeUpdate(unpack('<B', bytearray(dataArray[indexStart:indexEnd])))
-        indexStart = indexEnd; indexEnd += 4;                       data.deviceType     = DeviceType(unpack('<I', bytearray(dataArray[indexStart:indexEnd])))
-        indexStart = indexEnd; indexEnd += Version.getSize();       data.imageVersion   = Version.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += 2;                       data.year           = unpack('<H', bytearray(dataArray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += 1;                       data.month          = unpack('<B', bytearray(dataArray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += 1;                       data.day            = unpack('<B', bytearray(dataArray[indexStart:indexEnd]))
+        indexStart = 0;        indexEnd = 1;                        data.modeUpdate     = ModeUpdate(unpack('<B', dataArray[indexStart:indexEnd]))
+        indexStart = indexEnd; indexEnd += 4;                       data.deviceType     = DeviceType(unpack('<I', dataArray[indexStart:indexEnd]))
+        indexStart = indexEnd; indexEnd += Version.getSize();       data.imageVersion   = Version.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 2;                       data.year           = unpack('<H', dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 1;                       data.month          = unpack('<B', dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 1;                       data.day            = unpack('<B', dataArray[indexStart:indexEnd])
         return data
 
 
@@ -408,7 +408,7 @@ class Information(ISerializable):
 class Address(ISerializable):
 
     def __init__(self):
-        self.address    = []
+        self.address    = bytearray()
 
 
     @classmethod
@@ -417,7 +417,7 @@ class Address(ISerializable):
 
 
     def toArray(self):
-        return bytearray(self.address)
+        return self.address
 
 
     @classmethod
@@ -427,7 +427,7 @@ class Address(ISerializable):
         if len(dataarray) != cls.getSize():
             return None
         
-        data.address = list(dataarray[0:16])
+        data.address = dataarray[0:16]
         return data
 
 
@@ -1013,8 +1013,8 @@ class LightModeCommand(ISerializable):
         if len(dataarray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightMode.getSize();    data.mode       = LightMode.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += Command.getSize();     data.command    = Command.parse(bytearray(dataarray[indexStart:indexEnd]))
+        indexStart = 0;        indexEnd = LightMode.getSize();    data.mode       = LightMode.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Command.getSize();     data.command    = Command.parse(dataarray[indexStart:indexEnd])
         return data
 
 
@@ -1047,9 +1047,9 @@ class LightModeCommandIr(ISerializable):
         if len(dataarray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += 4;                       data.irData     = unpack('<I', bytearray(dataArray[indexStart:indexEnd]))
+        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 4;                       data.irData     = unpack('<I', dataArray[indexStart:indexEnd])
         return data
 
 
@@ -1080,8 +1080,8 @@ class LightModeColor(ISerializable):
         if len(dataarray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(bytearray(dataarray[indexStart:indexEnd]))
+        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(dataarray[indexStart:indexEnd])
         return data
 
 
@@ -1114,9 +1114,9 @@ class LightModeColorCommand(ISerializable):
         if len(dataarray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightMode.getSize();    data.mode       = LightMode.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += Color.getSize();       data.color      = Color.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += Command.getSize();     data.command    = Command.parse(bytearray(dataarray[indexStart:indexEnd]))
+        indexStart = 0;        indexEnd = LightMode.getSize();    data.mode       = LightMode.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Color.getSize();       data.color      = Color.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Command.getSize();     data.command    = Command.parse(dataarray[indexStart:indexEnd])
         return data
 
 
@@ -1151,10 +1151,10 @@ class LightModeColorCommandIr(ISerializable):
         if len(dataarray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += 4;                       data.irData     = unpack('<I', bytearray(dataArray[indexStart:indexEnd]))
+        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 4;                       data.irData     = unpack('<I', dataArray[indexStart:indexEnd])
         return data
 
 
@@ -1185,8 +1185,8 @@ class LightModeColors(ISerializable):
         if len(dataarray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', bytearray(dataArray[indexStart:indexEnd])))
+        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', dataArray[indexStart:indexEnd]))
         return data
 
 
@@ -1219,9 +1219,9 @@ class LightModeColorsCommand(ISerializable):
         if len(dataarray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', bytearray(dataArray[indexStart:indexEnd])))
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(bytearray(dataarray[indexStart:indexEnd]))
+        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', dataArray[indexStart:indexEnd]))
+        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
         return data
 
 
@@ -1256,10 +1256,10 @@ class LightModeColorsCommandIr(ISerializable):
         if len(dataarray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', bytearray(dataArray[indexStart:indexEnd])))
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += 4;                       data.irData     = unpack('<I', bytearray(dataArray[indexStart:indexEnd]))
+        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', dataArray[indexStart:indexEnd]))
+        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 4;                       data.irData     = unpack('<I', dataArray[indexStart:indexEnd])
         return data
 
 
@@ -1290,8 +1290,8 @@ class LightEventCommand(ISerializable):
         if len(dataarray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(bytearray(dataarray[indexStart:indexEnd]))
+        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
         return data
 
 
@@ -1324,9 +1324,9 @@ class LightEventCommandIr(ISerializable):
         if len(dataarray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += 4;                       data.irData     = unpack('<I', bytearray(dataArray[indexStart:indexEnd]))
+        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 4;                       data.irData     = unpack('<I', dataArray[indexStart:indexEnd])
         return data
 
 
@@ -1357,8 +1357,8 @@ class LightEventColor(ISerializable):
         if len(dataarray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += Color.getSize();         data.command    = Color.parse(bytearray(dataarray[indexStart:indexEnd]))
+        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Color.getSize();         data.command    = Color.parse(dataarray[indexStart:indexEnd])
         return data
 
 
@@ -1391,9 +1391,9 @@ class LightEventColorCommand(ISerializable):
         if len(dataarray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(bytearray(dataarray[indexStart:indexEnd]))
+        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
         return data
 
 
@@ -1428,10 +1428,10 @@ class LightEventColorCommandIr(ISerializable):
         if len(dataarray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += 4;                       data.irData     = unpack('<I', bytearray(dataArray[indexStart:indexEnd]))
+        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 4;                       data.irData     = unpack('<I', dataArray[indexStart:indexEnd])
         return data
 
 
@@ -1462,8 +1462,8 @@ class LightEventColors(ISerializable):
         if len(dataarray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', bytearray(dataArray[indexStart:indexEnd])))
+        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', dataArray[indexStart:indexEnd]))
         return data
 
 
@@ -1496,9 +1496,9 @@ class LightEventColorsCommand(ISerializable):
         if len(dataarray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', bytearray(dataArray[indexStart:indexEnd])))
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(bytearray(dataarray[indexStart:indexEnd]))
+        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', dataArray[indexStart:indexEnd]))
+        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
         return data
 
 
@@ -1533,10 +1533,10 @@ class LightEventColorsCommandIr(ISerializable):
         if len(dataarray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', bytearray(dataArray[indexStart:indexEnd])))
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += 4;                       data.irData     = unpack('<I', bytearray(dataArray[indexStart:indexEnd]))
+        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', dataArray[indexStart:indexEnd]))
+        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 4;                       data.irData     = unpack('<I', dataArray[indexStart:indexEnd])
         return data
 
 
@@ -2068,8 +2068,8 @@ class Joystick(ISerializable):
         if len(dataarray) != cls.getSize():
             return None
         
-        indexStart = 0;        indexEnd  = JoystickBlock.getSize();     data.left   = JoystickBlock.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += JoystickBlock.getSize();     data.right  = JoystickBlock.parse(bytearray(dataarray[indexStart:indexEnd]))
+        indexStart = 0;        indexEnd  = JoystickBlock.getSize();     data.left   = JoystickBlock.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += JoystickBlock.getSize();     data.right  = JoystickBlock.parse(dataarray[indexStart:indexEnd])
 
         return data
 
@@ -2570,10 +2570,10 @@ class Motor(ISerializable):
         if len(dataarray) != cls.getSize():
             return None
         
-        indexStart = 0;        indexEnd  = MotorBlock.getSize();    data.motor[0]   = MotorBlock.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += MotorBlock.getSize();    data.motor[1]   = MotorBlock.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += MotorBlock.getSize();    data.motor[2]   = MotorBlock.parse(bytearray(dataarray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += MotorBlock.getSize();    data.motor[3]   = MotorBlock.parse(bytearray(dataarray[indexStart:indexEnd]))
+        indexStart = 0;        indexEnd  = MotorBlock.getSize();    data.motor[0]   = MotorBlock.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += MotorBlock.getSize();    data.motor[1]   = MotorBlock.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += MotorBlock.getSize();    data.motor[2]   = MotorBlock.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += MotorBlock.getSize();    data.motor[3]   = MotorBlock.parse(dataarray[indexStart:indexEnd])
         return data
 
 
