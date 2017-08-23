@@ -282,6 +282,26 @@ class Drone:
 # Common Start
 
 
+    def sendPing(self, dataType):
+        
+        if  ( not isinstance(dataType, DataType) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Ping
+        header.length   = Ping.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = Ping()
+
+        data.systemTime = 0
+
+        return self.transfer(header, data)
+
+
+
     def sendRequest(self, dataType):
     
         if  ( not isinstance(dataType, DataType) ):
@@ -297,6 +317,31 @@ class Drone:
         data = Request()
 
         data.dataType   = dataType
+
+        return self.transfer(header, data)
+
+
+
+    def sendPairing(self, target, addressLocal, addressRemote, channel):
+    
+        if  ( (not isinstance(target, DeviceType)) or
+            (not isinstance(addressLocal, int)) or
+            (not isinstance(addressRemote, int)) or
+            (not isinstance(channel, int)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Pairing
+        header.length   = Pairing.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = target
+
+        data = Pairing()
+
+        data.addressLocal   = addressLocal
+        data.addressRemote  = addressRemote
+        data.channel        = channel
 
         return self.transfer(header, data)
 
@@ -585,6 +630,87 @@ class Drone:
 
 
 # Setup End
+
+
+
+# Device Start
+
+    def sendMotor(self, motor0, motor1, motor2, motor3):
+        
+        if  ((not isinstance(motor0, int)) or
+            (not isinstance(motor1, int)) or
+            (not isinstance(motor2, int)) or
+            (not isinstance(motor3, int))):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Motor
+        header.length   = Motor.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = Motor()
+
+        data.motor[0].rotation  = Rotation.Clockwise
+        data.motor[0].value     = motor0
+
+        data.motor[1].rotation  = Rotation.Counterclockwise
+        data.motor[1].value     = motor1
+
+        data.motor[2].rotation  = Rotation.Clockwise
+        data.motor[2].value     = motor2
+
+        data.motor[3].rotation  = Rotation.Counterclockwise
+        data.motor[3].value     = motor3
+
+        return self.transfer(header, data)
+
+
+    def sendMotorSingle(self, target, rotation, value):
+        
+        if  ((not isinstance(target, int)) or
+            (not isinstance(rotation, Rotation)) or
+            (not isinstance(value, int))):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.MotorSingle
+        header.length   = MotorSingle.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = MotorSingle()
+
+        data.target     = target
+        data.rotation   = Rotation.Clockwise
+        data.value      = motor0
+
+        return self.transfer(header, data)
+
+
+
+    def sendIrMessage(self, value):
+        
+        if  ((not isinstance(value, int))):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.IrMessage
+        header.length   = IrMessage.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = IrMessage()
+
+        data.value      = value
+
+        return self.transfer(header, data)
+
+
+# Device End
 
 
 

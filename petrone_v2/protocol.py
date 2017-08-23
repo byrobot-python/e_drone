@@ -40,7 +40,7 @@ class DataType(Enum):
     Request             = 0x04      # 지정한 타입의 데이터 요청
     Message             = 0x05      # 문자열 데이터
     Reserved_1          = 0x06      # 예약
-    Reserved_2          = 0x07      # 예약
+    SystemInformation   = 0x07      # 시스템 정보
     Monitor             = 0x08      # 디버깅용 값 배열 전송. 첫번째 바이트에 타입 두 번째 바이트에 페이지 지정(수신 받는 데이터의 저장 경로 구분)
     SystemCounter       = 0x09      # 시스템 카운터
     Information         = 0x0A      # 장치 정보
@@ -2311,7 +2311,7 @@ class Attitude(ISerializable):
 class IrMessage(ISerializable):
 
     def __init__(self):
-        self.direction  = 0
+        self.direction  = Direction.None_
         self.irData     = 0
 
 
@@ -2321,7 +2321,7 @@ class IrMessage(ISerializable):
 
 
     def toArray(self):
-        return pack('<BI', self.direction, self.irData)
+        return pack('<BI', self.direction.value, self.irData)
 
 
     @classmethod
@@ -2332,6 +2332,7 @@ class IrMessage(ISerializable):
             return None
         
         data.direction, data.irData = unpack('<BI', dataarray)
+        data.direction = Direction(data.direction)
         
         return data
 
