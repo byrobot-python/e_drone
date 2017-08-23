@@ -6,6 +6,7 @@ import threading
 from threading import Thread
 from time import sleep
 from struct import *
+import time
 
 from petrone_v2.protocol import *
 from petrone_v2.storage import *
@@ -135,12 +136,117 @@ class Drone:
 
 
     def handler(self, header, dataArray):
+
+        # 들어오는 데이터를 구분없이 저장
+        self._handler(header, dataArray)
+
+        # 들어오는 데이터를 구분하여 저장
         if      header.from_ == DeviceType.Drone:
             self._handlerDrone(header, dataArray)
         elif    header.from_ == DeviceType.Controller:
             self._handlerController(header, dataArray)
 
         return header.dataType
+
+
+
+    def _handler(self, header, dataArray):
+        if      header.dataType == DataType.Ack:
+            self.storage.ack       = Ack.parse(dataArray);
+            self.storageCount.ack  += 1
+
+        elif    header.dataType == DataType.Message:
+            self.storage.message       = dataArray.decode()
+            self.storageCount.message  += 1
+
+        elif    header.dataType == DataType.Information:
+            self.storage.information       = Information.parse(dataArray)
+            self.storageCount.information  += 1
+
+        elif    header.dataType == DataType.Address:
+            self.storage.address       = Address.parse(dataArray)
+            self.storageCount.address  += 1
+
+
+        elif    header.dataType == DataType.State:
+            self.storage.state         = State.parse(dataArray)
+            self.storageCount.state    += 1
+
+        elif    header.dataType == DataType.Attitude:
+            self.storage.attitude          = Attitude.parse(dataArray)
+            self.storageCount.attitude     += 1
+
+        elif    header.dataType == DataType.AccelBias:
+            self.storage.accelBias         = Vector.parse(dataArray)
+            self.storageCount.accelBias    += 1
+
+        elif    header.dataType == DataType.GyroBias:
+            self.storage.gyroBias          = Attitude.parse(dataArray)
+            self.storageCount.gyroBias     += 1
+
+        elif    header.dataType == DataType.TrimFlight:
+            self.storage.trimFlight        = TrimFlight.parse(dataArray)
+            self.storageCount.trimFlight   += 1
+
+        elif    header.dataType == DataType.TrimDrive:
+            self.storage.trimDrive         = TrimDrive.parse(dataArray)
+            self.storageCount.trimDrive    += 1
+
+
+        elif    header.dataType == DataType.Imu:
+            self.storage.imu       = Imu.parse(dataArray)
+            self.storageCount.imu  += 1
+
+        elif    header.dataType == DataType.Pressure:
+            self.storage.pressure      = Pressure.parse(dataArray)
+            self.storageCount.pressure += 1
+
+        elif    header.dataType == DataType.Battery:
+            self.storage.battery       = Battery.parse(dataArray)
+            self.storageCount.battery  += 1
+
+        elif    header.dataType == DataType.Range:
+            self.storage.range         = Range.parse(dataArray)
+            self.storageCount.range    += 1
+
+        elif    header.dataType == DataType.ImageFlow:
+            self.storage.imageFlow = ImageFlow.parse(dataArray)
+            self.storageCount.imageFlow    += 1
+
+
+        elif    header.dataType == DataType.Button:
+            self.storage.button        = Button.parse(dataArray)
+            self.storageCount.button   += 1
+
+
+        elif    header.dataType == DataType.IrMessage:
+            irMessage = IrMessage.parse(dataArray)
+
+            if  irMessage.direction == Direction.Front:
+                self.storage.irMessageFront        = irMessage
+                self.storageCount.irMessageFront   += 1
+            else:
+                self.storage.irMessageRear         = irMessage
+                self.storageCount.irMessageRear    += 1
+
+
+        elif    header.dataType == DataType.CountFlight:
+            self.storage.countFlight       = CountFlight.parse(dataArray)
+            self.storageCount.countFlight  += 1
+
+        elif    header.dataType == DataType.CountDrive:
+            self.storage.countDrive        = CountDrive.parse(dataArray)
+            self.storageCount.countDrive   += 1
+
+
+        elif    header.dataType == DataType.Pairing:
+            self.storage.pairing       = Pairing.parse(dataArray)
+            self.storageCount.pairing  += 1
+
+        elif    header.dataType == DataType.Rssi:
+            self.storage.rssi          = Rssi.parse(dataArray)
+            self.storageCount.rssi     += 1
+
 
 
 
@@ -357,11 +463,8 @@ class Drone:
 # Control Start
 
 
-    def sendTakeOff(self, modeVehicle):
+    def sendTakeOff(self):
         
-        if  ( not isinstance(modeVehicle, ModeVehicle) ):
-            return None
-
         header = Header()
         
         header.dataType = DataType.Command
@@ -378,11 +481,8 @@ class Drone:
 
 
 
-    def sendLanding(self, modeVehicle):
+    def sendLanding(self):
         
-        if  ( not isinstance(modeVehicle, ModeVehicle) ):
-            return None
-
         header = Header()
         
         header.dataType = DataType.Command
@@ -399,11 +499,8 @@ class Drone:
 
 
 
-    def sendStop(self, modeVehicle):
+    def sendStop(self,):
         
-        if  ( not isinstance(modeVehicle, ModeVehicle) ):
-            return None
-
         header = Header()
         
         header.dataType = DataType.Command
@@ -443,6 +540,22 @@ class Drone:
 
 
 
+    def sendControlWhile(self, roll, pitch, yaw, throttle, timeMs):
+        
+        if  ( (not isinstance(roll, int)) or (not isinstance(pitch, int)) or (not isinstance(yaw, int)) or (not isinstance(throttle, int)) ):
+            return None
+
+        timeSec     = timeMs / 1000
+        timeStart   = time.time()
+
+        while ((time.time() - timeStart) < timeSec):
+            self.sendControl(self, roll, pitch, yaw, throttle)
+            sleep(0.02)
+
+        return self.sendControl(self, roll, pitch, yaw, throttle)
+
+
+
     def sendControlDrive(self, wheel, accel):
         
         if  ( (not isinstance(wheel, int)) or (not isinstance(accel, int)) ):
@@ -461,6 +574,22 @@ class Drone:
         data.accel      = accel
 
         return self.transfer(header, data)
+
+
+
+    def sendControlDriveWhile(self, wheel, accel, timeMs):
+        
+        if  ( (not isinstance(wheel, int)) or (not isinstance(accel, int)) ):
+            return None
+
+        timeSec     = timeMs / 1000
+        timeStart   = time.time()
+
+        while ((time.time() - timeStart) < timeSec):
+            self.sendControlDrive(self, wheel, accel)
+            sleep(0.02)
+
+        return self.sendControlDrive(self, wheel, accel)
 
 
 # Control End
