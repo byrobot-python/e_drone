@@ -44,6 +44,8 @@ class Drone:
             
             self.threadLock.acquire()        # Get lock to synchronize threads
             self.bufferReceive.extend(self.serialport.read())
+            while len(self.bufferReceive) > 4096:
+                self.bufferReceive.remove(0)    # bufferReceive에 저장된 데이터가 4096 바이트를 초과하면 이전에 받은 데이터를 제거함
             self.threadLock.release()        # Free lock to release next thread
 
             sleep(0.001)
