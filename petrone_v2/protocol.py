@@ -226,13 +226,13 @@ class Ping(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = Ping()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.systemTime = unpack('<Q', dataarray)
+        data.systemTime = unpack('<Q', dataArray)
         return data
 
 
@@ -255,13 +255,13 @@ class Ack(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = Ack()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.systemTime, data.dataType, data.crc16 = unpack('<QBH', dataarray)
+        data.systemTime, data.dataType, data.crc16 = unpack('<QBH', dataArray)
         data.dataType = DataType(data.dataType)
         return data
 
@@ -283,13 +283,13 @@ class Request(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = Request()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.dataType = unpack('<B', dataarray)
+        data.dataType = unpack('<B', dataArray)
         data.dataType = DataType(data.dataType)
         return data
 
@@ -316,15 +316,15 @@ class Version(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = Version()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
 
-        data.v = unpack('<I', dataarray)
+        data.v = unpack('<I', dataArray)
 
-        data.build, data.minor, data.major = unpack('<HBB', dataarray)
+        data.build, data.minor, data.major = unpack('<HBB', dataArray)
         data.stage = DevelopmentStage((data.build >> 14) & 0x03)
         data.build = data.build & 0xFFFC
         return data
@@ -348,13 +348,13 @@ class SystemInformation(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = SystemInformation()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.crc32bootloader, data.crc32application = unpack('<II', dataarray)
+        data.crc32bootloader, data.crc32application = unpack('<II', dataArray)
         return data
 
 
@@ -389,15 +389,15 @@ class Information(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = Information()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
         indexStart = 0;        indexEnd = 1;                        data.modeUpdate     = ModeUpdate(unpack('<B', dataArray[indexStart:indexEnd]))
         indexStart = indexEnd; indexEnd += 4;                       data.deviceType     = DeviceType(unpack('<I', dataArray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += Version.getSize();       data.imageVersion   = Version.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Version.getSize();       data.imageVersion   = Version.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 2;                       data.year           = unpack('<H', dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 1;                       data.month          = unpack('<B', dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 1;                       data.day            = unpack('<B', dataArray[indexStart:indexEnd])
@@ -421,13 +421,13 @@ class Address(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = SystemInformation()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.address = dataarray[0:16]
+        data.address = dataArray[0:16]
         return data
 
 
@@ -449,13 +449,13 @@ class Command(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = Command()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.commandType, data.option = unpack('<BB', dataarray)
+        data.commandType, data.option = unpack('<BB', dataArray)
         data.commandType = CommandType(data.commandType)
         return data
 
@@ -479,13 +479,13 @@ class Pairing(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = Pairing()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.addressLocal, data.addressRemote, data.channel = unpack('<HHB', dataarray)
+        data.addressLocal, data.addressRemote, data.channel = unpack('<HHB', dataArray)
         return data
 
 
@@ -506,13 +506,13 @@ class Rssi(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = Rssi()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.rssi = unpack('<b', dataarray)
+        data.rssi = unpack('<b', dataArray)
         return data
 
 
@@ -542,13 +542,13 @@ class ControlQuad8(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = ControlQuad8()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.roll, data.pitch, data.yaw, data.throttle = unpack('<bbbb', dataarray)
+        data.roll, data.pitch, data.yaw, data.throttle = unpack('<bbbb', dataArray)
         return data
 
 
@@ -572,13 +572,13 @@ class ControlQuad16(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = ControlQuad16()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.roll, data.pitch, data.yaw, data.throttle = unpack('<hhhh', dataarray)
+        data.roll, data.pitch, data.yaw, data.throttle = unpack('<hhhh', dataArray)
         return data
 
 
@@ -600,13 +600,13 @@ class ControlDouble8(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = ControlDouble8()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.wheel, data.accel = unpack('<bb', dataarray)
+        data.wheel, data.accel = unpack('<bb', dataArray)
         return data
 
 
@@ -628,13 +628,13 @@ class ControlDouble16(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = ControlDouble16()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.wheel, data.accel = unpack('<hh', dataarray)
+        data.wheel, data.accel = unpack('<hh', dataArray)
         return data
 
 
@@ -742,13 +742,13 @@ class Color(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = Color()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.r, data.g, data.b = unpack('<BBB', dataarray)
+        data.r, data.g, data.b = unpack('<BBB', dataArray)
         return data
 
 
@@ -918,13 +918,13 @@ class LightManual(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = LightManual()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.flags, data.brightness = unpack('<BB', dataarray)
+        data.flags, data.brightness = unpack('<BB', dataArray)
         return data
 
 
@@ -946,13 +946,13 @@ class LightMode(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = LightMode()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
 
-        data.mode, data.interval = unpack('<BH', dataarray)
+        data.mode, data.interval = unpack('<BH', dataArray)
         return data
 
 
@@ -975,13 +975,13 @@ class LightEvent(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = LightEvent()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
 
-        data.event, data.interval, data.repeat = unpack('<BHB', dataarray)
+        data.event, data.interval, data.repeat = unpack('<BHB', dataArray)
 
         return data
 
@@ -1007,14 +1007,14 @@ class LightModeCommand(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = LightModeCommand()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightMode.getSize();    data.mode       = LightMode.parse(dataarray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Command.getSize();     data.command    = Command.parse(dataarray[indexStart:indexEnd])
+        indexStart = 0;        indexEnd = LightMode.getSize();    data.mode       = LightMode.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Command.getSize();     data.command    = Command.parse(dataArray[indexStart:indexEnd])
         return data
 
 
@@ -1041,14 +1041,14 @@ class LightModeCommandIr(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = LightModeCommandIr()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataarray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
+        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 4;                       data.irData     = unpack('<I', dataArray[indexStart:indexEnd])
         return data
 
@@ -1074,14 +1074,14 @@ class LightModeColor(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = LightModeColor()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataarray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(dataarray[indexStart:indexEnd])
+        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(dataArray[indexStart:indexEnd])
         return data
 
 
@@ -1108,15 +1108,15 @@ class LightModeColorCommand(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = LightModeColorCommand()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightMode.getSize();    data.mode       = LightMode.parse(dataarray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Color.getSize();       data.color      = Color.parse(dataarray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Command.getSize();     data.command    = Command.parse(dataarray[indexStart:indexEnd])
+        indexStart = 0;        indexEnd = LightMode.getSize();    data.mode       = LightMode.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Color.getSize();       data.color      = Color.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Command.getSize();     data.command    = Command.parse(dataArray[indexStart:indexEnd])
         return data
 
 
@@ -1145,15 +1145,15 @@ class LightModeColorCommandIr(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = LightModeColorCommandIr()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataarray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(dataarray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
+        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 4;                       data.irData     = unpack('<I', dataArray[indexStart:indexEnd])
         return data
 
@@ -1179,13 +1179,13 @@ class LightModeColors(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = LightModeColors()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataarray[indexStart:indexEnd])
+        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', dataArray[indexStart:indexEnd]))
         return data
 
@@ -1213,15 +1213,15 @@ class LightModeColorsCommand(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = LightModeColorsCommand()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataarray[indexStart:indexEnd])
+        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', dataArray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
         return data
 
 
@@ -1250,15 +1250,15 @@ class LightModeColorsCommandIr(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = LightModeColorsCommandIr()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataarray[indexStart:indexEnd])
+        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', dataArray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 4;                       data.irData     = unpack('<I', dataArray[indexStart:indexEnd])
         return data
 
@@ -1284,14 +1284,14 @@ class LightEventCommand(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = LightEventCommand()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataarray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
+        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
         return data
 
 
@@ -1318,14 +1318,14 @@ class LightEventCommandIr(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = LightEventCommandIr()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataarray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
+        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 4;                       data.irData     = unpack('<I', dataArray[indexStart:indexEnd])
         return data
 
@@ -1351,14 +1351,14 @@ class LightEventColor(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = LightEventColor()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataarray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Color.getSize();         data.command    = Color.parse(dataarray[indexStart:indexEnd])
+        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Color.getSize();         data.command    = Color.parse(dataArray[indexStart:indexEnd])
         return data
 
 
@@ -1385,15 +1385,15 @@ class LightEventColorCommand(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = LightEventColorCommand()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataarray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(dataarray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
+        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
         return data
 
 
@@ -1422,15 +1422,15 @@ class LightEventColorCommandIr(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = LightEventColorCommandIr()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataarray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(dataarray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
+        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 4;                       data.irData     = unpack('<I', dataArray[indexStart:indexEnd])
         return data
 
@@ -1456,13 +1456,13 @@ class LightEventColors(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = LightEventColors()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataarray[indexStart:indexEnd])
+        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', dataArray[indexStart:indexEnd]))
         return data
 
@@ -1490,15 +1490,15 @@ class LightEventColorsCommand(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = LightEventColorsCommand()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataarray[indexStart:indexEnd])
+        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', dataArray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
         return data
 
 
@@ -1527,15 +1527,15 @@ class LightEventColorsCommandIr(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = LightEventColorsCommandIr()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
 
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataarray[indexStart:indexEnd])
+        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', dataArray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 4;                       data.irData     = unpack('<I', dataArray[indexStart:indexEnd])
         return data
 
@@ -1910,13 +1910,13 @@ class Buzzer(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = Buzzer()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.mode, data.value, data.time = unpack('<BHH', dataarray)
+        data.mode, data.value, data.time = unpack('<BHH', dataArray)
         data.mode = BuzzerMode(data.mode)
 
         return data
@@ -1959,13 +1959,13 @@ class Vibrator(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = Vibrator()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.mode, data.on, data.off, data.total = unpack('<BHHH', dataarray)
+        data.mode, data.on, data.off, data.total = unpack('<BHHH', dataArray)
         data.mode = VibratorMode(data.mode)
 
         return data
@@ -2028,13 +2028,13 @@ class JoystickBlock(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = JoystickBlock()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.x, data.y, data.direction, data.event = unpack('<BBBB', dataarray)
+        data.x, data.y, data.direction, data.event = unpack('<BBBB', dataArray)
         data.direction  = JoystickDirection(data.direction)
         data.event      = JoystickEvent(data.event)
 
@@ -2062,14 +2062,14 @@ class Joystick(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = Joystick()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        indexStart = 0;        indexEnd  = JoystickBlock.getSize();     data.left   = JoystickBlock.parse(dataarray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += JoystickBlock.getSize();     data.right  = JoystickBlock.parse(dataarray[indexStart:indexEnd])
+        indexStart = 0;        indexEnd  = JoystickBlock.getSize();     data.left   = JoystickBlock.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += JoystickBlock.getSize();     data.right  = JoystickBlock.parse(dataArray[indexStart:indexEnd])
 
         return data
 
@@ -2126,13 +2126,13 @@ class Button(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = Button()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.button, data.event = unpack('<HB', dataarray)
+        data.button, data.event = unpack('<HB', dataArray)
         
         return data
 
@@ -2168,13 +2168,13 @@ class State(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = Range()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.modeVehicle, data.modeSystem, data.modeFlight, data.modeDrive, data.sensorOrientation, data.headless, data.battery = unpack('<BBBBBBB', dataarray)
+        data.modeVehicle, data.modeSystem, data.modeFlight, data.modeDrive, data.sensorOrientation, data.headless, data.battery = unpack('<BBBBBBB', dataArray)
         
         return data
 
@@ -2200,13 +2200,13 @@ class CountFlight(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = CountFlight()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.timeFlight, data.countTakeOff, data.countLanding, data.countAccident = unpack('<QHHH', dataarray)
+        data.timeFlight, data.countTakeOff, data.countLanding, data.countAccident = unpack('<QHHH', dataArray)
         
         return data
 
@@ -2230,13 +2230,13 @@ class CountDrive(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = CountDrive()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.timeDrive, data.countAccident = unpack('<QH', dataarray)
+        data.timeDrive, data.countAccident = unpack('<QH', dataArray)
         
         return data
 
@@ -2266,13 +2266,13 @@ class Vector(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = Vector()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.x, data.y, data.z = unpack('<hhh', dataarray)
+        data.x, data.y, data.z = unpack('<hhh', dataArray)
         
         return data
 
@@ -2296,13 +2296,13 @@ class Attitude(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = Attitude()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.roll, data.pitch, data.yaw = unpack('<hhh', dataarray)
+        data.roll, data.pitch, data.yaw = unpack('<hhh', dataArray)
         
         return data
 
@@ -2325,13 +2325,13 @@ class IrMessage(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = IrMessage()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.direction, data.irData = unpack('<BI', dataarray)
+        data.direction, data.irData = unpack('<BI', dataArray)
         data.direction = Direction(data.direction)
         
         return data
@@ -2362,13 +2362,13 @@ class Imu(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = Imu()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.accelX, data.accelY, data.accelZ, data.gyroRoll, data.gyroPitch, data.gyroYaw, data.angleRoll, data.anglePitch, data.angleYaw = unpack('<hhhhhhhhh', dataarray)
+        data.accelX, data.accelY, data.accelZ, data.gyroRoll, data.gyroPitch, data.gyroYaw, data.angleRoll, data.anglePitch, data.angleYaw = unpack('<hhhhhhhhh', dataArray)
         
         return data
 
@@ -2397,13 +2397,13 @@ class Battery(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = Battery()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.gradient, data.yIntercept, data.adjustGradient, data.adjustYIntercept, data.flagBatteryCalibration, data.batteryRaw, data.batteryPercent, data.voltage = unpack('<ffffBhff', dataarray)
+        data.gradient, data.yIntercept, data.adjustGradient, data.adjustYIntercept, data.flagBatteryCalibration, data.batteryRaw, data.batteryPercent, data.voltage = unpack('<ffffBhff', dataArray)
         data.flagBatteryCalibration = bool(data.flagBatteryCalibration)
         
         return data
@@ -2427,13 +2427,13 @@ class Pressure(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = Pressure()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.temperature, data.pressure = unpack('<ff', dataarray)
+        data.temperature, data.pressure = unpack('<ff', dataArray)
         
         return data
 
@@ -2460,13 +2460,13 @@ class Range(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = Range()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.left, data.front, data.right, data.rear, data.top, data.bottom = unpack('<ffffff', dataarray)
+        data.left, data.front, data.right, data.rear, data.top, data.bottom = unpack('<ffffff', dataArray)
         
         return data
 
@@ -2489,13 +2489,13 @@ class ImageFlow(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = ImageFlow()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.positionX, data.positionY = unpack('<ff', dataarray)
+        data.positionX, data.positionY = unpack('<ff', dataArray)
         
         return data
 
@@ -2525,13 +2525,13 @@ class MotorBlock(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = MotorBlock()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.rotation, data.value = unpack('<Bh', dataarray)
+        data.rotation, data.value = unpack('<Bh', dataArray)
         data.rotation = Rotation(data.rotation)
         
         return data
@@ -2564,16 +2564,16 @@ class Motor(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = Motor()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        indexStart = 0;        indexEnd  = MotorBlock.getSize();    data.motor[0]   = MotorBlock.parse(dataarray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += MotorBlock.getSize();    data.motor[1]   = MotorBlock.parse(dataarray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += MotorBlock.getSize();    data.motor[2]   = MotorBlock.parse(dataarray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += MotorBlock.getSize();    data.motor[3]   = MotorBlock.parse(dataarray[indexStart:indexEnd])
+        indexStart = 0;        indexEnd  = MotorBlock.getSize();    data.motor[0]   = MotorBlock.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += MotorBlock.getSize();    data.motor[1]   = MotorBlock.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += MotorBlock.getSize();    data.motor[2]   = MotorBlock.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += MotorBlock.getSize();    data.motor[3]   = MotorBlock.parse(dataArray[indexStart:indexEnd])
         return data
 
 
@@ -2596,13 +2596,13 @@ class MotorSingle(ISerializable):
 
 
     @classmethod
-    def parse(cls, dataarray):
+    def parse(cls, dataArray):
         data = MotorBlock()
         
-        if len(dataarray) != cls.getSize():
+        if len(dataArray) != cls.getSize():
             return None
         
-        data.target, data.rotation, data.value = unpack('<BBh', dataarray)
+        data.target, data.rotation, data.value = unpack('<BBh', dataArray)
         data.rotation = Rotation(data.rotation)
         
         return data

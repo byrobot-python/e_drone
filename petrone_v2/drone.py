@@ -47,8 +47,8 @@ class Drone:
             self.bufferReceive.extend(self.serialport.read())
 
             length = len(self.bufferReceive)
-            if length > 4096:
-                del self.bufferReceive[0:(length - 4096)]    # bufferReceive에 저장된 데이터가 4096 바이트를 초과하면 이전에 받은 데이터를 제거함
+            if length > 16384:
+                del self.bufferReceive[0:(length - 16384)]    # bufferReceive에 저장된 데이터가 16384 바이트를 초과하면 이전에 받은 데이터를 제거함
             
             self.threadLock.release()        # Free lock to release next thread
 
