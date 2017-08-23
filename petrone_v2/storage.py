@@ -92,7 +92,7 @@ class StorageController:
 
 
 # Storage Controller Count
-class StorageDroneCount:
+class StorageControllerCount:
 
     def __init__(self):
         self.ack                = 0
@@ -107,4 +107,3 @@ class StorageDroneCount:
         self.rssi               = 0
 
 
-        

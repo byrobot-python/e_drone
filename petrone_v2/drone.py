@@ -43,9 +43,13 @@ class Drone:
         while self.flagThreadRun:
             
             self.threadLock.acquire()        # Get lock to synchronize threads
+
             self.bufferReceive.extend(self.serialport.read())
-            while len(self.bufferReceive) > 4096:
-                self.bufferReceive.remove(0)    # bufferReceive에 저장된 데이터가 4096 바이트를 초과하면 이전에 받은 데이터를 제거함
+
+            length = len(self.bufferReceive)
+            if length > 4096:
+                del self.bufferReceive[0:(length - 4096)]    # bufferReceive에 저장된 데이터가 4096 바이트를 초과하면 이전에 받은 데이터를 제거함
+            
             self.threadLock.release()        # Free lock to release next thread
 
             sleep(0.001)
@@ -122,7 +126,7 @@ class Drone:
                 del(self.bufferHandler[0])
                 
                 if self.receiver.state == StateLoading.Loaded:
-                    self.handler(self.receiver.header, self.receiver.dataBuffer)
+                    self.handler(self.receiver.header, self.receiver.data)
                     self.receiver.checked()
                     return self.receiver.header.dataType
 
@@ -282,9 +286,9 @@ class Drone:
 # Common Start
 
 
-    def sendPing(self, dataType):
+    def sendPing(self, deviceType):
         
-        if  ( not isinstance(dataType, DataType) ):
+        if  ( not isinstance(deviceType, DeviceType) ):
             return None
 
         header = Header()
@@ -292,7 +296,7 @@ class Drone:
         header.dataType = DataType.Ping
         header.length   = Ping.getSize()
         header.from_    = DeviceType.Tester
-        header.to_      = DeviceType.Drone
+        header.to_      = deviceType
 
         data = Ping()
 
@@ -302,9 +306,9 @@ class Drone:
 
 
 
-    def sendRequest(self, dataType):
+    def sendRequest(self, deviceType, dataType):
     
-        if  ( not isinstance(dataType, DataType) ):
+        if  ( (not isinstance(deviceType, DeviceType)) or (not isinstance(dataType, DataType)) ):
             return None
 
         header = Header()
@@ -312,7 +316,7 @@ class Drone:
         header.dataType = DataType.Request
         header.length   = Request.getSize()
         header.from_    = DeviceType.Tester
-        header.to_      = DeviceType.Drone
+        header.to_      = deviceType
 
         data = Request()
 
@@ -322,9 +326,9 @@ class Drone:
 
 
 
-    def sendPairing(self, target, addressLocal, addressRemote, channel):
+    def sendPairing(self, deviceType, addressLocal, addressRemote, channel):
     
-        if  ( (not isinstance(target, DeviceType)) or
+        if  ( (not isinstance(deviceType, DeviceType)) or
             (not isinstance(addressLocal, int)) or
             (not isinstance(addressRemote, int)) or
             (not isinstance(channel, int)) ):
@@ -335,7 +339,7 @@ class Drone:
         header.dataType = DataType.Pairing
         header.length   = Pairing.getSize()
         header.from_    = DeviceType.Tester
-        header.to_      = target
+        header.to_      = deviceType
 
         data = Pairing()
 
@@ -717,9 +721,9 @@ class Drone:
 # Light Start
 
 
-    def sendLightManual(self, target, flags, brightness):
+    def sendLightManual(self, deviceType, flags, brightness):
         
-        if  (((target != DeviceType.Drone) and (target != DeviceType.Controller)) or
+        if  (((deviceType != DeviceType.Drone) and (deviceType != DeviceType.Controller)) or
             (not isinstance(flags, int)) or
             (not isinstance(brightness, int))):
             return None
@@ -729,7 +733,7 @@ class Drone:
         header.dataType = DataType.LightManual
         header.length   = LightManual.getSize()
         header.from_    = DeviceType.Tester
-        header.to_      = target
+        header.to_      = deviceType
 
         data = LightManual()
 

@@ -30,19 +30,20 @@ class Receiver:
 
     def __init__(self):
         
-        self.state                   = StateLoading.Ready
-        self.sectionOld              = Section.End
-        self.section                 = Section.Start
-        self.index                   = 0
+        self.state                  = StateLoading.Ready
+        self.sectionOld             = Section.End
+        self.section                = Section.Start
+        self.index                  = 0
 
-        self.header                  = Header()
-        self.timeReceiveStart        = 0
-        self.timeReceiveComplete     = 0
+        self.header                 = Header()
+        self.timeReceiveStart       = 0
+        self.timeReceiveComplete    = 0
 
-        self.dataBuffer              = []
+        self._dataBuffer            = []
+        self.data                   = bytearray()
 
-        self.crc16received           = 0
-        self.crc16calculated         = 0
+        self.crc16received          = 0
+        self.crc16calculated        = 0
 
 
     def call(self, data):
@@ -109,12 +110,12 @@ class Receiver:
                     self.section = Section.End
                 else:
                     self.section = Section.Data
-                    self.dataBuffer.clear()
+                    self._dataBuffer.clear()
             else:
                 self.state = StateLoading.Failure
         
         elif self.section == Section.Data:
-            self.dataBuffer.append(data)
+            self._dataBuffer.append(data)
             self.crc16calculated = CRC16.calc(data, self.crc16calculated)
 
             if (self.index == self.header.length - 1):
@@ -127,6 +128,7 @@ class Receiver:
                 self.crc16received = (data << 8) | self.crc16received
 
                 if self.crc16received == self.crc16calculated:
+                    self.data = bytearray(self._dataBuffer)
                     self.timeReceiveComplete = now
                     self.state = StateLoading.Loaded
                 else:

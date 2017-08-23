@@ -14,6 +14,7 @@ rem wheel 빌드
 
 rem PYPI 등록
 "C:\Users\Sanghyo Lee\Anaconda3\Scripts\twine.exe" upload dist/*
+rem "C:\Users\Sanghyo Lee\Anaconda3\Scripts\twine.exe" upload --repository-url https://test.pypi.org/legacy/ dist/*
 
 rem 설치
 "C:\Users\Sanghyo Lee\Anaconda3\Scripts\pip.exe" --no-cache-dir install petrone_v2
