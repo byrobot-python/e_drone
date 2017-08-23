@@ -19,6 +19,8 @@ from petrone_v2.crc import *
 class Drone:
 
 
+# BaseFunctions Start
+
     def __init__(self):
         
         self.serialport      = None
@@ -120,6 +122,318 @@ class Drone:
     def handler(self, header, dataArray):
         if header.dataType == DataType.Ack:
             self.storage.countAck += 1
+
+
+# BaseFunctions End
+
+
+
+# Common Start
+
+
+    def sendRequest(self, dataType):
+    
+        if  ( not isinstance(dataType, DataType) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Request
+        header.length   = Request.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = Request()
+
+        data.dataType   = dataType
+
+        return self.transfer(header, data)
+
+
+# Common Start
+
+
+
+# Control Start
+
+
+    def sendTakeOff(self, modeVehicle):
+        
+        if  ( not isinstance(modeVehicle, ModeVehicle) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = Command()
+
+        data.commandType    = CommandType.FlightEvent
+        data.option         = FlightEvent.TakeOff.value
+
+        return self.transfer(header, data)
+
+
+
+    def sendLanding(self, modeVehicle):
+        
+        if  ( not isinstance(modeVehicle, ModeVehicle) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = Command()
+
+        data.commandType    = CommandType.FlightEvent
+        data.option         = FlightEvent.Landing.value
+
+        return self.transfer(header, data)
+
+
+
+    def sendStop(self, modeVehicle):
+        
+        if  ( not isinstance(modeVehicle, ModeVehicle) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = Command()
+
+        data.commandType    = CommandType.Stop
+        data.option         = 0
+
+        return self.transfer(header, data)
+
+
+
+    def sendControl(self, roll, pitch, yaw, throttle):
+        
+        if  ( (not isinstance(roll, int)) or (not isinstance(pitch, int)) or (not isinstance(yaw, int)) or (not isinstance(throttle, int)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Control
+        header.length   = ControlQuad8.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = ControlQuad8()
+
+        data.roll       = roll
+        data.pitch      = pitch
+        data.yaw        = yaw
+        data.throttle   = throttle
+
+        return self.transfer(header, data)
+
+
+
+    def sendControlDrive(self, wheel, accel):
+        
+        if  ( (not isinstance(wheel, int)) or (not isinstance(accel, int)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Control
+        header.length   = ControlDouble8.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = ControlDouble8()
+
+        data.wheel      = wheel
+        data.accel      = accel
+
+        return self.transfer(header, data)
+
+
+# Control End
+
+
+
+# Setup Start
+
+
+    def sendModeVehicle(self, modeVehicle):
+        
+        if  ( not isinstance(modeVehicle, ModeVehicle) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = Command()
+
+        data.commandType    = CommandType.ModeVehicle
+        data.option         = modeVehicle.value
+
+        return self.transfer(header, data)
+
+
+
+    def sendHeadless(self, headless):
+        
+        if  ( not isinstance(headless, Headless) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = Command()
+
+        data.commandType    = CommandType.Headless
+        data.option         = headless.value
+
+        return self.transfer(header, data)
+
+
+
+    def sendTrimFlight(self, roll, pitch, yaw, throttle):
+        
+        if  ( (not isinstance(roll, int)) or (not isinstance(pitch, int)) or (not isinstance(yaw, int)) or (not isinstance(throttle, int)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.TrimFlight
+        header.length   = TrimFlight.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = TrimFlight()
+
+        data.roll       = roll
+        data.pitch      = pitch
+        data.yaw        = yaw
+        data.throttle   = throttle
+
+        return self.transfer(header, data)
+
+
+
+    def sendTrimDrive(self, wheel, accel):
+        
+        if  ( (not isinstance(wheel, int)) or (not isinstance(accel, int)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.TrimDrive
+        header.length   = TrimDrive.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = TrimDrive()
+
+        data.wheel      = wheel
+        data.accel      = accel
+
+        return self.transfer(header, data)
+
+
+
+    def sendFlightEvent(self, flightEvent):
+        
+        if  ( (not isinstance(flightEvent, FlightEvent)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = Command()
+
+        data.commandType    = CommandType.FlightEvent
+        data.option         = flightEvent.value
+
+        return self.transfer(header, data)
+
+
+
+    def sendDriveEvent(self, driveEvent):
+        
+        if  ( (not isinstance(driveEvent, DriveEvent)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = Command()
+
+        data.commandType    = CommandType.DriveEvent
+        data.option         = driveEvent.value
+
+        return self.transfer(header, data)
+
+
+
+    def sendClearTrim(self):
+        
+        header = Header()
+        
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = Command()
+
+        data.commandType    = CommandType.ClearTrim
+        data.option         = 0
+
+        return self.transfer(header, data)
+
+
+
+    def sendClearGyroBias(self):
+        
+        header = Header()
+        
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = Command()
+
+        data.commandType    = CommandType.ClearGyroBias
+        data.option         = 0
+
+        return self.transfer(header, data)
+
+
+# Setup End
 
 
 

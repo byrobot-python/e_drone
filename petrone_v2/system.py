@@ -3,7 +3,7 @@ from enum import Enum
 
 class DeviceType(Enum):
     
-    None_               = 0x00      # 없음
+    None_               = 0x00
 
     Drone               = 0x30      # 드론
     Controller          = 0x31      # 조종기
@@ -24,7 +24,7 @@ class DeviceType(Enum):
 
 class Direction(Enum):
     
-    None_               = 0x00      # 없음
+    None_               = 0x00
 
     Left                = 0x01
     Front               = 0x02
@@ -40,7 +40,7 @@ class Direction(Enum):
 
 class ModeSystem(Enum):
     
-    None_               = 0x00      # 없음
+    None_               = 0x00
 
     Boot                = 0x01
     Start               = 0x02
@@ -54,7 +54,7 @@ class ModeSystem(Enum):
 
 class ModeVehicle(Enum):
     
-    None_               = 0x00      # 없음
+    None_               = 0x00
 
     FlightGuard         = 0x10
     FlightNoGuard       = 0x11
@@ -71,7 +71,7 @@ class ModeVehicle(Enum):
 
 class ModeFlight(Enum):
     
-    None_               = 0x00      # 없음
+    None_               = 0x00
 
     Ready               = 0x10
     TakeOff             = 0x11
@@ -93,7 +93,7 @@ class ModeFlight(Enum):
 
 class ModeDrive(Enum):
     
-    None_               = 0x00      # 없음
+    None_               = 0x00
 
     Ready               = 0x10
     Start               = 0x11
@@ -110,9 +110,35 @@ class ModeDrive(Enum):
 
 
 
+class ModeUpdate(Enum):
+    
+    None_               = 0x00
+
+    Ready               = 0x01      # 업데이트 가능 상태
+    Update              = 0x02      # 업데이트 중
+    Complete            = 0x03      # 업데이트 완료
+
+    Faild               = 0x04      # 업데이트 실패(업데이트 완료까지 갔으나 body의 CRC16이 일치하지 않는 경우 등)
+
+    NotAvailable        = 0x05      # 업데이트 불가능 상태(Debug 모드 등)
+    RunApplication      = 0x06      # 어플리케이션 동작 중
+
+    EndOfType           = 0x07
+
+
+
+class DevelopmentStage(Enum):
+    
+    Alpha               = 0x00
+    Beta                = 0x01 
+    ReleaseCandidate    = 0x02
+    Release             = 0x03
+
+
+
 class Rotation(Enum):
     
-    None_               = 0x00      # 없음
+    None_               = 0x00
 
     Clockwise           = 0x01
     Counterclockwise    = 0x02
@@ -123,7 +149,7 @@ class Rotation(Enum):
 
 class FlightEvent(Enum):
     
-    None_               = 0x00      # 없음
+    None_               = 0x00
 
     Stop                = 0x10
     TakeOff             = 0x11
@@ -142,7 +168,7 @@ class FlightEvent(Enum):
 
 class DriveEvent(Enum):
     
-    None_               = 0x00      # 없음
+    None_               = 0x00
 
     Stop                = 0x10
     
@@ -155,7 +181,7 @@ class DriveEvent(Enum):
 
 class SensorOrientation(Enum):
     
-    None_               = 0x00      # 없음
+    None_               = 0x00
 
     Normal              = 0x01
     ReverseStart        = 0x02
@@ -165,12 +191,12 @@ class SensorOrientation(Enum):
 
 
 
-class Coordinate(Enum):
+class Headless(Enum):
     
-    None_               = 0x00      # 없음
+    None_               = 0x00
 
-    World               = 0x01      # 고정 좌표계(Headless)
-    Local               = 0x02      # 상대 좌표계(Normal)
+    Headless            = 0x01      # Headless
+    Normal              = 0x02      # Normal
 
     EndOfType           = 0x04
 

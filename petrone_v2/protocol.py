@@ -141,7 +141,7 @@ class CommandType(Enum):
     ModeVehicle         = 0x10      # Vehicle 동작 모드 전환
 
     # 제어
-    Coordinate          = 0x20      # 방위 기준 변경
+    Headless            = 0x20      # 헤드리스 모드 선택
     Trim                = 0x21      # 트림 변경
     FlightEvent         = 0x22      # 비행 이벤트 실행
     DriveEvent          = 0x23      # 주행 이벤트 실행
@@ -209,6 +209,228 @@ class Header(ISerializable):
 # Common Start
 
 
+class Ping(ISerializable):
+
+    def __init__(self):
+        self.systemTime     = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 8
+
+
+    def toArray(self):
+        return pack('<Q', self.systemTime)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = Ping()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.systemTime = unpack('<Q', dataarray)
+        return data
+
+
+
+class Ack(ISerializable):
+
+    def __init__(self):
+        self.systemTime     = 0
+        self.dataType       = DataType.None_
+        self.crc16          = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 11
+
+
+    def toArray(self):
+        return pack('<QBH', self.systemTime, self.dataType, self.crc16)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = Ack()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.systemTime, data.dataType, data.crc16 = unpack('<QBH', dataarray)
+        data.dataType = DataType(data.dataType)
+        return data
+
+
+
+class Request(ISerializable):
+
+    def __init__(self):
+        self.dataType    = DataType.None_
+
+
+    @classmethod
+    def getSize(cls):
+        return 1
+
+
+    def toArray(self):
+        return pack('<B', self.dataType)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = Request()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.dataType = unpack('<B', dataarray)
+        data.dataType = DataType(data.dataType)
+        return data
+
+
+
+class Version(ISerializable):
+
+    def __init__(self):
+        self.build          = 0
+        self.stage          = DevelopmentStage.Alpha
+        self.minor          = 0
+        self.major          = 0
+
+        self.v              = 0         # build, stage, minor, major을 하나의 UInt32로 묶은 것(버젼 비교 시 사용)
+
+
+    @classmethod
+    def getSize(cls):
+        return 4
+
+
+    def toArray(self):
+        return pack('<HBB', ((self.stage << 14) | self.build), self.minor, self.major)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = Version()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+
+        data.v = unpack('<I', dataarray)
+
+        data.build, data.minor, data.major = unpack('<HBB', dataarray)
+        data.stage = DevelopmentStage((data.build >> 14) & 0x03)
+        data.build = data.build & 0xFFFC
+        return data
+
+
+
+class SystemInformation(ISerializable):
+
+    def __init__(self):
+        self.crc32bootloader    = 0
+        self.crc32application   = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 8
+
+
+    def toArray(self):
+        return pack('<II', self.crc32bootloader, self.crc32application)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = SystemInformation()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.crc32bootloader, data.crc32application = unpack('<II', dataarray)
+        return data
+
+
+
+class Information(ISerializable):
+
+    def __init__(self):
+        self.modeUpdate     = ModeUpdate.None_
+
+        self.deviceType     = DeviceType.None_
+        self.imageVersion   = Version()
+
+        self.year           = 0
+        self.month          = 0
+        self.day            = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 13
+
+
+    def toArray(self):
+        dataArray = []
+        dataArray.extend(pack('<B', self.modeUpdate.value))
+        dataArray.extend(pack('<I', self.deviceType.value))
+        dataArray.extend(self.imageVersion.toArray())
+        dataArray.extend(pack('<H', self.year))
+        dataArray.extend(pack('<B', self.month))
+        dataArray.extend(pack('<B', self.day))
+        return dataArray
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = Information()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        indexStart = 0;        indexEnd = 1;                        data.modeUpdate     = ModeUpdate(unpack('<B', dataArray[indexStart:indexEnd]))
+        indexStart = indexEnd; indexEnd += 4;                       data.deviceType     = DeviceType(unpack('<I', dataArray[indexStart:indexEnd]))
+        indexStart = indexEnd; indexEnd += Version.getSize();       data.imageVersion   = Version.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 2;                       data.year           = unpack('<H', dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 1;                       data.month          = unpack('<B', dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 1;                       data.day            = unpack('<B', dataArray[indexStart:indexEnd])
+        return data
+
+
+
+class Address(ISerializable):
+
+    def __init__(self):
+        self.address    = []
+
+
+    @classmethod
+    def getSize(cls):
+        return 16
+
+
+    def toArray(self):
+        return bytearray(self.address)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = SystemInformation()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.address = list(dataarray[0:16])
+        return data
+
+
+
 class Command(ISerializable):
 
     def __init__(self):
@@ -237,7 +459,167 @@ class Command(ISerializable):
         return data
 
 
+
+class Rssi(ISerializable):
+
+    def __init__(self):
+        self.rssi       = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 1
+
+
+    def toArray(self):
+        return pack('<b', self.rssi)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = Rssi()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.rssi = unpack('<b', dataarray)
+        return data
+
+
 # Common End
+
+
+
+# Control Start
+
+
+class ControlQuad8(ISerializable):
+
+    def __init__(self):
+        self.roll       = 0
+        self.pitch      = 0
+        self.yaw        = 0
+        self.throttle   = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 4
+
+
+    def toArray(self):
+        return pack('<bbbb', self.roll, self.pitch, self.yaw, self.throttle)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = ControlQuad8()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.roll, data.pitch, data.yaw, data.throttle = unpack('<bbbb', dataarray)
+        return data
+
+
+
+class ControlQuad16(ISerializable):
+
+    def __init__(self):
+        self.roll       = 0
+        self.pitch      = 0
+        self.yaw        = 0
+        self.throttle   = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 8
+
+
+    def toArray(self):
+        return pack('<hhhh', self.roll, self.pitch, self.yaw, self.throttle)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = ControlQuad16()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.roll, data.pitch, data.yaw, data.throttle = unpack('<hhhh', dataarray)
+        return data
+
+
+
+class ControlDouble8(ISerializable):
+
+    def __init__(self):
+        self.wheel      = 0
+        self.accel      = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 2
+
+
+    def toArray(self):
+        return pack('<bb', self.wheel, self.accel)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = ControlDouble8()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.wheel, data.accel = unpack('<bb', dataarray)
+        return data
+
+
+
+class ControlDouble16(ISerializable):
+
+    def __init__(self):
+        self.wheel      = 0
+        self.accel      = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 4
+
+
+    def toArray(self):
+        return pack('<hh', self.wheel, self.accel)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = ControlDouble16()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.wheel, data.accel = unpack('<hh', dataarray)
+        return data
+
+
+
+class TrimFlight(ControlQuad16):
+    pass
+
+
+
+class TrimDrive(ControlDouble16):
+    pass
+
+
+# Control End
+
 
 
 # Light Start
@@ -1602,8 +1984,8 @@ class JoystickBlock(ISerializable):
     def __init__(self):
         self.x          = 0
         self.y          = 0
-        self.direction  = 0
-        self.event      = 0
+        self.direction  = JoystickDirection.None_
+        self.event      = JoystickEvent.None_
 
 
     @classmethod
@@ -1726,3 +2108,444 @@ class Button(ISerializable):
 
 
 # Button End
+
+
+
+# Information Start
+
+
+class State(ISerializable):
+
+    def __init__(self):
+        self.modeVehicle        = ModeVehicle.None_
+
+        self.modeSystem         = ModeSystem.None_
+        self.modeFlight         = ModeFlight.None_
+        self.modeDrive          = ModeDrive.None_
+
+        self.sensorOrientation  = SensorOrientation.None_
+        self.headless           = Headless.None_
+        self.battery            = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 7
+
+
+    def toArray(self):
+        return pack('<BBBBBBB', self.modeVehicle.value, self.modeSystem.value, self.modeFlight.value, self.modeDrive.value, self.sensorOrientation.value, self.headless.value, self.battery)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = Range()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.modeVehicle, data.modeSystem, data.modeFlight, data.modeDrive, data.sensorOrientation, data.headless, data.battery = unpack('<BBBBBBB', dataarray)
+        
+        return data
+
+
+
+class CountFlight(ISerializable):
+
+    def __init__(self):
+        self.timeFlight     = 0
+
+        self.countTakeOff   = 0
+        self.countLanding   = 0
+        self.countAccident  = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 14
+
+
+    def toArray(self):
+        return pack('<QHHH', self.timeFlight, self.countTakeOff, self.countLanding, self.countAccident)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = CountFlight()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.timeFlight, data.countTakeOff, data.countLanding, data.countAccident = unpack('<QHHH', dataarray)
+        
+        return data
+
+
+
+class CountDrive(ISerializable):
+    
+    def __init__(self):
+        self.timeDrive      = 0
+
+        self.countAccident  = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 10
+
+
+    def toArray(self):
+        return pack('<QH', self.timeDrive, self.countAccident)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = CountDrive()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.timeDrive, data.countAccident = unpack('<QH', dataarray)
+        
+        return data
+
+
+# Information End
+
+
+
+# Sensor Start
+
+
+class Attitude(ISerializable):
+
+    def __init__(self):
+        self.roll       = 0
+        self.pitch      = 0
+        self.yaw        = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 6
+
+
+    def toArray(self):
+        return pack('<hhh', self.roll, self.pitch, self.yaw)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = Attitude()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.roll, data.pitch, data.yaw = unpack('<hhh', dataarray)
+        
+        return data
+
+
+
+class IrMessage(ISerializable):
+
+    def __init__(self):
+        self.direction  = 0
+        self.irData     = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 5
+
+
+    def toArray(self):
+        return pack('<BI', self.direction, self.irData)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = IrMessage()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.direction, data.irData = unpack('<BI', dataarray)
+        
+        return data
+
+
+
+class Imu(ISerializable):
+
+    def __init__(self):
+        self.accelX     = 0
+        self.accelY     = 0
+        self.accelZ     = 0
+        self.gyroRoll   = 0
+        self.gyroPitch  = 0
+        self.gyroYaw    = 0
+        self.angleRoll  = 0
+        self.anglePitch = 0
+        self.angleYaw   = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 18
+
+
+    def toArray(self):
+        return pack('<hhhhhhhhh', self.accelX, self.accelY, self.accelZ, self.gyroRoll, self.gyroPitch, self.gyroYaw, self.angleRoll, self.anglePitch, self.angleYaw)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = Imu()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.accelX, data.accelY, data.accelZ, data.gyroRoll, data.gyroPitch, data.gyroYaw, data.angleRoll, data.anglePitch, data.angleYaw = unpack('<hhhhhhhhh', dataarray)
+        
+        return data
+
+
+
+class Battery(ISerializable):
+
+    def __init__(self):
+        self.gradient                   = 0
+        self.yIntercept                 = 0
+        self.adjustGradient             = 0
+        self.adjustYIntercept           = 0
+        self.flagBatteryCalibration     = False
+        self.batteryRaw                 = 0
+        self.batteryPercent             = 0
+        self.voltage                    = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 27
+
+
+    def toArray(self):
+        return pack('<ffffBhff', self.gradient, self.yIntercept, self.adjustGradient, self.adjustYIntercept, self.flagBatteryCalibration, self.batteryRaw, self.batteryPercent, self.voltage)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = Battery()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.gradient, data.yIntercept, data.adjustGradient, data.adjustYIntercept, data.flagBatteryCalibration, data.batteryRaw, data.batteryPercent, data.voltage = unpack('<ffffBhff', dataarray)
+        data.flagBatteryCalibration = bool(data.flagBatteryCalibration)
+        
+        return data
+
+
+
+class Pressure(ISerializable):
+
+    def __init__(self):
+        self.temperature    = 0
+        self.pressure       = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 8
+
+
+    def toArray(self):
+        return pack('<ff', self.temperature, self.pressure)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = Pressure()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.temperature, data.pressure = unpack('<ff', dataarray)
+        
+        return data
+
+
+
+class Range(ISerializable):
+
+    def __init__(self):
+        self.left       = 0
+        self.front      = 0
+        self.right      = 0
+        self.rear       = 0
+        self.top        = 0
+        self.bottom     = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 24
+
+
+    def toArray(self):
+        return pack('<ffffff', self.left, self.front, self.right, self.rear, self.top, self.bottom)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = Range()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.left, data.front, data.right, data.rear, data.top, data.bottom = unpack('<ffffff', dataarray)
+        
+        return data
+
+
+
+class ImageFlow(ISerializable):
+
+    def __init__(self):
+        self.positionX     = 0
+        self.positionY     = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 8
+
+
+    def toArray(self):
+        return pack('<ff', self.positionX, self.positionY)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = ImageFlow()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.positionX, data.positionY = unpack('<ff', dataarray)
+        
+        return data
+
+
+
+# Sensor End
+
+
+
+# Device Start
+
+
+class MotorBlock(ISerializable):
+
+    def __init__(self):
+        self.rotation   = Rotation.None_
+        self.value      = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 3
+
+
+    def toArray(self):
+        return pack('<Bh', self.rotation.value, self.value)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = MotorBlock()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.rotation, data.value = unpack('<Bh', dataarray)
+        data.rotation = Rotation(data.rotation)
+        
+        return data
+
+
+
+
+class Motor(ISerializable):
+
+    def __init__(self):
+        self.motor      = []
+        self.motor.append(MotorBlock())
+        self.motor.append(MotorBlock())
+        self.motor.append(MotorBlock())
+        self.motor.append(MotorBlock())
+
+
+    @classmethod
+    def getSize(cls):
+        return MotorBlock.getSize() * 4
+
+
+    def toArray(self):
+        dataArray = []
+        dataArray.extend(self.motor[0].toArray())
+        dataArray.extend(self.motor[1].toArray())
+        dataArray.extend(self.motor[2].toArray())
+        dataArray.extend(self.motor[3].toArray())
+        return dataArray
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = Motor()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        indexStart = 0;        indexEnd  = MotorBlock.getSize();    data.motor[0]   = MotorBlock.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += MotorBlock.getSize();    data.motor[1]   = MotorBlock.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += MotorBlock.getSize();    data.motor[2]   = MotorBlock.parse(dataarray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += MotorBlock.getSize();    data.motor[3]   = MotorBlock.parse(dataarray[indexStart:indexEnd])
+        return data
+
+
+
+class MotorSingle(ISerializable):
+
+    def __init__(self):
+        self.target     = 0
+        self.rotation   = Rotation.None_
+        self.value      = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 4
+
+
+    def toArray(self):
+        return pack('<BBh', self.target, self.rotation.value, self.value)
+
+
+    @classmethod
+    def parse(cls, dataarray):
+        data = MotorBlock()
+        
+        if len(dataarray) != cls.getSize():
+            return None
+        
+        data.target, data.rotation, data.value = unpack('<BBh', dataarray)
+        data.rotation = Rotation(data.rotation)
+        
+        return data
+
+
+# Device End
+
