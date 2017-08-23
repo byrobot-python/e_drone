@@ -395,12 +395,16 @@ class Information(ISerializable):
         if len(dataArray) != cls.getSize():
             return None
         
-        indexStart = 0;        indexEnd = 1;                        data.modeUpdate     = ModeUpdate(unpack('<B', dataArray[indexStart:indexEnd]))
-        indexStart = indexEnd; indexEnd += 4;                       data.deviceType     = DeviceType(unpack('<I', dataArray[indexStart:indexEnd]))
+        indexStart = 0;        indexEnd = 1;                        data.modeUpdate     = unpack('<B', dataArray[indexStart:indexEnd]);
+        indexStart = indexEnd; indexEnd += 4;                       data.deviceType     = unpack('<I', dataArray[indexStart:indexEnd]);
         indexStart = indexEnd; indexEnd += Version.getSize();       data.imageVersion   = Version.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 2;                       data.year           = unpack('<H', dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 1;                       data.month          = unpack('<B', dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 1;                       data.day            = unpack('<B', dataArray[indexStart:indexEnd])
+
+        data.modeUpdate     = ModeUpdate(data.modeUpdate)
+        data.deviceType     = DeviceType(data.deviceType)
+
         return data
 
 
@@ -1186,7 +1190,10 @@ class LightModeColors(ISerializable):
             return None
 
         indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', dataArray[indexStart:indexEnd]))
+        indexStart = indexEnd; indexEnd += 1;                       data.colors     = unpack('<B', dataArray[indexStart:indexEnd])
+
+        data.colors     = Colors(data.colors)
+
         return data
 
 
@@ -1220,8 +1227,11 @@ class LightModeColorsCommand(ISerializable):
             return None
 
         indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', dataArray[indexStart:indexEnd]))
+        indexStart = indexEnd; indexEnd += 1;                       data.colors     = unpack('<B', dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
+
+        data.colors     = Colors(data.colors)
+
         return data
 
 
@@ -1257,9 +1267,12 @@ class LightModeColorsCommandIr(ISerializable):
             return None
 
         indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', dataArray[indexStart:indexEnd]))
+        indexStart = indexEnd; indexEnd += 1;                       data.colors     = unpack('<B', dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 4;                       data.irData     = unpack('<I', dataArray[indexStart:indexEnd])
+
+        data.colors     = Colors(data.colors)
+
         return data
 
 
@@ -1463,7 +1476,10 @@ class LightEventColors(ISerializable):
             return None
 
         indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', dataArray[indexStart:indexEnd]))
+        indexStart = indexEnd; indexEnd += 1;                       data.colors     = unpack('<B', dataArray[indexStart:indexEnd])
+
+        data.colors     = Colors(data.colors)
+
         return data
 
 
@@ -1497,8 +1513,11 @@ class LightEventColorsCommand(ISerializable):
             return None
 
         indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', dataArray[indexStart:indexEnd]))
+        indexStart = indexEnd; indexEnd += 1;                       data.colors     = unpack('<B', dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
+
+        data.colors     = Colors(data.colors)
+
         return data
 
 
@@ -1534,9 +1553,12 @@ class LightEventColorsCommandIr(ISerializable):
             return None
 
         indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 1;                       data.colors     = Colors(unpack('<B', dataArray[indexStart:indexEnd]))
+        indexStart = indexEnd; indexEnd += 1;                       data.colors     = unpack('<B', dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 4;                       data.irData     = unpack('<I', dataArray[indexStart:indexEnd])
+
+        data.colors     = Colors(data.colors)
+
         return data
 
 
