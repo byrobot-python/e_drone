@@ -297,6 +297,35 @@ class Request(ISerializable):
 
 
 
+class Message():
+
+    def __init__(self):
+        self.message    = ""
+
+
+    def getSize(self):
+        return len(self.message)
+
+
+    def toArray(self):
+        dataArray = bytearray()
+        dataArray.extend(self.message.encode('ascii', 'ignore'))
+        return dataArray
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = Message()
+        
+        if len(dataArray) == 0:
+            return ""
+
+        data.message = dataArray[0:len(dataArray)].decode()
+        
+        return data
+
+
+
 class Version(ISerializable):
 
     def __init__(self):
@@ -2336,6 +2365,11 @@ class Vector(ISerializable):
 
 
 
+class AccelBias(Vector):
+    pass
+
+
+
 class Attitude(ISerializable):
 
     def __init__(self):
@@ -2363,6 +2397,11 @@ class Attitude(ISerializable):
         data.roll, data.pitch, data.yaw = unpack('<hhh', dataArray)
         
         return data
+
+
+
+class GyroBias(Attitude):
+    pass
 
 
 

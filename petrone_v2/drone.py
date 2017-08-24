@@ -21,7 +21,7 @@ class Drone:
 
 # BaseFunctions Start
 
-    def __init__(self):
+    def __init__(self, flagCheckBackground = False):
         
         self.serialport                 = None
         self.bufferReceive              = bytearray()
@@ -33,15 +33,13 @@ class Drone:
 
         self.receiver                   = Receiver()
 
-        self.flagCheckBackground        = False
+        self.flagCheckBackground        = flagCheckBackground
 
         self.event                      = Event()
         self.storage                    = Storage()
         self.storageCount               = StorageCount()
-        self.storageDrone               = StorageDrone()
-        self.storageDroneCount          = StorageDroneCount()
-        self.storageController          = StorageController()
-        self.storageControllerCount     = StorageControllerCount()
+        self.parser                     = Parser()
+
 
 
 
@@ -167,336 +165,26 @@ class Drone:
 
     def handler(self, header, dataArray):
 
-        # 들어오는 데이터를 구분없이 저장
+        # 들어오는 데이터를 저장
         self._handler(header, dataArray)
 
         # 들어오는 데이터에 대한 콜백 이벤트 실행
-        self._event(header, dataArray)
-
-        # 들어오는 데이터를 구분하여 저장
-        if      header.from_ == DeviceType.Drone:
-            self._handlerDrone(header, dataArray)
-        elif    header.from_ == DeviceType.Controller:
-            self._handlerController(header, dataArray)
+        self._event(header)
 
         return header.dataType
 
 
 
-    def _event(self, header, dataArray):
-        if      header.dataType == DataType.Ack:
-            if self.event.ack != None:
-                self.event.ack(self.storage.ack)
-
-        elif    header.dataType == DataType.Message:
-            if self.event.message != None:
-                self.event.message(self.storage.message)
-
-        elif    header.dataType == DataType.Information:
-            if self.event.information != None:
-                self.event.information(self.storage.information)
-
-        elif    header.dataType == DataType.Address:
-            if self.event.address != None:
-                self.event.address(self.storage.address)
-
-
-        elif    header.dataType == DataType.State:
-            if self.event.state != None:
-                self.event.state(self.storage.state)
-
-        elif    header.dataType == DataType.Attitude:
-            if self.event.attitude != None:
-                self.event.attitude(self.storage.attitude)
-
-        elif    header.dataType == DataType.AccelBias:
-            if self.event.accelBias != None:
-                self.event.accelBias(self.storage.accelBias)
-
-        elif    header.dataType == DataType.GyroBias:
-            if self.event.gyroBias != None:
-                self.event.gyroBias(self.storage.gyroBias)
-
-        elif    header.dataType == DataType.TrimFlight:
-            if self.event.trimFlight != None:
-                self.event.trimFlight(self.storage.trimFlight)
-
-        elif    header.dataType == DataType.TrimDrive:
-            if self.event.trimDrive != None:
-                self.event.trimDrive(self.storage.trimDrive)
-
-
-        elif    header.dataType == DataType.Imu:
-            if self.event.imu != None:
-                self.event.imu(self.storage.imu)
-
-        elif    header.dataType == DataType.Pressure:
-            if self.event.pressure != None:
-                self.event.pressure(self.storage.pressure)
-
-        elif    header.dataType == DataType.Battery:
-            if self.event.battery != None:
-                self.event.battery(self.storage.battery)
-
-        elif    header.dataType == DataType.Range:
-            if self.event.range != None:
-                self.event.range(self.storage.range)
-
-        elif    header.dataType == DataType.ImageFlow:
-            if self.event.imageFlow != None:
-                self.event.imageFlow(self.storage.imageFlow)
-
-
-        elif    header.dataType == DataType.Button:
-            if self.event.button != None:
-                self.event.button(self.storage.button)
-
-
-        elif    header.dataType == DataType.IrMessage:
-            if self.event.irMessage != None:
-                self.event.irMessage(self.storage.irMessage)
-                
-
-        elif    header.dataType == DataType.CountFlight:
-            if self.event.countFlight != None:
-                self.event.countFlight(self.storage.countFlight)
-
-        elif    header.dataType == DataType.CountDrive:
-            if self.event.countDrive != None:
-                self.event.countDrive(self.storage.countDrive)
-
-
-        elif    header.dataType == DataType.Pairing:
-            if self.event.pairing != None:
-                self.event.pairing(self.storage.pairing)
-
-        elif    header.dataType == DataType.Rssi:
-            if self.event.rssi != None:
-                self.event.rssi(self.storage.rssi)
-
-
-
     def _handler(self, header, dataArray):
-        if      header.dataType == DataType.Ack:
-            self.storage.ack       = Ack.parse(dataArray);
-            self.storageCount.ack  += 1
+        if self.parser.d[header.dataType] != None:
+            self.storage.d[header.dataType]         = self.parser.d[header.dataType](dataArray);
+            self.storageCount.d[header.dataType]    += 1
 
-        elif    header.dataType == DataType.Message:
-            self.storage.message       = dataArray.decode()
-            self.storageCount.message  += 1
 
-        elif    header.dataType == DataType.Information:
-            self.storage.information       = Information.parse(dataArray)
-            self.storageCount.information  += 1
 
-        elif    header.dataType == DataType.Address:
-            self.storage.address       = Address.parse(dataArray)
-            self.storageCount.address  += 1
-
-
-        elif    header.dataType == DataType.State:
-            self.storage.state         = State.parse(dataArray)
-            self.storageCount.state    += 1
-
-        elif    header.dataType == DataType.Attitude:
-            self.storage.attitude          = Attitude.parse(dataArray)
-            self.storageCount.attitude     += 1
-
-        elif    header.dataType == DataType.AccelBias:
-            self.storage.accelBias         = Vector.parse(dataArray)
-            self.storageCount.accelBias    += 1
-
-        elif    header.dataType == DataType.GyroBias:
-            self.storage.gyroBias          = Attitude.parse(dataArray)
-            self.storageCount.gyroBias     += 1
-
-        elif    header.dataType == DataType.TrimFlight:
-            self.storage.trimFlight        = TrimFlight.parse(dataArray)
-            self.storageCount.trimFlight   += 1
-
-        elif    header.dataType == DataType.TrimDrive:
-            self.storage.trimDrive         = TrimDrive.parse(dataArray)
-            self.storageCount.trimDrive    += 1
-
-
-        elif    header.dataType == DataType.Imu:
-            self.storage.imu       = Imu.parse(dataArray)
-            self.storageCount.imu  += 1
-
-        elif    header.dataType == DataType.Pressure:
-            self.storage.pressure      = Pressure.parse(dataArray)
-            self.storageCount.pressure += 1
-
-        elif    header.dataType == DataType.Battery:
-            self.storage.battery       = Battery.parse(dataArray)
-            self.storageCount.battery  += 1
-
-        elif    header.dataType == DataType.Range:
-            self.storage.range         = Range.parse(dataArray)
-            self.storageCount.range    += 1
-
-        elif    header.dataType == DataType.ImageFlow:
-            self.storage.imageFlow = ImageFlow.parse(dataArray)
-            self.storageCount.imageFlow    += 1
-
-
-        elif    header.dataType == DataType.Button:
-            self.storage.button        = Button.parse(dataArray)
-            self.storageCount.button   += 1
-
-
-        elif    header.dataType == DataType.IrMessage:
-            self.storage.irMessage        = IrMessage.parse(dataArray)
-            self.storageCount.irMessage   += 1
-
-
-        elif    header.dataType == DataType.CountFlight:
-            self.storage.countFlight       = CountFlight.parse(dataArray)
-            self.storageCount.countFlight  += 1
-
-        elif    header.dataType == DataType.CountDrive:
-            self.storage.countDrive        = CountDrive.parse(dataArray)
-            self.storageCount.countDrive   += 1
-
-
-        elif    header.dataType == DataType.Pairing:
-            self.storage.pairing       = Pairing.parse(dataArray)
-            self.storageCount.pairing  += 1
-
-        elif    header.dataType == DataType.Rssi:
-            self.storage.rssi          = Rssi.parse(dataArray)
-            self.storageCount.rssi     += 1
-
-
-
-
-    def _handlerDrone(self, header, dataArray):
-        if      header.dataType == DataType.Ack:
-            self.storageDrone.ack       = Ack.parse(dataArray);
-            self.storageDroneCount.ack  += 1
-
-        elif    header.dataType == DataType.Message:
-            self.storageDrone.message       = dataArray.decode()
-            self.storageDroneCount.message  += 1
-
-        elif    header.dataType == DataType.Information:
-            self.storageDrone.information       = Information.parse(dataArray)
-            self.storageDroneCount.information  += 1
-
-        elif    header.dataType == DataType.Address:
-            self.storageDrone.address       = Address.parse(dataArray)
-            self.storageDroneCount.address  += 1
-
-
-        elif    header.dataType == DataType.State:
-            self.storageDrone.state         = State.parse(dataArray)
-            self.storageDroneCount.state    += 1
-
-        elif    header.dataType == DataType.Attitude:
-            self.storageDrone.attitude          = Attitude.parse(dataArray)
-            self.storageDroneCount.attitude     += 1
-
-        elif    header.dataType == DataType.AccelBias:
-            self.storageDrone.accelBias         = Vector.parse(dataArray)
-            self.storageDroneCount.accelBias    += 1
-
-        elif    header.dataType == DataType.GyroBias:
-            self.storageDrone.gyroBias          = Attitude.parse(dataArray)
-            self.storageDroneCount.gyroBias     += 1
-
-        elif    header.dataType == DataType.TrimFlight:
-            self.storageDrone.trimFlight        = TrimFlight.parse(dataArray)
-            self.storageDroneCount.trimFlight   += 1
-
-        elif    header.dataType == DataType.TrimDrive:
-            self.storageDrone.trimDrive         = TrimDrive.parse(dataArray)
-            self.storageDroneCount.trimDrive    += 1
-
-
-        elif    header.dataType == DataType.Imu:
-            self.storageDrone.imu       = Imu.parse(dataArray)
-            self.storageDroneCount.imu  += 1
-
-        elif    header.dataType == DataType.Pressure:
-            self.storageDrone.pressure      = Pressure.parse(dataArray)
-            self.storageDroneCount.pressure += 1
-
-        elif    header.dataType == DataType.Battery:
-            self.storageDrone.battery       = Battery.parse(dataArray)
-            self.storageDroneCount.battery  += 1
-
-        elif    header.dataType == DataType.Range:
-            self.storageDrone.range         = Range.parse(dataArray)
-            self.storageDroneCount.range    += 1
-
-        elif    header.dataType == DataType.ImageFlow:
-            self.storageDrone.imageFlow = ImageFlow.parse(dataArray)
-            self.storageDroneCount.imageFlow    += 1
-
-
-        elif    header.dataType == DataType.Button:
-            self.storageDrone.button        = Button.parse(dataArray)
-            self.storageDroneCount.button   += 1
-
-
-        elif    header.dataType == DataType.IrMessage:
-            self.storageDrone.irMessage        = IrMessage.parse(dataArray)
-            self.storageDroneCount.irMessage   += 1
-
-
-        elif    header.dataType == DataType.CountFlight:
-            self.storageDrone.countFlight       = CountFlight.parse(dataArray)
-            self.storageDroneCount.countFlight  += 1
-
-        elif    header.dataType == DataType.CountDrive:
-            self.storageDrone.countDrive        = CountDrive.parse(dataArray)
-            self.storageDroneCount.countDrive   += 1
-
-
-        elif    header.dataType == DataType.Pairing:
-            self.storageDrone.pairing       = Pairing.parse(dataArray)
-            self.storageDroneCount.pairing  += 1
-
-        elif    header.dataType == DataType.Rssi:
-            self.storageDrone.rssi          = Rssi.parse(dataArray)
-            self.storageDroneCount.rssi     += 1
-
-
-
-    def _handlerController(self, header, dataArray):
-        if      header.dataType == DataType.Ack:
-            self.storageController.ack          = Ack.parse(dataArray);
-            self.storageControllerCount.ack     += 1
-
-        elif    header.dataType == DataType.Message:
-            self.storageController.message          = dataArray.decode()
-            self.storageControllerCount.message     += 1
-
-        elif    header.dataType == DataType.Information:
-            self.storageController.information      = Information.parse(dataArray)
-            self.storageControllerCount.information += 1
-
-        elif    header.dataType == DataType.Address:
-            self.storageController.address          = Address.parse(dataArray)
-            self.storageControllerCount.address     += 1
-
-
-        elif    header.dataType == DataType.Button:
-            self.storageController.button           = Button.parse(dataArray)
-            self.storageControllerCount.button      += 1
-
-        elif    header.dataType == DataType.Joystick:
-            self.storageController.joystick         = Joystick.parse(dataArray)
-            self.storageControllerCount.joystick    += 1
-
-
-        elif    header.dataType == DataType.Pairing:
-            self.storageController.pairing      = Pairing.parse(dataArray)
-            self.storageControllerCount.pairing += 1
-
-        elif    header.dataType == DataType.Rssi:
-            self.storageController.rssi         = Rssi.parse(dataArray)
-            self.storageControllerCount.rssi    += 1
+    def _event(self, header):
+        if  (self.event.d[header.dataType] != None) and (self.storage.d[header.dataType] != None):
+            self.event.d[header.dataType](self.storage.d[header.dataType])
 
 
 # BaseFunctions End
