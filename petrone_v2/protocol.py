@@ -263,6 +263,7 @@ class Ack(ISerializable):
         
         data.systemTime, data.dataType, data.crc16 = unpack('<QBH', dataArray)
         data.dataType = DataType(data.dataType)
+
         return data
 
 
@@ -291,6 +292,7 @@ class Request(ISerializable):
         
         data.dataType, = unpack('<B', dataArray)
         data.dataType = DataType(data.dataType)
+
         return data
 
 
@@ -322,11 +324,12 @@ class Version(ISerializable):
         if len(dataArray) != cls.getSize():
             return None
 
-        data.v = unpack('<I', dataArray)
+        data.v, = unpack('<I', dataArray)
 
         data.build, data.minor, data.major = unpack('<HBB', dataArray)
         data.stage = DevelopmentStage((data.build >> 14) & 0x03)
-        data.build = data.build & 0xFFFC
+        data.build = data.build & 0x3FFF
+
         return data
 
 
@@ -355,6 +358,7 @@ class SystemInformation(ISerializable):
             return None
         
         data.crc32bootloader, data.crc32application = unpack('<II', dataArray)
+
         return data
 
 
@@ -381,7 +385,7 @@ class Information(ISerializable):
         dataArray = []
         dataArray.extend(pack('<B', self.modeUpdate.value))
         dataArray.extend(pack('<I', self.deviceType.value))
-        dataArray.extend(self.imageVersion.toArray())
+        dataArray.extend(self.version.toArray())
         dataArray.extend(pack('<H', self.year))
         dataArray.extend(pack('<B', self.month))
         dataArray.extend(pack('<B', self.day))
@@ -395,12 +399,12 @@ class Information(ISerializable):
         if len(dataArray) != cls.getSize():
             return None
         
-        indexStart = 0;        indexEnd = 1;                        data.modeUpdate,     = unpack('<B', dataArray[indexStart:indexEnd]);
-        indexStart = indexEnd; indexEnd += 4;                       data.deviceType,     = unpack('<I', dataArray[indexStart:indexEnd]);
-        indexStart = indexEnd; indexEnd += Version.getSize();       data.imageVersion   = Version.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 2;                       data.year,           = unpack('<H', dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 1;                       data.month,          = unpack('<B', dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 1;                       data.day,            = unpack('<B', dataArray[indexStart:indexEnd])
+        indexStart = 0;        indexEnd = 1;                        data.modeUpdate,    = unpack('<B', dataArray[indexStart:indexEnd]);
+        indexStart = indexEnd; indexEnd += 4;                       data.deviceType,    = unpack('<I', dataArray[indexStart:indexEnd]);
+        indexStart = indexEnd; indexEnd += Version.getSize();       data.version        = Version.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 2;                       data.year,          = unpack('<H', dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 1;                       data.month,         = unpack('<B', dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 1;                       data.day,           = unpack('<B', dataArray[indexStart:indexEnd])
 
         data.modeUpdate     = ModeUpdate(data.modeUpdate)
         data.deviceType     = DeviceType(data.deviceType)
@@ -461,6 +465,7 @@ class Command(ISerializable):
         
         data.commandType, data.option = unpack('<BB', dataArray)
         data.commandType = CommandType(data.commandType)
+
         return data
 
 
@@ -1307,6 +1312,7 @@ class LightEventCommand(ISerializable):
 
         indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
+        
         return data
 
 
@@ -1342,6 +1348,7 @@ class LightEventCommandIr(ISerializable):
         indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 4;                       data.irData,    = unpack('<I', dataArray[indexStart:indexEnd])
+        
         return data
 
 
@@ -1374,6 +1381,7 @@ class LightEventColor(ISerializable):
 
         indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += Color.getSize();         data.command    = Color.parse(dataArray[indexStart:indexEnd])
+        
         return data
 
 
@@ -1409,6 +1417,7 @@ class LightEventColorCommand(ISerializable):
         indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
+        
         return data
 
 
@@ -1447,6 +1456,7 @@ class LightEventColorCommandIr(ISerializable):
         indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 4;                       data.irData,    = unpack('<I', dataArray[indexStart:indexEnd])
+        
         return data
 
 
@@ -1809,6 +1819,11 @@ class DisplayDrawString(ISerializable):
     def getSize(cls):
         return 6
 
+
+    def getSizeTotal(self):
+        return self.getSize() + len(self.message)
+
+
     def toArray(self):
         dataArray = []
         dataArray.extend(pack('<hhBB', self.x, self.y, self.font.value, self.pixel.value))
@@ -1824,9 +1839,10 @@ class DisplayDrawString(ISerializable):
             return None
 
         data.x, data.y, data.font, data.pixel = unpack('<hhBB', dataArray[0:getSize()])
-        data.font = DisplayFont(data.font);
-        data.pixel = DisplayPixel(data.pixel);
-        data.message = dataArray[getSize():len(dataArray)].decode()
+
+        data.font       = DisplayFont(data.font);
+        data.pixel      = DisplayPixel(data.pixel);
+        data.message    = dataArray[getSize():len(dataArray)].decode()
         
         return data
 
@@ -1848,6 +1864,12 @@ class DisplayDrawStringAlign(ISerializable):
     @classmethod
     def getSize(cls):
         return 9
+
+
+
+    def getSizeTotal(self):
+        return self.getSize() + len(self.message)
+
 
 
     def toArray(self):
@@ -1941,6 +1963,7 @@ class Buzzer(ISerializable):
             return None
         
         data.mode, data.value, data.time = unpack('<BHH', dataArray)
+
         data.mode = BuzzerMode(data.mode)
 
         return data
@@ -1990,6 +2013,7 @@ class Vibrator(ISerializable):
             return None
         
         data.mode, data.on, data.off, data.total = unpack('<BHHH', dataArray)
+
         data.mode = VibratorMode(data.mode)
 
         return data
@@ -2059,6 +2083,7 @@ class JoystickBlock(ISerializable):
             return None
         
         data.x, data.y, data.direction, data.event = unpack('<BBBB', dataArray)
+
         data.direction  = JoystickDirection(data.direction)
         data.event      = JoystickEvent(data.event)
 
@@ -2199,6 +2224,15 @@ class State(ISerializable):
             return None
         
         data.modeVehicle, data.modeSystem, data.modeFlight, data.modeDrive, data.sensorOrientation, data.headless, data.battery = unpack('<BBBBBBB', dataArray)
+
+        data.modeVehicle        = ModeVehicle(data.modeVehicle)
+
+        data.modeSystem         = ModeSystem(data.modeSystem)
+        data.modeFlight         = ModeFlight(data.modeFlight)
+        data.modeDrive          = ModeDrive(data.modeDrive)
+
+        data.sensorOrientation  = SensorOrientation(data.sensorOrientation)
+        data.headless           = Headless(data.headless)
         
         return data
 
@@ -2356,6 +2390,7 @@ class IrMessage(ISerializable):
             return None
         
         data.direction, data.irData = unpack('<BI', dataArray)
+
         data.direction = Direction(data.direction)
         
         return data
@@ -2428,6 +2463,7 @@ class Battery(ISerializable):
             return None
         
         data.gradient, data.yIntercept, data.adjustGradient, data.adjustYIntercept, data.flagBatteryCalibration, data.batteryRaw, data.batteryPercent, data.voltage = unpack('<ffffBhff', dataArray)
+        
         data.flagBatteryCalibration = bool(data.flagBatteryCalibration)
         
         return data
@@ -2598,6 +2634,7 @@ class Motor(ISerializable):
         indexStart = indexEnd; indexEnd += MotorBlock.getSize();    data.motor[1]   = MotorBlock.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += MotorBlock.getSize();    data.motor[2]   = MotorBlock.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += MotorBlock.getSize();    data.motor[3]   = MotorBlock.parse(dataArray[indexStart:indexEnd])
+        
         return data
 
 

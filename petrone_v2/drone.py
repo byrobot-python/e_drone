@@ -33,6 +33,8 @@ class Drone:
 
         self.receiver                   = Receiver()
 
+        self.storage                    = Storage()
+        self.storageCount               = StorageCount()
         self.storageDrone               = StorageDrone()
         self.storageDroneCount          = StorageDroneCount()
         self.storageController          = StorageController()
@@ -132,6 +134,26 @@ class Drone:
                     return self.receiver.header.dataType
 
         return DataType.None_
+
+
+
+    def checkDetail(self):
+        if len(self.bufferReceive) > 0:
+            self.threadLock.acquire()           # Get lock to synchronize threads
+            self.bufferHandler.extend(self.bufferReceive)
+            self.bufferReceive.clear()
+            self.threadLock.release()            # Free lock to release next thread
+
+            while len(self.bufferHandler) > 0:
+                self.receiver.call(self.bufferHandler[0])
+                del(self.bufferHandler[0])
+                
+                if self.receiver.state == StateLoading.Loaded:
+                    self.handler(self.receiver.header, self.receiver.data)
+                    self.receiver.checked()
+                    return self.receiver.header, self.receiver.data
+
+        return None, None
 
 
 
@@ -499,7 +521,7 @@ class Drone:
 
 
 
-    def sendStop(self,):
+    def sendStop(self):
         
         header = Header()
         
@@ -549,10 +571,10 @@ class Drone:
         timeStart   = time.time()
 
         while ((time.time() - timeStart) < timeSec):
-            self.sendControl(self, roll, pitch, yaw, throttle)
+            self.sendControl(roll, pitch, yaw, throttle)
             sleep(0.02)
 
-        return self.sendControl(self, roll, pitch, yaw, throttle)
+        return self.sendControl(roll, pitch, yaw, throttle)
 
 
 
@@ -586,10 +608,10 @@ class Drone:
         timeStart   = time.time()
 
         while ((time.time() - timeStart) < timeSec):
-            self.sendControlDrive(self, wheel, accel)
+            self.sendControlDrive(wheel, accel)
             sleep(0.02)
 
-        return self.sendControlDrive(self, wheel, accel)
+        return self.sendControlDrive(wheel, accel)
 
 
 # Control End
