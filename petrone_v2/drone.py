@@ -187,6 +187,22 @@ class Drone:
             self.event.d[header.dataType](self.storage.d[header.dataType])
 
 
+
+    @classmethod
+    def printByteArray(cls, dataArray):
+
+        if (dataArray == None) or (not isinstance(dataArray, bytearray)):
+            return
+
+        string = ""
+
+        for data in dataArray:
+            string += "{0:02X} ".format(data)
+        
+        print(string)
+
+
+
 # BaseFunctions End
 
 
