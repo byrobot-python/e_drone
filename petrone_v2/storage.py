@@ -4,6 +4,40 @@ from petrone_v2.protocol import *
 from petrone_v2.system import *
 
 
+# Event
+class Event:
+
+    def __init__(self):
+        self.ack                = None
+        self.message            = None
+        self.information        = None
+        self.address            = None
+        
+        self.state              = None
+        self.attitude           = None
+        self.accelBias          = None
+        self.gyroBias           = None
+        self.trimFlight         = None
+        self.trimDrive          = None
+        
+        self.imu                = None
+        self.pressure           = None
+        self.battery            = None
+        self.range              = None
+        self.imageFlow          = None
+        
+        self.button             = None
+        
+        self.irMessage          = None
+        
+        self.countFlight        = None
+        self.countDrive         = None
+        
+        self.pairing            = None
+        self.rssi               = None
+
+
+
 # Storage
 class Storage:
 
@@ -28,8 +62,7 @@ class Storage:
 
         self.button             = Button()
 
-        self.irMessageFront     = IrMessage()
-        self.irMessageRear      = IrMessage()
+        self.irMessage          = IrMessage()
 
         self.countFlight        = CountFlight()
         self.countDrive         = CountDrive()
@@ -63,8 +96,7 @@ class StorageCount:
 
         self.button             = 0
 
-        self.irMessageFront     = 0
-        self.irMessageRear      = 0
+        self.irMessage          = 0
 
         self.countFlight        = 0
         self.countDrive         = 0
@@ -98,8 +130,7 @@ class StorageDrone:
 
         self.button             = Button()
 
-        self.irMessageFront     = IrMessage()
-        self.irMessageRear      = IrMessage()
+        self.irMessage          = IrMessage()
 
         self.countFlight        = CountFlight()
         self.countDrive         = CountDrive()
@@ -133,8 +164,7 @@ class StorageDroneCount:
 
         self.button             = 0
 
-        self.irMessageFront     = 0
-        self.irMessageRear      = 0
+        self.irMessage          = 0
 
         self.countFlight        = 0
         self.countDrive         = 0

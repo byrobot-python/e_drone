@@ -33,6 +33,9 @@ class Drone:
 
         self.receiver                   = Receiver()
 
+        self.flagCheckBackground        = False
+
+        self.event                      = Event()
         self.storage                    = Storage()
         self.storageCount               = StorageCount()
         self.storageDrone               = StorageDrone()
@@ -54,6 +57,11 @@ class Drone:
                 del self.bufferReceive[0:(length - 16384)]    # bufferReceive에 저장된 데이터가 16384 바이트를 초과하면 이전에 받은 데이터를 제거함
             
             self.threadLock.release()        # Free lock to release next thread
+
+            # 수신 데이터 백그라운드 확인이 활성화 된 경우 데이터 자동 업데이트
+            if self.flagCheckBackground == True:
+                while self.check() != DataType.None_:
+                    pass
 
             sleep(0.001)
 
@@ -162,6 +170,9 @@ class Drone:
         # 들어오는 데이터를 구분없이 저장
         self._handler(header, dataArray)
 
+        # 들어오는 데이터에 대한 콜백 이벤트 실행
+        self._event(header, dataArray)
+
         # 들어오는 데이터를 구분하여 저장
         if      header.from_ == DeviceType.Drone:
             self._handlerDrone(header, dataArray)
@@ -169,6 +180,99 @@ class Drone:
             self._handlerController(header, dataArray)
 
         return header.dataType
+
+
+
+    def _event(self, header, dataArray):
+        if      header.dataType == DataType.Ack:
+            if self.event.ack != None:
+                self.event.ack(self.storage.ack)
+
+        elif    header.dataType == DataType.Message:
+            if self.event.message != None:
+                self.event.message(self.storage.message)
+
+        elif    header.dataType == DataType.Information:
+            if self.event.information != None:
+                self.event.information(self.storage.information)
+
+        elif    header.dataType == DataType.Address:
+            if self.event.address != None:
+                self.event.address(self.storage.address)
+
+
+        elif    header.dataType == DataType.State:
+            if self.event.state != None:
+                self.event.state(self.storage.state)
+
+        elif    header.dataType == DataType.Attitude:
+            if self.event.attitude != None:
+                self.event.attitude(self.storage.attitude)
+
+        elif    header.dataType == DataType.AccelBias:
+            if self.event.accelBias != None:
+                self.event.accelBias(self.storage.accelBias)
+
+        elif    header.dataType == DataType.GyroBias:
+            if self.event.gyroBias != None:
+                self.event.gyroBias(self.storage.gyroBias)
+
+        elif    header.dataType == DataType.TrimFlight:
+            if self.event.trimFlight != None:
+                self.event.trimFlight(self.storage.trimFlight)
+
+        elif    header.dataType == DataType.TrimDrive:
+            if self.event.trimDrive != None:
+                self.event.trimDrive(self.storage.trimDrive)
+
+
+        elif    header.dataType == DataType.Imu:
+            if self.event.imu != None:
+                self.event.imu(self.storage.imu)
+
+        elif    header.dataType == DataType.Pressure:
+            if self.event.pressure != None:
+                self.event.pressure(self.storage.pressure)
+
+        elif    header.dataType == DataType.Battery:
+            if self.event.battery != None:
+                self.event.battery(self.storage.battery)
+
+        elif    header.dataType == DataType.Range:
+            if self.event.range != None:
+                self.event.range(self.storage.range)
+
+        elif    header.dataType == DataType.ImageFlow:
+            if self.event.imageFlow != None:
+                self.event.imageFlow(self.storage.imageFlow)
+
+
+        elif    header.dataType == DataType.Button:
+            if self.event.button != None:
+                self.event.button(self.storage.button)
+
+
+        elif    header.dataType == DataType.IrMessage:
+            if self.event.irMessage != None:
+                self.event.irMessage(self.storage.irMessage)
+                
+
+        elif    header.dataType == DataType.CountFlight:
+            if self.event.countFlight != None:
+                self.event.countFlight(self.storage.countFlight)
+
+        elif    header.dataType == DataType.CountDrive:
+            if self.event.countDrive != None:
+                self.event.countDrive(self.storage.countDrive)
+
+
+        elif    header.dataType == DataType.Pairing:
+            if self.event.pairing != None:
+                self.event.pairing(self.storage.pairing)
+
+        elif    header.dataType == DataType.Rssi:
+            if self.event.rssi != None:
+                self.event.rssi(self.storage.rssi)
 
 
 
@@ -242,14 +346,8 @@ class Drone:
 
 
         elif    header.dataType == DataType.IrMessage:
-            irMessage = IrMessage.parse(dataArray)
-
-            if  irMessage.direction == Direction.Front:
-                self.storage.irMessageFront        = irMessage
-                self.storageCount.irMessageFront   += 1
-            else:
-                self.storage.irMessageRear         = irMessage
-                self.storageCount.irMessageRear    += 1
+            self.storage.irMessage        = IrMessage.parse(dataArray)
+            self.storageCount.irMessage   += 1
 
 
         elif    header.dataType == DataType.CountFlight:
@@ -342,14 +440,8 @@ class Drone:
 
 
         elif    header.dataType == DataType.IrMessage:
-            irMessage = IrMessage.parse(dataArray)
-
-            if  irMessage.direction == Direction.Front:
-                self.storageDrone.irMessageFront        = irMessage
-                self.storageDroneCount.irMessageFront   += 1
-            else:
-                self.storageDrone.irMessageRear         = irMessage
-                self.storageDroneCount.irMessageRear    += 1
+            self.storageDrone.irMessage        = IrMessage.parse(dataArray)
+            self.storageDroneCount.irMessage   += 1
 
 
         elif    header.dataType == DataType.CountFlight:
