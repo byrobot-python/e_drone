@@ -382,7 +382,7 @@ class Information(ISerializable):
 
 
     def toArray(self):
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend(pack('<B', self.modeUpdate.value))
         dataArray.extend(pack('<I', self.deviceType.value))
         dataArray.extend(self.version.toArray())
@@ -1010,7 +1010,7 @@ class LightModeCommand(ISerializable):
 
 
     def toArray(self):
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend(self.mode.toArray())
         dataArray.extend(self.command.toArray())
         return dataArray
@@ -1043,7 +1043,7 @@ class LightModeCommandIr(ISerializable):
 
 
     def toArray(self):
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend(self.mode.toArray())
         dataArray.extend(self.command.toArray())
         dataArray.extend(pack('<I', self.irData))
@@ -1078,7 +1078,7 @@ class LightModeColor(ISerializable):
 
 
     def toArray(self):
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend(self.mode.toArray())
         dataArray.extend(self.color.toArray())
         return dataArray
@@ -1111,7 +1111,7 @@ class LightModeColorCommand(ISerializable):
 
 
     def toArray(self):
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend(self.mode.toArray())
         dataArray.extend(self.color.toArray())
         dataArray.extend(self.command.toArray())
@@ -1147,7 +1147,7 @@ class LightModeColorCommandIr(ISerializable):
 
 
     def toArray(self):
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend(self.mode.toArray())
         dataArray.extend(self.color.toArray())
         dataArray.extend(self.command.toArray())
@@ -1183,7 +1183,7 @@ class LightModeColors(ISerializable):
 
 
     def toArray(self):
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend(self.mode.toArray())
         dataArray.extend(pack('<B', self.colors.value))
         return dataArray
@@ -1219,7 +1219,7 @@ class LightModeColorsCommand(ISerializable):
 
 
     def toArray(self):
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend(self.mode.toArray())
         dataArray.extend(pack('<B', self.colors.value))
         dataArray.extend(self.command.toArray())
@@ -1258,7 +1258,7 @@ class LightModeColorsCommandIr(ISerializable):
 
 
     def toArray(self):
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend(self.mode.toArray())
         dataArray.extend(pack('<B', self.colors.value))
         dataArray.extend(self.command.toArray())
@@ -1297,7 +1297,7 @@ class LightEventCommand(ISerializable):
 
 
     def toArray(self):
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend(self.event.toArray())
         dataArray.extend(self.command.toArray())
         return dataArray
@@ -1331,7 +1331,7 @@ class LightEventCommandIr(ISerializable):
 
 
     def toArray(self):
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend(self.event.toArray())
         dataArray.extend(self.command.toArray())
         dataArray.extend(pack('<I', self.irData))
@@ -1366,7 +1366,7 @@ class LightEventColor(ISerializable):
 
 
     def toArray(self):
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend(self.event.toArray())
         dataArray.extend(self.color.toArray())
         return dataArray
@@ -1400,7 +1400,7 @@ class LightEventColorCommand(ISerializable):
 
 
     def toArray(self):
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend(self.event.toArray())
         dataArray.extend(self.color.toArray())
         dataArray.extend(self.command.toArray())
@@ -1437,7 +1437,7 @@ class LightEventColorCommandIr(ISerializable):
 
 
     def toArray(self):
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend(self.event.toArray())
         dataArray.extend(self.color.toArray())
         dataArray.extend(self.command.toArray())
@@ -1474,7 +1474,7 @@ class LightEventColors(ISerializable):
 
 
     def toArray(self):
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend(self.event.toArray())
         dataArray.extend(pack('<B', self.colors.value))
         return dataArray
@@ -1510,7 +1510,7 @@ class LightEventColorsCommand(ISerializable):
 
 
     def toArray(self):
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend(self.event.toArray())
         dataArray.extend(pack('<B', self.colors.value))
         dataArray.extend(self.command.toArray())
@@ -1549,7 +1549,7 @@ class LightEventColorsCommandIr(ISerializable):
 
 
     def toArray(self):
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend(self.event.toArray())
         dataArray.extend(pack('<B', self.colors.value))
         dataArray.extend(self.command.toArray())
@@ -1825,7 +1825,7 @@ class DisplayDrawString(ISerializable):
 
 
     def toArray(self):
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend(pack('<hhBB', self.x, self.y, self.font.value, self.pixel.value))
         dataArray.extend(self.message.encode('ascii', 'ignore'))
         return dataArray
@@ -1873,7 +1873,7 @@ class DisplayDrawStringAlign(ISerializable):
 
 
     def toArray(self):
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend(pack('<hhhBBB', self.x_start, self.x_end, self.y, self.align.value, self.font.value, self.pixel.value))
         dataArray.extend(self.message.encode('ascii', 'ignore'))
         return dataArray
@@ -2104,7 +2104,7 @@ class Joystick(ISerializable):
 
 
     def toArray(self):
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend(self.left.toArray())
         dataArray.extend(self.right.toArray())
         return dataArray
@@ -2615,7 +2615,7 @@ class Motor(ISerializable):
 
 
     def toArray(self):
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend(self.motor[0].toArray())
         dataArray.extend(self.motor[1].toArray())
         dataArray.extend(self.motor[2].toArray())

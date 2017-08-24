@@ -39,7 +39,7 @@ class Receiver:
         self.timeReceiveStart       = 0
         self.timeReceiveComplete    = 0
 
-        self._dataBuffer            = []
+        self._buffer                = bytearray()
         self.data                   = bytearray()
 
         self.crc16received          = 0
@@ -110,12 +110,12 @@ class Receiver:
                     self.section = Section.End
                 else:
                     self.section = Section.Data
-                    self._dataBuffer.clear()
+                    self._buffer.clear()
             else:
                 self.state = StateLoading.Failure
         
         elif self.section == Section.Data:
-            self._dataBuffer.append(data)
+            self._buffer.append(data)
             self.crc16calculated = CRC16.calc(data, self.crc16calculated)
 
             if (self.index == self.header.length - 1):
@@ -128,7 +128,7 @@ class Receiver:
                 self.crc16received = (data << 8) | self.crc16received
 
                 if self.crc16received == self.crc16calculated:
-                    self.data = bytearray(self._dataBuffer)
+                    self.data = self._buffer.copy()
                     self.timeReceiveComplete = now
                     self.state = StateLoading.Loaded
                 else:

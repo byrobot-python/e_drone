@@ -24,8 +24,8 @@ class Drone:
     def __init__(self):
         
         self.serialport                 = None
-        self.bufferReceive              = []
-        self.bufferHandler              = []
+        self.bufferReceive              = bytearray()
+        self.bufferHandler              = bytearray()
         self.index                      = 0
 
         self.threadLock                 = threading.Lock()
@@ -93,7 +93,7 @@ class Drone:
         crc16 = CRC16.calc(header.toArray(), 0)
         crc16 = CRC16.calc(data.toArray(), crc16)
 
-        dataArray = []
+        dataArray = bytearray()
         dataArray.extend((0x0A, 0x55))
         dataArray.extend(header.toArray())
         dataArray.extend(data.toArray())
