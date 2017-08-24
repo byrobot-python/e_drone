@@ -21,7 +21,7 @@ class Drone:
 
 # BaseFunctions Start
 
-    def __init__(self, flagCheckBackground = False):
+    def __init__(self, flagCheckBackground = True):
         
         self.serialport                 = None
         self.bufferReceive              = bytearray()
