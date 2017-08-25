@@ -133,7 +133,7 @@ class Drone:
                 del(self._bufferHandler[0])
                 
                 if self._receiver.state == StateLoading.Loaded:
-                    self.handler(self._receiver.header, self._receiver.data)
+                    self._handler(self._receiver.header, self._receiver.data)
                     return self._receiver.header.dataType
 
         return DataType.None_
@@ -152,14 +152,14 @@ class Drone:
                 del(self._bufferHandler[0])
                 
                 if self._receiver.state == StateLoading.Loaded:
-                    self.handler(self._receiver.header, self._receiver.data)
+                    self._handler(self._receiver.header, self._receiver.data)
                     return self._receiver.header, self._receiver.data
 
         return None, None
 
 
 
-    def handler(self, header, dataArray):
+    def _handler(self, header, dataArray):
 
         # 들어오는 데이터를 저장
         self._runHandler(header, dataArray)
@@ -1184,7 +1184,7 @@ class Drone:
 # Display Start
 
 
-    def sendDisplayClearAll(self, pixel):
+    def sendDisplayClearAll(self, pixel = DisplayPixel.Black):
         
         if ( not isinstance(pixel, DisplayPixel) ):
             return None
@@ -1204,7 +1204,7 @@ class Drone:
     
 
 
-    def sendDisplayClear(self, x, y, width, height, pixel):
+    def sendDisplayClear(self, x, y, width, height, pixel = DisplayPixel.Black):
         
         if ( not isinstance(pixel, DisplayPixel) ):
             return None
@@ -1248,7 +1248,7 @@ class Drone:
 
 
 
-    def sendDisplayDrawPoint(self, x, y, pixel):
+    def sendDisplayDrawPoint(self, x, y, pixel = DisplayPixel.White):
         
         if ( not isinstance(pixel, DisplayPixel) ):
             return None
@@ -1270,7 +1270,7 @@ class Drone:
 
 
 
-    def sendDisplayDrawRect(self, x, y, width, height, pixel, flagFill):
+    def sendDisplayDrawRect(self, x, y, width, height, pixel = DisplayPixel.White, flagFill = True):
         
         if ( (not isinstance(pixel, DisplayPixel)) or (not isinstance(flagFill, bool)) ):
             return None
@@ -1295,7 +1295,7 @@ class Drone:
 
 
 
-    def sendDisplayDrawCircle(self, x, y, radius, pixel, flagFill):
+    def sendDisplayDrawCircle(self, x, y, radius, pixel = DisplayPixel.White, flagFill = True):
         
         if ( (not isinstance(pixel, DisplayPixel)) or (not isinstance(flagFill, bool)) ):
             return None
@@ -1319,7 +1319,7 @@ class Drone:
 
 
 
-    def sendDisplayDrawString(self, x, y, font, pixel, message):
+    def sendDisplayDrawString(self, x, y, message, font = DisplayFont.LiberationMono5x8, pixel = DisplayPixel.White):
         
         if ( (not isinstance(font, DisplayFont)) or (not isinstance(pixel, DisplayPixel)) or (not isinstance(message, str)) ):
             return None
@@ -1343,7 +1343,7 @@ class Drone:
 
 
 
-    def sendDisplayDrawStringAlign(self, x_start, x_end, y, align, font, pixel, message):
+    def sendDisplayDrawStringAlign(self, x_start, x_end, y, message, align = DisplayAlign.Center, font = DisplayFont.LiberationMono5x8, pixel = DisplayPixel.White):
         
         if ( (not isinstance(align, DisplayAlign)) or (not isinstance(font, DisplayFont)) or (not isinstance(pixel, DisplayPixel)) or (not isinstance(message, str)) ):
             return None
