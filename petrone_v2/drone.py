@@ -23,41 +23,41 @@ class Drone:
 
     def __init__(self, flagCheckBackground = True):
         
-        self.serialport                 = None
-        self.bufferReceive              = bytearray()
-        self.bufferHandler              = bytearray()
-        self.index                      = 0
+        self._serialport                = None
+        self._bufferReceive             = bytearray()
+        self._bufferHandler             = bytearray()
+        self._index                     = 0
 
-        self.threadLock                 = threading.Lock()
-        self.flagThreadRun              = False
+        self._threadLock                = threading.Lock()
+        self._flagThreadRun             = False
 
-        self.receiver                   = Receiver()
+        self._receiver                  = Receiver()
 
-        self.flagCheckBackground        = flagCheckBackground
+        self._flagCheckBackground       = flagCheckBackground
 
-        self.event                      = Event()
-        self.storage                    = Storage()
-        self.storageCount               = StorageCount()
-        self.parser                     = Parser()
-
+        self._event                     = Event()
+        self._storageHeader             = StorageHeader()
+        self._storage                   = Storage()
+        self._storageCount              = StorageCount()
+        self._parser                    = Parser()
 
 
 
     def _receiving(self):
-        while self.flagThreadRun:
+        while self._flagThreadRun:
             
-            self.threadLock.acquire()        # Get lock to synchronize threads
+            self._threadLock.acquire()        # Get lock to synchronize threads
 
-            self.bufferReceive.extend(self.serialport.read())
+            self._bufferReceive.extend(self._serialport.read())
 
-            length = len(self.bufferReceive)
+            length = len(self._bufferReceive)
             if length > 16384:
-                del self.bufferReceive[0:(length - 16384)]    # bufferReceive에 저장된 데이터가 16384 바이트를 초과하면 이전에 받은 데이터를 제거함
+                del self._bufferReceive[0:(length - 16384)]    # bufferReceive에 저장된 데이터가 16384 바이트를 초과하면 이전에 받은 데이터를 제거함
             
-            self.threadLock.release()        # Free lock to release next thread
+            self._threadLock.release()        # Free lock to release next thread
 
             # 수신 데이터 백그라운드 확인이 활성화 된 경우 데이터 자동 업데이트
-            if self.flagCheckBackground == True:
+            if self._flagCheckBackground == True:
                 while self.check() != DataType.None_:
                     pass
 
@@ -66,7 +66,7 @@ class Drone:
 
 
     def open(self, portname):
-        self.serialport = serial.Serial(
+        self._serialport = serial.Serial(
             port        = portname,
             baudrate    = 115200,
             parity      = serial.PARITY_NONE,
@@ -74,17 +74,17 @@ class Drone:
             bytesize    = serial.EIGHTBITS,
             timeout     = 0)
 
-        if( self.serialport.isOpen() ):
-            self.flagThreadRun = True
+        if( self._serialport.isOpen() ):
+            self._flagThreadRun = True
             Thread(target=self._receiving, args=()).start()
 
 
 
     def close(self):
-        self.flagThreadRun = False
+        self._flagThreadRun = False
         sleep(0.002)
-        while (self.serialport.isOpen() == True):
-            self.serialport.close()
+        while (self._serialport.isOpen() == True):
+            self._serialport.close()
             sleep(0.002)
 
 
@@ -105,59 +105,55 @@ class Drone:
         dataArray.extend(data.toArray())
         dataArray.extend(pack('H', crc16))
 
-        #print("{0} / {1}".format(len(dataArray), dataArray))
-
         return dataArray
 
 
 
     def transfer(self, header, data):
-        if (self.serialport == None) or (self.serialport.isOpen() == False):
+        if (self._serialport == None) or (self._serialport.isOpen() == False):
             return
 
         dataArray = self.makeTransferDataArray(header, data)
 
-        self.serialport.write(dataArray)
+        self._serialport.write(dataArray)
 
         return dataArray
 
 
 
     def check(self):
-        if len(self.bufferReceive) > 0:
-            self.threadLock.acquire()           # Get lock to synchronize threads
-            self.bufferHandler.extend(self.bufferReceive)
-            self.bufferReceive.clear()
-            self.threadLock.release()            # Free lock to release next thread
+        if len(self._bufferReceive) > 0:
+            self._threadLock.acquire()  # Get lock to synchronize threads
+            self._bufferHandler.extend(self._bufferReceive)
+            self._bufferReceive.clear()
+            self._threadLock.release()  # Free lock to release next thread
 
-            while len(self.bufferHandler) > 0:
-                self.receiver.call(self.bufferHandler[0])
-                del(self.bufferHandler[0])
+            while len(self._bufferHandler) > 0:
+                self._receiver.call(self._bufferHandler[0])
+                del(self._bufferHandler[0])
                 
-                if self.receiver.state == StateLoading.Loaded:
-                    self.handler(self.receiver.header, self.receiver.data)
-                    self.receiver.checked()
-                    return self.receiver.header.dataType
+                if self._receiver.state == StateLoading.Loaded:
+                    self.handler(self._receiver.header, self._receiver.data)
+                    return self._receiver.header.dataType
 
         return DataType.None_
 
 
 
     def checkDetail(self):
-        if len(self.bufferReceive) > 0:
-            self.threadLock.acquire()           # Get lock to synchronize threads
-            self.bufferHandler.extend(self.bufferReceive)
-            self.bufferReceive.clear()
-            self.threadLock.release()            # Free lock to release next thread
+        if len(self._bufferReceive) > 0:
+            self._threadLock.acquire()           # Get lock to synchronize threads
+            self._bufferHandler.extend(self._bufferReceive)
+            self._bufferReceive.clear()
+            self._threadLock.release()            # Free lock to release next thread
 
-            while len(self.bufferHandler) > 0:
-                self.receiver.call(self.bufferHandler[0])
-                del(self.bufferHandler[0])
+            while len(self._bufferHandler) > 0:
+                self._receiver.call(self._bufferHandler[0])
+                del(self._bufferHandler[0])
                 
-                if self.receiver.state == StateLoading.Loaded:
-                    self.handler(self.receiver.header, self.receiver.data)
-                    self.receiver.checked()
-                    return self.receiver.header, self.receiver.data
+                if self._receiver.state == StateLoading.Loaded:
+                    self.handler(self._receiver.header, self._receiver.data)
+                    return self._receiver.header, self._receiver.data
 
         return None, None
 
@@ -171,20 +167,51 @@ class Drone:
         # 들어오는 데이터에 대한 콜백 이벤트 실행
         self._event(header)
 
+        # 데이터 처리 완료 확인
+        self._receiver.checked()
+
         return header.dataType
 
 
 
     def _handler(self, header, dataArray):
-        if self.parser.d[header.dataType] != None:
-            self.storage.d[header.dataType]         = self.parser.d[header.dataType](dataArray);
-            self.storageCount.d[header.dataType]    += 1
+        if self._parser.d[header.dataType] != None:
+            self._storageHeader.d[header.dataType]   = header
+            self._storage.d[header.dataType]         = self._parser.d[header.dataType](dataArray);
+            self._storageCount.d[header.dataType]    += 1
 
 
 
     def _event(self, header):
-        if  (self.event.d[header.dataType] != None) and (self.storage.d[header.dataType] != None):
-            self.event.d[header.dataType](self.storage.d[header.dataType])
+        if  (self._event.d[header.dataType] != None) and (self._storage.d[header.dataType] != None):
+            self._event.d[header.dataType](self._storage.d[header.dataType])
+
+
+
+    def setEvent(self, dataType, eventHandler):
+        
+        if (not isinstance(dataType, DataType)) or (eventHandler == None):
+            return
+
+        self._event.d[dataType] = eventHandler
+
+
+
+    def getHeader(self, dataType):
+    
+        if (not isinstance(dataType, DataType)):
+            return None
+
+        return self._storageHeader.d[dataType]
+
+
+
+    def getData(self, dataType):
+
+        if (not isinstance(dataType, DataType)):
+            return None
+
+        return self._storage[dataType]
 
 
 
@@ -200,7 +227,6 @@ class Drone:
             string += "{0:02X} ".format(data)
         
         print(string)
-
 
 
 # BaseFunctions End

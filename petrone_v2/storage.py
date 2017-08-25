@@ -12,6 +12,14 @@ class Event:
 
 
 
+# StorageHeader
+class StorageHeader:
+
+    def __init__(self):
+        self.d = dict.fromkeys(list(DataType))
+
+
+
 # Storage
 class Storage:
 
