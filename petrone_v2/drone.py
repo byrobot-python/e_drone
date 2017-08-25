@@ -35,7 +35,7 @@ class Drone:
 
         self._flagCheckBackground       = flagCheckBackground
 
-        self._event                     = Event()
+        self._eventHandler              = EventHandler()
         self._storageHeader             = StorageHeader()
         self._storage                   = Storage()
         self._storageCount              = StorageCount()
@@ -162,10 +162,10 @@ class Drone:
     def handler(self, header, dataArray):
 
         # 들어오는 데이터를 저장
-        self._handler(header, dataArray)
+        self._runHandler(header, dataArray)
 
         # 들어오는 데이터에 대한 콜백 이벤트 실행
-        self._event(header)
+        self._runEventHandler(header)
 
         # 데이터 처리 완료 확인
         self._receiver.checked()
@@ -174,7 +174,7 @@ class Drone:
 
 
 
-    def _handler(self, header, dataArray):
+    def _runHandler(self, header, dataArray):
         if self._parser.d[header.dataType] != None:
             self._storageHeader.d[header.dataType]   = header
             self._storage.d[header.dataType]         = self._parser.d[header.dataType](dataArray);
@@ -182,18 +182,18 @@ class Drone:
 
 
 
-    def _event(self, header):
-        if  (self._event.d[header.dataType] != None) and (self._storage.d[header.dataType] != None):
-            self._event.d[header.dataType](self._storage.d[header.dataType])
+    def _runEventHandler(self, header):
+        if  (self._eventHandler.d[header.dataType] != None) and (self._storage.d[header.dataType] != None):
+            self._eventHandler.d[header.dataType](self._storage.d[header.dataType])
 
 
 
-    def setEvent(self, dataType, eventHandler):
+    def setEventHandler(self, dataType, eventHandler):
         
         if (not isinstance(dataType, DataType)) or (eventHandler == None):
             return
 
-        self._event.d[dataType] = eventHandler
+        self._eventHandler.d[dataType] = eventHandler
 
 
 

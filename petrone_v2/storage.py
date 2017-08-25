@@ -4,8 +4,8 @@ from petrone_v2.protocol import *
 from petrone_v2.system import *
 
 
-# Event
-class Event:
+# EventHandler
+class EventHandler:
 
     def __init__(self):
         self.d = dict.fromkeys(list(DataType))
