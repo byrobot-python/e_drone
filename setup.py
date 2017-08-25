@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = "petrone_v2",
-    version = "0.1.46",
+    version = "0.1.47",
     description = "Library for BYROBOT PETRONE V2",
     author = "BYROBOT",
     author_email = "dev@byrobot.co.kr",

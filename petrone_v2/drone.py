@@ -216,7 +216,7 @@ class Drone:
 
 
     @classmethod
-    def printByteArray(cls, dataArray):
+    def convertByteArrayToString(cls, dataArray):
 
         if (dataArray == None) or (not isinstance(dataArray, bytearray)):
             return
@@ -226,7 +226,7 @@ class Drone:
         for data in dataArray:
             string += "{0:02X} ".format(data)
         
-        print(string)
+        return string
 
 
 # BaseFunctions End
