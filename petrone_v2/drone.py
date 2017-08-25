@@ -211,7 +211,7 @@ class Drone:
         if (not isinstance(dataType, DataType)):
             return None
 
-        return self._storage[dataType]
+        return self._storage.d[dataType]
 
 
 
