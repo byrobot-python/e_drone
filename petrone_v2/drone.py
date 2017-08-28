@@ -682,7 +682,7 @@ class Drone:
 
         data = IrMessage()
 
-        data.value      = value
+        data.irData     = value
 
         return self.transfer(header, data)
 
