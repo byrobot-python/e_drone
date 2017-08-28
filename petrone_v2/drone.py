@@ -661,8 +661,8 @@ class Drone:
         data = MotorSingle()
 
         data.target     = target
-        data.rotation   = Rotation.Clockwise
-        data.value      = motor0
+        data.rotation   = rotation
+        data.value      = value
 
         return self.transfer(header, data)
 
