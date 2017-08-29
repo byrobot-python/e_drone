@@ -1762,6 +1762,41 @@ class DisplayDrawPoint(ISerializable):
 
 
 
+class DisplayDrawLine(ISerializable):
+
+    def __init__(self):
+        
+        self.x1          = 0
+        self.y1          = 0
+        self.x2          = 0
+        self.y2          = 0
+        self.pixel       = DisplayPixel.White
+
+
+    @classmethod
+    def getSize(cls):
+        return 9
+
+
+    def toArray(self):
+        return pack('<hhhhB', self.x1, self.y1, self.x2, self.y2, self.pixel.value)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = DisplayDrawLine()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+
+        data.x1, data.y1, data.x2, data.y2, data.pixel = unpack('<hhhhB', dataArray)
+
+        data.pixel = DisplayPixel(data.pixel);
+        
+        return data
+
+
+
 class DisplayDrawRect(ISerializable):
 
     def __init__(self):

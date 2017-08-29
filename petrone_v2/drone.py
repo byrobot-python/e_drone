@@ -1270,6 +1270,30 @@ class Drone:
 
 
 
+    def sendDisplayDrawLine(self, x1, y1, x2, y2, pixel = DisplayPixel.White):
+        
+        if ( not isinstance(pixel, DisplayPixel) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.DisplayDrawLine
+        header.length   = DisplayDrawLine.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Controller
+        
+        data = DisplayDrawLine()
+
+        data.x1         = x1
+        data.y1         = y1
+        data.x2         = x2
+        data.y2         = y2
+        data.pixel      = pixel
+
+        return self.transfer(header, data)
+
+
+
     def sendDisplayDrawRect(self, x, y, width, height, pixel = DisplayPixel.White, flagFill = True):
         
         if ( (not isinstance(pixel, DisplayPixel)) or (not isinstance(flagFill, bool)) ):

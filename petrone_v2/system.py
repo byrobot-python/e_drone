@@ -38,6 +38,17 @@ class Direction(Enum):
 
 
 
+class Rotation(Enum):
+    
+    None_               = 0x00
+
+    Clockwise           = 0x01
+    Counterclockwise    = 0x02
+
+    EndOfType           = 0x03
+
+
+
 class ModeSystem(Enum):
     
     None_               = 0x00
@@ -133,17 +144,6 @@ class DevelopmentStage(Enum):
     Beta                = 0x01 
     ReleaseCandidate    = 0x02
     Release             = 0x03
-
-
-
-class Rotation(Enum):
-    
-    None_               = 0x00
-
-    Clockwise           = 0x01
-    Counterclockwise    = 0x02
-
-    EndOfType           = 0x03
 
 
 
