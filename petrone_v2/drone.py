@@ -867,12 +867,12 @@ class Drone:
 
 
 
-    def sendLightModeColorsCommand(self, lightMode, interval, colors, command, option):
+    def sendLightModeColorsCommand(self, lightMode, interval, colors, commandType, option):
         
         if  (((not isinstance(lightMode, LightModeDrone)) and (not isinstance(lightMode, LightModeController))) or
             (not isinstance(interval, int))  or
             (not isinstance(colors, Colors)) or
-            (not isinstance(command, CommandType)) or
+            (not isinstance(commandType, CommandType)) or
             (not isinstance(option, int))):
             return None
 
@@ -896,19 +896,19 @@ class Drone:
 
         data.colors         = colors
 
-        data.command.commandType    = command
+        data.command.commandType    = commandType
         data.command.option         = option
 
         return self.transfer(header, data)
 
 
 
-    def sendLightModeColorsCommandIr(self, lightMode, interval, colors, command, option, irData):
+    def sendLightModeColorsCommandIr(self, lightMode, interval, colors, commandType, option, irData):
         
         if  (((not isinstance(lightMode, LightModeDrone)) and (not isinstance(lightMode, LightModeController))) or
             (not isinstance(interval, int)) or
             (not isinstance(colors, Colors)) or
-            (not isinstance(command, CommandType)) or
+            (not isinstance(commandType, CommandType)) or
             (not isinstance(option, int)) or
             (not isinstance(irData, int))):
             return None
@@ -933,7 +933,7 @@ class Drone:
 
         data.colors         = colors
 
-        data.command.commandType    = command
+        data.command.commandType    = commandType
         data.command.option         = option
 
         data.irData      = irData
@@ -1099,13 +1099,13 @@ class Drone:
 
 
 
-    def sendLightEventColorsCommand(self, lightEvent, interval, repeat, colors, command, option):
+    def sendLightEventColorsCommand(self, lightEvent, interval, repeat, colors, commandType, option):
         
         if  (((not isinstance(lightEvent, LightModeDrone)) and (not isinstance(lightEvent, LightModeController))) or
             (not isinstance(interval, int))  or
             (not isinstance(repeat, int)) or
             (not isinstance(colors, Colors)) or
-            (not isinstance(command, CommandType)) or
+            (not isinstance(commandType, CommandType)) or
             (not isinstance(option, int))):
             return None
 
@@ -1130,20 +1130,20 @@ class Drone:
 
         data.colors         = colors
 
-        data.command.commandType    = command
+        data.command.commandType    = commandType
         data.command.option         = option
 
         return self.transfer(header, data)
 
 
 
-    def sendLightEventColorsCommandIr(self, lightEvent, interval, repeat, colors, command, option, irData):
+    def sendLightEventColorsCommandIr(self, lightEvent, interval, repeat, colors, commandType, option, irData):
         
         if  (((not isinstance(lightEvent, LightModeDrone)) and (not isinstance(lightEvent, LightModeController))) or
             (not isinstance(interval, int)) or
             (not isinstance(repeat, int)) or
             (not isinstance(colors, Colors)) or
-            (not isinstance(command, CommandType)) or
+            (not isinstance(commandType, CommandType)) or
             (not isinstance(option, int)) or
             (not isinstance(irData, int))):
             return None
@@ -1169,7 +1169,7 @@ class Drone:
 
         data.colors         = colors
 
-        data.command.commandType    = command
+        data.command.commandType    = commandType
         data.command.option         = option
 
         data.irData      = irData

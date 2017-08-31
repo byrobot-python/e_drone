@@ -170,7 +170,6 @@ class CommandType(Enum):
 class Header(ISerializable):
 
     def __init__(self):
-        
         self.dataType    = DataType.None_
         self.length      = 0
         self.from_       = DeviceType.None_
@@ -191,7 +190,6 @@ class Header(ISerializable):
         header = Header()
 
         if len(dataArray) != cls.getSize():
-            #print("{0}".format(dataArray.count))
             return None
 
         header.dataType, header.length, header.from_, header.to_ = unpack('<BBBB', dataArray)
@@ -1626,9 +1624,9 @@ class DisplayFont(Enum):
 
 class DisplayAlign(Enum):
     
-    Left                = 0x00      # 수동 조작
-    Center              = 0x01      
-    Right               = 0x02      
+    Left                = 0x00
+    Center              = 0x01
+    Right               = 0x02
 
 
 
@@ -1665,7 +1663,6 @@ class DisplayClearAll(ISerializable):
 class DisplayClear(ISerializable):
 
     def __init__(self):
-        
         self.x           = 0
         self.y           = 0
         self.width       = 0
@@ -1700,7 +1697,6 @@ class DisplayClear(ISerializable):
 class DisplayInvert(ISerializable):
 
     def __init__(self):
-        
         self.x           = 0
         self.y           = 0
         self.width       = 0
@@ -1732,7 +1728,6 @@ class DisplayInvert(ISerializable):
 class DisplayDrawPoint(ISerializable):
 
     def __init__(self):
-        
         self.x           = 0
         self.y           = 0
         self.pixel       = DisplayPixel.White
@@ -1765,7 +1760,6 @@ class DisplayDrawPoint(ISerializable):
 class DisplayDrawLine(ISerializable):
 
     def __init__(self):
-        
         self.x1          = 0
         self.y1          = 0
         self.x2          = 0
@@ -1800,7 +1794,6 @@ class DisplayDrawLine(ISerializable):
 class DisplayDrawRect(ISerializable):
 
     def __init__(self):
-        
         self.x          = 0
         self.y          = 0
         self.width      = 0
@@ -1836,7 +1829,6 @@ class DisplayDrawRect(ISerializable):
 class DisplayDrawCircle(ISerializable):
 
     def __init__(self):
-        
         self.x          = 0
         self.y          = 0
         self.radius     = 0
@@ -1871,7 +1863,6 @@ class DisplayDrawCircle(ISerializable):
 class DisplayDrawString(ISerializable):
 
     def __init__(self):
-        
         self.x          = 0
         self.y          = 0
         self.font       = DisplayFont.LiberationMono5x8
@@ -2136,7 +2127,7 @@ class JoystickBlock(ISerializable):
 
 
     def toArray(self):
-        return pack('<BBBB', self.x, self.y, self.direction.value, self.event.value)
+        return pack('<bbBB', self.x, self.y, self.direction.value, self.event.value)
 
 
     @classmethod
@@ -2146,7 +2137,7 @@ class JoystickBlock(ISerializable):
         if len(dataArray) != cls.getSize():
             return None
         
-        data.x, data.y, data.direction, data.event = unpack('<BBBB', dataArray)
+        data.x, data.y, data.direction, data.event = unpack('<bbBB', dataArray)
 
         data.direction  = JoystickDirection(data.direction)
         data.event      = JoystickEvent(data.event)
@@ -2222,11 +2213,23 @@ class ButtonFlagDrone(Enum):
 
 
 
+class ButtonEvent(Enum):
+
+    None_             = 0x00
+    
+    Down              = 0x01  # 누르기 시작
+    Press             = 0x02  # 누르는 중
+    Up                = 0x03  # 뗌
+    
+    EndContinuePress  = 0x04  # 연속 입력 종료
+
+
+
 class Button(ISerializable):
 
     def __init__(self):
         self.button     = 0
-        self.event      = 0
+        self.event      = ButtonEvent.None_
 
 
     @classmethod
@@ -2246,6 +2249,7 @@ class Button(ISerializable):
             return None
         
         data.button, data.event = unpack('<HB', dataArray)
+        data.event = ButtonEvent(data.event)
         
         return data
 
@@ -2282,7 +2286,7 @@ class State(ISerializable):
 
     @classmethod
     def parse(cls, dataArray):
-        data = Range()
+        data = State()
         
         if len(dataArray) != cls.getSize():
             return None
