@@ -2238,7 +2238,7 @@ class Button(ISerializable):
 
 
     def toArray(self):
-        return pack('<HB', self.button, self.event)
+        return pack('<HB', self.button, self.event.value)
 
 
     @classmethod
@@ -2249,6 +2249,7 @@ class Button(ISerializable):
             return None
         
         data.button, data.event = unpack('<HB', dataArray)
+
         data.event = ButtonEvent(data.event)
         
         return data
