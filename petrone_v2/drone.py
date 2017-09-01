@@ -77,6 +77,9 @@ class Drone:
         if( self._serialport.isOpen() ):
             self._flagThreadRun = True
             Thread(target=self._receiving, args=()).start()
+            return True
+        else:
+            return False
 
 
 
