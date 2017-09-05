@@ -1630,6 +1630,12 @@ class DisplayAlign(Enum):
 
 
 
+class DisplayLine(Enum):
+    
+    Solid               = 0x00
+    Dotted              = 0x01
+    Dashed              = 0x02
+
 
 class DisplayClearAll(ISerializable):
 
@@ -1765,15 +1771,16 @@ class DisplayDrawLine(ISerializable):
         self.x2          = 0
         self.y2          = 0
         self.pixel       = DisplayPixel.White
+        self.line        = DisplayLine.Solid
 
 
     @classmethod
     def getSize(cls):
-        return 9
+        return 10
 
 
     def toArray(self):
-        return pack('<hhhhB', self.x1, self.y1, self.x2, self.y2, self.pixel.value)
+        return pack('<hhhhBB', self.x1, self.y1, self.x2, self.y2, self.pixel.value, self.line.value)
 
 
     @classmethod
@@ -1783,9 +1790,10 @@ class DisplayDrawLine(ISerializable):
         if len(dataArray) != cls.getSize():
             return None
 
-        data.x1, data.y1, data.x2, data.y2, data.pixel = unpack('<hhhhB', dataArray)
+        data.x1, data.y1, data.x2, data.y2, data.pixel, data.line = unpack('<hhhhBB', dataArray)
 
-        data.pixel = DisplayPixel(data.pixel);
+        data.pixel  = DisplayPixel(data.pixel);
+        data.line   = DisplayLine(data.line);
         
         return data
 
@@ -1800,15 +1808,16 @@ class DisplayDrawRect(ISerializable):
         self.height     = 0
         self.pixel      = DisplayPixel.White
         self.flagFill   = True
+        self.line        = DisplayLine.Solid
 
 
     @classmethod
     def getSize(cls):
-        return 10
+        return 11
 
 
     def toArray(self):
-        return pack('<hhhhB?', self.x, self.y, self.width, self.height, self.pixel.value, self.flagFill)
+        return pack('<hhhhB?B', self.x, self.y, self.width, self.height, self.pixel.value, self.flagFill, self.line.value)
 
 
     @classmethod
@@ -1818,9 +1827,10 @@ class DisplayDrawRect(ISerializable):
         if len(dataArray) != cls.getSize():
             return None
 
-        data.x, data.y, data.width, data.height, data.pixel, data.flagFill = unpack('<hhhhB?', dataArray)
+        data.x, data.y, data.width, data.height, data.pixel, data.flagFill, data.line = unpack('<hhhhB?B', dataArray)
 
-        data.pixel = DisplayPixel(data.pixel);
+        data.pixel  = DisplayPixel(data.pixel);
+        data.line   = DisplayLine(data.line);
         
         return data
 

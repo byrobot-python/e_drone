@@ -1294,9 +1294,9 @@ class Drone:
 
 
 
-    def sendDisplayDrawLine(self, x1, y1, x2, y2, pixel = DisplayPixel.White):
+    def sendDisplayDrawLine(self, x1, y1, x2, y2, pixel = DisplayPixel.White, line = DisplayLine.Solid):
         
-        if ( not isinstance(pixel, DisplayPixel) ):
+        if ( (not isinstance(pixel, DisplayPixel)) or (not isinstance(line, DisplayLine)) ):
             return None
 
         header = Header()
@@ -1313,14 +1313,15 @@ class Drone:
         data.x2         = x2
         data.y2         = y2
         data.pixel      = pixel
+        data.line       = line
 
         return self.transfer(header, data)
 
 
 
-    def sendDisplayDrawRect(self, x, y, width, height, pixel = DisplayPixel.White, flagFill = True):
+    def sendDisplayDrawRect(self, x, y, width, height, pixel = DisplayPixel.White, flagFill = False, line = DisplayLine.Solid):
         
-        if ( (not isinstance(pixel, DisplayPixel)) or (not isinstance(flagFill, bool)) ):
+        if ( (not isinstance(pixel, DisplayPixel)) or (not isinstance(flagFill, bool)) or (not isinstance(line, DisplayLine)) ):
             return None
 
         header = Header()
@@ -1338,6 +1339,7 @@ class Drone:
         data.height     = height
         data.pixel      = pixel
         data.flagFill   = flagFill
+        data.line       = line
 
         return self.transfer(header, data)
 
