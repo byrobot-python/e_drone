@@ -42,6 +42,10 @@ class Drone:
         self._parser                    = Parser()
 
 
+    def __del__(self):
+        
+        close()
+
 
     def _receiving(self):
         while self._flagThreadRun:
@@ -84,11 +88,13 @@ class Drone:
 
 
     def close(self):
-        self._flagThreadRun = False
-        sleep(0.002)
+        if self._flagThreadRun == True:
+            self._flagThreadRun = False
+            sleep(0.01)
+
         while (self._serialport.isOpen() == True):
             self._serialport.close()
-            sleep(0.002)
+            sleep(0.01)
 
 
 
