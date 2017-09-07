@@ -44,7 +44,7 @@ class Drone:
 
     def __del__(self):
         
-        close()
+        self.close()
 
 
     def _receiving(self):
