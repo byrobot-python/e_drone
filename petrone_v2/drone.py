@@ -8,6 +8,7 @@ from time import sleep
 from struct import *
 import time
 from serial.tools.list_ports import comports
+from operator import eq
 
 from petrone_v2.protocol import *
 from petrone_v2.storage import *
