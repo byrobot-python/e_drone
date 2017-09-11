@@ -70,7 +70,14 @@ class Drone:
 
 
 
-    def open(self, portname):
+    def open(self, portname = "None"):
+        
+        if eq(portname, "None"):
+                
+            nodes = comports()
+            size = len(nodes)
+            portname = nodes[size - 1].device
+
         self._serialport = serial.Serial(
             port        = portname,
             baudrate    = 115200,
@@ -85,15 +92,6 @@ class Drone:
             return True
         else:
             return False
-
-
-
-    def openLaseDevice(self):
-        
-        nodes = comports()
-        size = len(nodes)
-
-        return self.open(nodes[size - 1].device)
 
 
 
