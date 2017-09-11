@@ -1,11 +1,11 @@
-python Library for BYROBOT PETRONE V2
+petrone_v2
 
-BYROBOT
-
-Documents
-https://dronefighters.github.io/Documents/
 
 PyPI
 https://pypi.python.org/pypi/petrone_v2
 
+Documents
+https://dronefighters.github.io/documents/kr/products/petrone_v2/library/python/petrone_v2/
 
+
+BYROBOT

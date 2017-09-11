@@ -7,6 +7,7 @@ from threading import Thread
 from time import sleep
 from struct import *
 import time
+from serial.tools.list_ports import comports
 
 from petrone_v2.protocol import *
 from petrone_v2.storage import *
@@ -84,6 +85,15 @@ class Drone:
             return True
         else:
             return False
+
+
+
+    def openLaseDevice(self):
+        
+        nodes = comports()
+        size = len(nodes)
+
+        return self.open(nodes[size - 1].device)
 
 
 
