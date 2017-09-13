@@ -32,26 +32,26 @@ class ISerializable:
 
 class DataType(Enum):
     
-    None_               = 0x00      # 없음
+    None_                       = 0x00      # 없음
     
-    Ping                = 0x01      # 통신 확인
-    Ack                 = 0x02      # 데이터 수신에 대한 응답
-    Error               = 0x03      # 오류(reserve 비트 플래그는 추후에 지정)
-    Request             = 0x04      # 지정한 타입의 데이터 요청
-    Message             = 0x05      # 문자열 데이터
-    Reserved_1          = 0x06      # 예약
-    SystemInformation   = 0x07      # 시스템 정보
-    Monitor             = 0x08      # 디버깅용 값 배열 전송. 첫번째 바이트에 타입 두 번째 바이트에 페이지 지정(수신 받는 데이터의 저장 경로 구분)
-    SystemCounter       = 0x09      # 시스템 카운터
-    Information         = 0x0A      # 장치 정보
-    UpdateLocation      = 0x0B      # 펌웨어 업데이트 위치 정정
-    Update              = 0x0C      # 펌웨어 업데이트
-    Encrypt             = 0x0D      # 펌웨어 암호화
-    Address             = 0x0E      # 장치 주소
-    Administrator       = 0x0F      # 관리자 권한 획득
-    Control             = 0x10      # 조종 명령
+    Ping                        = 0x01      # 통신 확인
+    Ack                         = 0x02      # 데이터 수신에 대한 응답
+    Error                       = 0x03      # 오류(reserve 비트 플래그는 추후에 지정)
+    Request                     = 0x04      # 지정한 타입의 데이터 요청
+    Message                     = 0x05      # 문자열 데이터
+    Reserved_1                  = 0x06      # 예약
+    SystemInformation           = 0x07      # 시스템 정보
+    Monitor                     = 0x08      # 디버깅용 값 배열 전송. 첫번째 바이트에 타입 두 번째 바이트에 페이지 지정(수신 받는 데이터의 저장 경로 구분)
+    SystemCounter               = 0x09      # 시스템 카운터
+    Information                 = 0x0A      # 장치 정보
+    UpdateLocation              = 0x0B      # 펌웨어 업데이트 위치 정정
+    Update                      = 0x0C      # 펌웨어 업데이트
+    Encrypt                     = 0x0D      # 펌웨어 암호화
+    Address                     = 0x0E      # 장치 주소
+    Administrator               = 0x0F      # 관리자 권한 획득
+    Control                     = 0x10      # 조종 명령
 
-    Command             = 0x11      # 명령
+    Command                     = 0x11      # 명령
 
     # Light
     LightManual                 = 0x20      # LED 수동 제어
@@ -79,57 +79,57 @@ class DataType(Enum):
     LightModeDefaultColor       = 0x33      # LED 초기 모드 3색 직접 지정
 
     # 상태 설정
-    State           = 0x40      # 드론의 상태(비행 모드 방위기준 배터리량)
-    Attitude        = 0x41      # 드론의 자세(Angle)
-    AccelBias       = 0x42      # 엑셀 바이어스 값
-    GyroBias        = 0x43      # 자이로 바이어스 값
-    TrimAll         = 0x44      # 전체 트림
-    TrimFlight      = 0x45      # 비행 트림
-    TrimDrive       = 0x46      # 주행 트림
+    State                       = 0x40      # 드론의 상태(비행 모드 방위기준 배터리량)
+    Attitude                    = 0x41      # 드론의 자세(Angle)
+    AccelBias                   = 0x42      # 엑셀 바이어스 값
+    GyroBias                    = 0x43      # 자이로 바이어스 값
+    TrimAll                     = 0x44      # 전체 트림
+    TrimFlight                  = 0x45      # 비행 트림
+    TrimDrive                   = 0x46      # 주행 트림
 
     # Sensor raw data
-    Imu             = 0x50      # IMU Raw
-    Pressure        = 0x51      # 압력 센서 데이터
-    Battery         = 0x52      # 배터리
-    Range           = 0x53      # 적외선 거리 센서
-    ImageFlow       = 0x54      # ImageFlow
-    CameraImage     = 0x55      # CameraImage
+    Imu                         = 0x50      # IMU Raw
+    Pressure                    = 0x51      # 압력 센서 데이터
+    Battery                     = 0x52      # 배터리
+    Range                       = 0x53      # 적외선 거리 센서
+    ImageFlow                   = 0x54      # ImageFlow
+    CameraImage                 = 0x55      # CameraImage
 
     # Input
-    Button          = 0x70      # 버튼 입력
-    Joystick        = 0x71      # 조이스틱 입력
+    Button                      = 0x70      # 버튼 입력
+    Joystick                    = 0x71      # 조이스틱 입력
 
     # Devices
-    Motor           = 0x80      # 모터 제어 및 현재 제어값 확인
-    MotorSingle     = 0x81      # 한 개의 모터 제어
-    IrMessage       = 0x82      # IR 데이터 송수신
-    Buzzer          = 0x83      # 부저 제어
-    Vibrator        = 0x84      # 진동 제어
+    Motor                       = 0x80      # 모터 제어 및 현재 제어값 확인
+    MotorSingle                 = 0x81      # 한 개의 모터 제어
+    IrMessage                   = 0x82      # IR 데이터 송수신
+    Buzzer                      = 0x83      # 부저 제어
+    Vibrator                    = 0x84      # 진동 제어
 
     # 카운트
-    CountFlight     = 0x90      # 비행 관련 카운트
-    CountDrive      = 0x91      # 주행 관련 카운트
+    CountFlight                 = 0x90      # 비행 관련 카운트
+    CountDrive                  = 0x91      # 주행 관련 카운트
 
     # RF
-    Pairing         = 0xA0      # 페어링
-    Rssi            = 0xA1      # RSSI
+    Pairing                     = 0xA0      # 페어링
+    Rssi                        = 0xA1      # RSSI
 
     # Display
-    DisplayClear            = 0xB0      # 화면 지우기
-    DisplayInvert           = 0xB1      # 화면 반전
-    DisplayDrawPoint        = 0xB2      # 점 그리기
-    DisplayDrawLine         = 0xB3      # 선 그리기
-    DisplayDrawRect         = 0xB4      # 사각형 그리기
-    DisplayDrawCircle       = 0xB5      # 원 그리기
-    DisplayDrawString       = 0xB6      # 문자열 쓰기
-    DisplayDrawStringAlign  = 0xB7      # 문자열 쓰기
+    DisplayClear                = 0xB0      # 화면 지우기
+    DisplayInvert               = 0xB1      # 화면 반전
+    DisplayDrawPoint            = 0xB2      # 점 그리기
+    DisplayDrawLine             = 0xB3      # 선 그리기
+    DisplayDrawRect             = 0xB4      # 사각형 그리기
+    DisplayDrawCircle           = 0xB5      # 원 그리기
+    DisplayDrawString           = 0xB6      # 문자열 쓰기
+    DisplayDrawStringAlign      = 0xB7      # 문자열 쓰기
 
     # Information Assembled
-    InformationAssembledForController   = 0xD0, # 자주 갱신되는 비행 데이터 모음
-    InformationAssembledForEntry        = 0xD1, # 자주 갱신되는 비행 데이터 모음
-    InformationAssembledForImuMonitor   = 0xD2, # 자주 갱신되는 비행 데이터 모음
+    InformationAssembledForController   = 0xD0 # 자주 갱신되는 비행 데이터 모음
+    InformationAssembledForEntry        = 0xD1 # 자주 갱신되는 비행 데이터 모음
+    InformationAssembledForImuMonitor   = 0xD2 # 자주 갱신되는 비행 데이터 모음
 
-    EndOfType               = 0xB8
+    EndOfType                   = 0xB8
 
 
 # DataType End

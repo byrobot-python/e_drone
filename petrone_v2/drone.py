@@ -208,7 +208,7 @@ class Drone:
 
     def setEventHandler(self, dataType, eventHandler):
         
-        if (not isinstance(dataType, DataType)) or (eventHandler == None):
+        if (not isinstance(dataType, DataType)):
             return
 
         self._eventHandler.d[dataType] = eventHandler
@@ -230,6 +230,15 @@ class Drone:
             return None
 
         return self._storage.d[dataType]
+
+
+
+    def getCount(self, dataType):
+
+        if (not isinstance(dataType, DataType)):
+            return None
+
+        return self._storageCount.d[dataType]
 
 
 
