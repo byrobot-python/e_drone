@@ -70,6 +70,6 @@ class Parser:
         self.d[DataType.Pairing]        = Pairing.parse
         self.d[DataType.Rssi]           = Rssi.parse
 
-
+        self.d[DataType.InformationAssembledForImuMonitor]  = InformationAssembledForImuMonitor.parse
 
 

@@ -124,6 +124,11 @@ class DataType(Enum):
     DisplayDrawString       = 0xB6      # 문자열 쓰기
     DisplayDrawStringAlign  = 0xB7      # 문자열 쓰기
 
+    # Information Assembled
+    InformationAssembledForController   = 0xD0, # 자주 갱신되는 비행 데이터 모음
+    InformationAssembledForEntry        = 0xD1, # 자주 갱신되는 비행 데이터 모음
+    InformationAssembledForImuMonitor   = 0xD2, # 자주 갱신되는 비행 데이터 모음
+
     EndOfType               = 0xB8
 
 
@@ -2756,6 +2761,41 @@ class MotorSingle(ISerializable):
         data.rotation = Rotation(data.rotation)
         
         return data
+
+
+
+class InformationAssembledForImuMonitor(ISerializable):
+
+    def __init__(self):
+        self.systemTime   = 0
+        self.accelX       = 0
+        self.accelY       = 0
+        self.accelZ       = 0
+        self.gyroRoll     = 0
+        self.gyroPitch    = 0
+        self.gyroYaw      = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 20
+
+
+    def toArray(self):
+        return pack('<Qhhhhhh', self.systemTime, self.accelX, self.accelY, self.accelZ, self.gyroRoll, self.gyroPitch, self.gyroYaw)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = InformationAssembledForImuMonitor()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.systemTime, data.accelX, data.accelY, data.accelZ, data.gyroRoll, data.gyroPitch, data.gyroYaw = unpack('<Qhhhhhh', dataArray)
+        
+        return data
+
 
 
 # Device End
