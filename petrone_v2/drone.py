@@ -8,6 +8,7 @@ from time import sleep
 from struct import *
 import time
 from serial.tools.list_ports import comports
+from queue import Queue
 from operator import eq
 
 from petrone_v2.protocol import *
@@ -18,7 +19,6 @@ from petrone_v2.crc import *
 
 
 
-
 class Drone:
 
 # BaseFunctions Start
@@ -26,11 +26,11 @@ class Drone:
     def __init__(self, flagCheckBackground = True):
         
         self._serialport                = None
-        self._bufferReceive             = bytearray()
+        self._bufferQueue               = Queue(4096)
         self._bufferHandler             = bytearray()
         self._index                     = 0
 
-        self._threadLock                = threading.Lock()
+        self._thread                    = None
         self._flagThreadRun             = False
 
         self._receiver                  = Receiver()
@@ -52,32 +52,26 @@ class Drone:
     def _receiving(self):
         while self._flagThreadRun:
             
-            self._threadLock.acquire()        # Get lock to synchronize threads
-
-            self._bufferReceive.extend(self._serialport.read())
-
-            length = len(self._bufferReceive)
-            if length > 16384:
-                del self._bufferReceive[0:(length - 16384)]    # bufferReceive에 저장된 데이터가 16384 바이트를 초과하면 이전에 받은 데이터를 제거함
-            
-            self._threadLock.release()        # Free lock to release next thread
+            self._bufferQueue.put(self._serialport.read())
 
             # 수신 데이터 백그라운드 확인이 활성화 된 경우 데이터 자동 업데이트
             if self._flagCheckBackground == True:
                 while self.check() != DataType.None_:
                     pass
 
-            sleep(0.001)
+            #sleep(0.001)
 
 
 
     def open(self, portname = "None"):
         
         if eq(portname, "None"):
-                
             nodes = comports()
             size = len(nodes)
-            portname = nodes[size - 1].device
+            if size > 0:
+                portname = nodes[size - 1].device
+            else:
+                return False
 
         self._serialport = serial.Serial(
             port        = portname,
@@ -89,7 +83,7 @@ class Drone:
 
         if( self._serialport.isOpen() ):
             self._flagThreadRun = True
-            Thread(target=self._receiving, args=()).start()
+            self._thread = Thread(target=self._receiving, args=(), daemon=True).start()
             return True
         else:
             return False
@@ -100,6 +94,9 @@ class Drone:
         if self._flagThreadRun == True:
             self._flagThreadRun = False
             sleep(0.01)
+
+        if self._thread != None:
+            self._thread.join()
 
         while (self._serialport.isOpen() == True):
             self._serialport.close()
@@ -140,38 +137,33 @@ class Drone:
 
 
     def check(self):
-        if len(self._bufferReceive) > 0:
-            self._threadLock.acquire()  # Get lock to synchronize threads
-            self._bufferHandler.extend(self._bufferReceive)
-            self._bufferReceive.clear()
-            self._threadLock.release()  # Free lock to release next thread
+        while self._bufferQueue.empty() == False:
+            self._bufferHandler.extend(self._bufferQueue.get_nowait())
+            self._bufferQueue.task_done()
 
-            while len(self._bufferHandler) > 0:
-                self._receiver.call(self._bufferHandler[0])
-                del(self._bufferHandler[0])
-                
-                if self._receiver.state == StateLoading.Loaded:
-                    self._handler(self._receiver.header, self._receiver.data)
-                    return self._receiver.header.dataType
+        while len(self._bufferHandler) > 0:
+            self._receiver.call(self._bufferHandler.pop(0))
+            
+            if self._receiver.state == StateLoading.Loaded:
+                self._handler(self._receiver.header, self._receiver.data)
+                return self._receiver.header.dataType
 
         return DataType.None_
 
 
 
     def checkDetail(self):
-        if len(self._bufferReceive) > 0:
-            self._threadLock.acquire()           # Get lock to synchronize threads
-            self._bufferHandler.extend(self._bufferReceive)
-            self._bufferReceive.clear()
-            self._threadLock.release()            # Free lock to release next thread
+        while self._bufferQueue.empty() == False:
+            self._bufferHandler.extend(self._bufferQueue.get_nowait())
+            self._bufferHandler.task_done()
 
-            while len(self._bufferHandler) > 0:
-                self._receiver.call(self._bufferHandler[0])
-                del(self._bufferHandler[0])
-                
-                if self._receiver.state == StateLoading.Loaded:
-                    self._handler(self._receiver.header, self._receiver.data)
-                    return self._receiver.header, self._receiver.data
+        while len(self._bufferHandler) > 0:
+            self._receiver.call(self._bufferHandler[0])
+            del(self._bufferHandler[0])
+            
+            if self._receiver.state == StateLoading.Loaded:
+                self._handler(self._receiver.header, self._receiver.data)
+                return self._receiver.header, self._receiver.data
 
         return None, None
 
