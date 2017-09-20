@@ -462,6 +462,27 @@ class Drone:
 # Setup Start
 
 
+    def sendCommand(self, commandType, option = 0):
+        
+        if  ( (not isinstance(commandType, CommandType)) or (not isinstance(option, int)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = Command()
+
+        data.commandType    = commandType
+        data.option         = option
+
+        return self.transfer(header, data)
+
+
+
     def sendModeVehicle(self, modeVehicle):
         
         if  ( not isinstance(modeVehicle, ModeVehicle) ):

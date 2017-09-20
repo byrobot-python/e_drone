@@ -46,6 +46,7 @@ class Parser:
         self.d = dict.fromkeys(list(DataType))
 
         self.d[DataType.Ack]            = Ack.parse
+        self.d[DataType.Error]          = Error.parse
         self.d[DataType.Message]        = Message.parse
         self.d[DataType.Information]    = Information.parse
         self.d[DataType.Address]        = Address.parse

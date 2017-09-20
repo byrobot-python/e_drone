@@ -271,6 +271,36 @@ class Ack(ISerializable):
 
 
 
+class Error(ISerializable):
+
+    def __init__(self):
+        self.systemTime             = 0
+        self.errorFlagsForSensor    = 0
+        self.errorFlagsForState     = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 16
+
+
+    def toArray(self):
+        return pack('<QII', self.systemTime, self.errorFlagsForSensor, self.errorFlagsForState)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = Error()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.systemTime, data.errorFlagsForSensor, data.errorFlagsForState = unpack('<QII', dataArray)
+
+        return data
+
+
+
 class Request(ISerializable):
 
     def __init__(self):

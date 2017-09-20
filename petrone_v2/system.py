@@ -22,33 +22,6 @@ class DeviceType(Enum):
 
 
 
-class Direction(Enum):
-    
-    None_               = 0x00
-
-    Left                = 0x01
-    Front               = 0x02
-    Right               = 0x03
-    Rear                = 0x04
-
-    Top                 = 0x05
-    Bottom              = 0x06
-
-    EndOfType           = 0x07
-
-
-
-class Rotation(Enum):
-    
-    None_               = 0x00
-
-    Clockwise           = 0x01
-    Counterclockwise    = 0x02
-
-    EndOfType           = 0x03
-
-
-
 class ModeSystem(Enum):
     
     None_               = 0x00
@@ -138,6 +111,38 @@ class ModeUpdate(Enum):
 
 
 
+class ErrorFlagsForSensor(Enum):
+
+    None_                       = 0x00000000
+
+    Imu_NoAnswer                = 0x00000001    # IMU 응답 없음
+    Imu_WrongValue              = 0x00000002
+    Imu_NotCalibrated           = 0x00000004    # Gyro Bias 보정이 완료되지 않음
+    Imu_Calibrating             = 0x00000008    # Gyro Bias 보정 중
+
+    Pressure_NoAnswer           = 0x00000010    # 압력센서 응답 없음
+    Pressure_WrongValue         = 0x00000020
+
+    RangeGround_NoAnswer        = 0x00000100    # 바닥 거리센서 응답 없음
+    RangeGround_WrongValue      = 0x00000200
+
+    Camera_NoAnswer             = 0x00001000    # 카메라 응답 없음
+    OpticalFlow_WrongValue      = 0x00002000
+
+    Battery_NoAnswer            = 0x00010000    # 배터리 응답 없음
+    Battery_WrongValue          = 0x00020000
+    Battery_NotCalibrated       = 0x00040000    # 배터리 입력값 보정이 완료되지 않음
+
+
+
+class ErrorFlagsForState(Enum):
+
+    None_                       = 0x00000000
+
+    NotTested                   = 0x00000001    # 테스트하지 않음
+
+
+
 class DevelopmentStage(Enum):
     
     Alpha               = 0x00
@@ -176,6 +181,33 @@ class DriveEvent(Enum):
     UnderAttack         = 0x12
 
     EndOfType           = 0x13
+
+
+
+class Direction(Enum):
+    
+    None_               = 0x00
+
+    Left                = 0x01
+    Front               = 0x02
+    Right               = 0x03
+    Rear                = 0x04
+
+    Top                 = 0x05
+    Bottom              = 0x06
+
+    EndOfType           = 0x07
+
+
+
+class Rotation(Enum):
+    
+    None_               = 0x00
+
+    Clockwise           = 0x01
+    Counterclockwise    = 0x02
+
+    EndOfType           = 0x03
 
 
 
