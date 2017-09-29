@@ -492,7 +492,7 @@ class Address(ISerializable):
 
     @classmethod
     def parse(cls, dataArray):
-        data = SystemInformation()
+        data = Address()
         
         if len(dataArray) != cls.getSize():
             return None

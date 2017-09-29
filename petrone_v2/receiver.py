@@ -45,28 +45,39 @@ class Receiver:
         self.crc16received          = 0
         self.crc16calculated        = 0
 
+        self.message                = None
+
+
 
     def call(self, data):
         
         now = time.clock() * 1000
 
+        self.message = None
+
 
         # First Step
+        if self.state == StateLoading.Failure:
+            self.state = StateLoading.Ready
+
+
+        # Second Step
         if self.state == StateLoading.Ready:
             self.section = Section.Start
             self.index = 0
 
         elif self.state == StateLoading.Receiving:
-            if self.timeReceiveStart + 100 < now:
-                self.state = StateLoading.Ready
-                self.section = Section.Start
-                self.index = 0
+            # 데이터 수신을 시작한지 600ms 시간이 지난 경우 오류 출력
+            if (self.timeReceiveStart + 600) < now:
+                self.state = StateLoading.Failure
+                self.message = "Error / Receiver / StateLoading.Receiving / Time over."
+                return self.state
 
         elif self.state == StateLoading.Loaded:
-            return
+            return self.state
 
 
-        # Second Step
+        # Third Step
         if self.section != self.sectionOld:
             self.index = 0
             self.sectionOld = self.section
@@ -77,42 +88,80 @@ class Receiver:
             if self.index == 0:
                 if data == 0x0A:
                     self.state = StateLoading.Receiving
+
                 else:
                     self.state = StateLoading.Failure
+                    return self.state
                 self.timeReceiveStart = now
 
             elif self.index == 1:
                 if data != 0x55:
                     self.state = StateLoading.Failure
+                    return self.state
                 else:
                     self.section = Section.Header
             else:
                 self.state = StateLoading.Failure
+                self.message = "Error / Receiver / Section.Start / Index over."
+                return self.state
         
         elif self.section == Section.Header:
+            
             if self.index == 0:
                 self.header = Header()
-                self.header.dataType = DataType(data)
+                
+                try:
+                    self.header.dataType = DataType(data)
+
+                except:
+                    self.state = StateLoading.Failure
+                    self.message = "Error / Receiver / Section.Header / DataType Error. 0x{0:02X}".format(data)
+                    return self.state
+
                 self.crc16calculated = CRC16.calc(data, 0)
+
             elif self.index == 1:
                 self.header.length = data
-                self.crc16calculated = CRC16.calc(data, self.crc16calculated)
-            elif self.index == 2:
-                self.header.from_ = DeviceType(data)
-                self.crc16calculated = CRC16.calc(data, self.crc16calculated)
-            elif self.index == 3:
-                self.header.to_ = DeviceType(data)
                 self.crc16calculated = CRC16.calc(data, self.crc16calculated)
 
                 if self.header.length > 128:
                     self.state = StateLoading.Failure
-                elif self.header.length == 0:
+                    self.message = "Error / Receiver / Section.Header / Data length is longer than 128. [{0}]".format(self.header.length)
+                    return self.state
+
+            elif self.index == 2:
+                try:
+                    self.header.from_ = DeviceType(data)
+
+                except:
+                    self.state = StateLoading.Failure
+                    self.message = "Error / Receiver / Section.Header / DeviceType Error. 0x{0:02X}".format(data)
+                    return self.state
+
+                self.crc16calculated = CRC16.calc(data, self.crc16calculated)
+
+            elif self.index == 3:
+                try:
+                    self.header.to_ = DeviceType(data)
+
+                except:
+                    self.state = StateLoading.Failure
+                    self.message = "Error / Receiver / Section.Header / DeviceType Error. 0x{0:02X}".format(data)
+                    return self.state
+
+                self.crc16calculated = CRC16.calc(data, self.crc16calculated)
+
+                if self.header.length == 0:
                     self.section = Section.End
+
                 else:
                     self.section = Section.Data
                     self._buffer.clear()
+
             else:
                 self.state = StateLoading.Failure
+                self.message = "Error / Receiver / Section.Header / Index over."
+                return self.state
         
         elif self.section == Section.Data:
             self._buffer.append(data)
@@ -122,8 +171,9 @@ class Receiver:
                 self.section = Section.End
         
         elif self.section == Section.End:
-            if self.index == 0:
+            if   self.index == 0:
                 self.crc16received = data
+
             elif self.index == 1:
                 self.crc16received = (data << 8) | self.crc16received
 
@@ -131,23 +181,32 @@ class Receiver:
                     self.data = self._buffer.copy()
                     self.timeReceiveComplete = now
                     self.state = StateLoading.Loaded
+                    self.message = "Success / Receiver / Section.End / Receive complete / {0} / [receive: 0x{1:04X}]".format(self.header.dataType, self.crc16received)
+                    return self.state
+
                 else:
                     self.state = StateLoading.Failure
+                    self.message = "Error / Receiver / Section.End / CRC Error / {0} / [receive: 0x{1:04X}, calculate: 0x{2:04X}]".format(self.header.dataType, self.crc16received, self.crc16calculated)
+                    return self.state
+
             else:
                 self.state = StateLoading.Failure
+                self.message = "Error / Receiver / Section.End / Index over."
+                return self.state
 
         else:
             self.state = StateLoading.Failure
+            self.message = "Error / Receiver / Section over."
+            return self.state
 
 
         #Forth Step
         if self.state == StateLoading.Receiving:
             self.index += 1
-        elif self.state == StateLoading.Failure:
-            self.state = StateLoading.Ready
+
+        return self.state
+
 
 
     def checked(self):
         self.state = StateLoading.Ready
-
-

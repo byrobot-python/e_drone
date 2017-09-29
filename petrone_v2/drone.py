@@ -10,6 +10,8 @@ import time
 from serial.tools.list_ports import comports
 from queue import Queue
 from operator import eq
+import colorama
+from colorama import Fore, Back, Style
 
 from petrone_v2.protocol import *
 from petrone_v2.storage import *
@@ -19,11 +21,26 @@ from petrone_v2.crc import *
 
 
 
+def convertByteArrayToString(dataArray):
+
+    if dataArray == None:
+        return ""
+
+    string = ""
+
+    if (isinstance(dataArray, bytes)) or (isinstance(dataArray, bytearray)) or (not isinstance(dataArray, list)):
+        for data in dataArray:
+            string += "{0:02X} ".format(data)
+
+    return string
+
+
+
 class Drone:
 
 # BaseFunctions Start
 
-    def __init__(self, flagCheckBackground = True):
+    def __init__(self, flagCheckBackground = True, flagShowErrorMessage = False, flagShowLogMessage = False, flagShowTransferData = False, flagShowReceiveData = False):
         
         self._serialport                = None
         self._bufferQueue               = Queue(4096)
@@ -37,11 +54,21 @@ class Drone:
 
         self._flagCheckBackground       = flagCheckBackground
 
+        self._flagShowErrorMessage      = flagShowErrorMessage
+        self._flagShowLogMessage        = flagShowLogMessage
+        self._flagShowTransferData      = flagShowTransferData
+        self._flagShowReceiveData       = flagShowReceiveData
+
         self._eventHandler              = EventHandler()
         self._storageHeader             = StorageHeader()
         self._storage                   = Storage()
         self._storageCount              = StorageCount()
         self._parser                    = Parser()
+
+        self.timeStartProgram           = time.time()   # 프로그램 시작 시각 기록
+
+        colorama.init()
+
 
 
     def __del__(self):
@@ -63,8 +90,15 @@ class Drone:
 
 
 
+    def isOpen(self):
+        if self._serialport != None:
+            return self._serialport.isOpen()
+        else:
+            return False
+
+
+
     def open(self, portname = "None"):
-        
         if eq(portname, "None"):
             nodes = comports()
             size = len(nodes)
@@ -81,16 +115,27 @@ class Drone:
             bytesize    = serial.EIGHTBITS,
             timeout     = 0)
 
-        if( self._serialport.isOpen() ):
+        if( self.isOpen() ):
             self._flagThreadRun = True
             self._thread = Thread(target=self._receiving, args=(), daemon=True).start()
+
+            # 로그 출력
+            self._printLog("Connected.({0})".format(portname))
+
             return True
         else:
+            # 오류 메세지 출력
+            self._printError("Could not connect to PETRONE V2.")
+
             return False
 
 
 
     def close(self):
+        # 로그 출력
+        if self.isOpen():
+            self._printLog("Closing serial port.")
+
         if self._flagThreadRun == True:
             self._flagThreadRun = False
             sleep(0.01)
@@ -98,7 +143,7 @@ class Drone:
         if self._thread != None:
             self._thread.join()
 
-        while (self._serialport.isOpen() == True):
+        while (self.isOpen() == True):
             self._serialport.close()
             sleep(0.01)
 
@@ -125,12 +170,15 @@ class Drone:
 
 
     def transfer(self, header, data):
-        if (self._serialport == None) or (self._serialport.isOpen() == False):
+        if not self.isOpen():
             return
 
         dataArray = self.makeTransferDataArray(header, data)
 
         self._serialport.write(dataArray)
+
+        # 송신 데이터 출력
+        self._printTransferData(dataArray)
 
         return dataArray
 
@@ -138,12 +186,35 @@ class Drone:
 
     def check(self):
         while self._bufferQueue.empty() == False:
-            self._bufferHandler.extend(self._bufferQueue.get_nowait())
+            dataArray = self._bufferQueue.get_nowait()
             self._bufferQueue.task_done()
 
+            if (dataArray != None) and (len(dataArray) > 0):
+                # 수신 데이터 출력
+                self._printReceiveData(dataArray)
+
+                self._bufferHandler.extend(dataArray)
+
         while len(self._bufferHandler) > 0:
-            self._receiver.call(self._bufferHandler.pop(0))
-            
+            stateLoading = self._receiver.call(self._bufferHandler.pop(0))
+
+            # 오류 출력
+            if stateLoading == StateLoading.Failure:
+                # 수신 데이터 출력(줄넘김)
+                self._printReceiveDataEnd()
+
+                # 오류 메세지 출력
+                self._printError(self._receiver.message)
+                
+
+            # 로그 출력
+            if stateLoading == StateLoading.Loaded:
+                # 수신 데이터 출력(줄넘김)
+                self._printReceiveDataEnd()
+
+                # 로그 출력
+                self._printLog(self._receiver.message)
+
             if self._receiver.state == StateLoading.Loaded:
                 self._handler(self._receiver.header, self._receiver.data)
                 return self._receiver.header.dataType
@@ -154,13 +225,35 @@ class Drone:
 
     def checkDetail(self):
         while self._bufferQueue.empty() == False:
-            self._bufferHandler.extend(self._bufferQueue.get_nowait())
-            self._bufferHandler.task_done()
+            dataArray = self._bufferQueue.get_nowait()
+            self._bufferQueue.task_done()
+
+            if (dataArray != None) and (len(dataArray) > 0):
+                # 수신 데이터 출력
+                self._printReceiveData(dataArray)
+
+                self._bufferHandler.extend(dataArray)
 
         while len(self._bufferHandler) > 0:
-            self._receiver.call(self._bufferHandler[0])
-            del(self._bufferHandler[0])
-            
+            stateLoading = self._receiver.call(self._bufferHandler.pop(0))
+
+            # 오류 출력
+            if stateLoading == StateLoading.Failure:
+                # 수신 데이터 출력(줄넘김)
+                self._printReceiveDataEnd()
+
+                # 오류 메세지 출력
+                self._printError(self._receiver.message)
+                
+
+            # 로그 출력
+            if stateLoading == StateLoading.Loaded:
+                # 수신 데이터 출력(줄넘김)
+                self._printReceiveDataEnd()
+
+                # 로그 출력
+                self._printLog(self._receiver.message)
+
             if self._receiver.state == StateLoading.Loaded:
                 self._handler(self._receiver.header, self._receiver.data)
                 return self._receiver.header, self._receiver.data
@@ -172,10 +265,13 @@ class Drone:
     def _handler(self, header, dataArray):
 
         # 들어오는 데이터를 저장
-        self._runHandler(header, dataArray)
+        message = self._runHandler(header, dataArray)
 
-        # 들어오는 데이터에 대한 콜백 이벤트 실행
-        self._runEventHandler(header)
+        # 오류 출력
+        self._printError(message)
+
+        # 콜백 이벤트 실행
+        self._runEventHandler(header.dataType)
 
         # 데이터 처리 완료 확인
         self._receiver.checked()
@@ -192,9 +288,11 @@ class Drone:
 
 
 
-    def _runEventHandler(self, header):
-        if  (self._eventHandler.d[header.dataType] != None) and (self._storage.d[header.dataType] != None):
-            self._eventHandler.d[header.dataType](self._storage.d[header.dataType])
+    def _runEventHandler(self, dataType):
+        if (isinstance(dataType, DataType)) and (self._eventHandler.d[dataType] != None) and (self._storage.d[dataType] != None):
+            return self._eventHandler.d[dataType](self._storage.d[dataType])
+        else:
+            return None
 
 
 
@@ -234,18 +332,45 @@ class Drone:
 
 
 
-    @classmethod
-    def convertByteArrayToString(cls, dataArray):
-
-        if (dataArray == None) or (not isinstance(dataArray, bytearray)):
-            return
-
-        string = ""
-
-        for data in dataArray:
-            string += "{0:02X} ".format(data)
+    def _printLog(self, message):
         
-        return string
+        # 로그 출력
+        if self._flagShowLogMessage and message != None:
+            print(Fore.GREEN + "[{0:10.03f}] {1}]".format((time.time() - self.timeStartProgram), message) + Style.RESET_ALL)
+
+
+
+    def _printError(self, message):
+    
+        # 오류 메세지 출력
+        if self._flagShowErrorMessage and message != None:
+            print(Fore.RED + "[{0:10.03f}] {1}]".format((time.time() - self.timeStartProgram), message) + Style.RESET_ALL)
+
+
+
+    def _printTransferData(self, dataArray):
+    
+        # 송신 데이터 출력
+        if (self._flagShowTransferData) and (dataArray != None) and (len(dataArray) > 0):
+            print(Back.YELLOW + Fore.BLACK + convertByteArrayToString(dataArray) + Style.RESET_ALL)
+
+
+
+    def _printReceiveData(self, dataArray):
+        
+        # 수신 데이터 출력
+        if (self._flagShowReceiveData) and (dataArray != None) and (len(dataArray) > 0):
+            print(Back.CYAN + Fore.BLACK + convertByteArrayToString(dataArray) + Style.RESET_ALL, end='')
+
+
+
+    def _printReceiveDataEnd(self):
+        
+        # 수신 데이터 출력(줄넘김)
+        if self._flagShowReceiveData:
+            print("")
+
+
 
 
 # BaseFunctions End

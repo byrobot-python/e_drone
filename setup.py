@@ -6,12 +6,12 @@ from setuptools import setup, find_packages
 
 setup(
     name = "petrone_v2",
-    version = "0.1.67",
+    version = "0.1.71",
     description = "Library for BYROBOT PETRONE V2",
     author = "BYROBOT",
     author_email = "dev@byrobot.co.kr",
     url = "http://www.byrobot.co.kr",
     packages = find_packages(exclude=['tests']),
-    install_requires = ['pyserial', 'numpy'],
+    install_requires = ['pyserial', 'numpy', 'colorama'],
     long_description = open('README.md').read(),
 )
