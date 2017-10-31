@@ -336,7 +336,7 @@ class Drone:
         
         # 로그 출력
         if self._flagShowLogMessage and message != None:
-            print(Fore.GREEN + "[{0:10.03f}] {1}]".format((time.time() - self.timeStartProgram), message) + Style.RESET_ALL)
+            print(Fore.GREEN + "[{0:10.03f}] {1}".format((time.time() - self.timeStartProgram), message) + Style.RESET_ALL)
 
 
 
@@ -344,7 +344,7 @@ class Drone:
     
         # 오류 메세지 출력
         if self._flagShowErrorMessage and message != None:
-            print(Fore.RED + "[{0:10.03f}] {1}]".format((time.time() - self.timeStartProgram), message) + Style.RESET_ALL)
+            print(Fore.RED + "[{0:10.03f}] {1}".format((time.time() - self.timeStartProgram), message) + Style.RESET_ALL)
 
 
 
