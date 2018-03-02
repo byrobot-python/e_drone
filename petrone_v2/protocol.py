@@ -461,8 +461,8 @@ class Information(ISerializable):
         if len(dataArray) != cls.getSize():
             return None
         
-        indexStart = 0;        indexEnd = 1;                        data.modeUpdate,    = unpack('<B', dataArray[indexStart:indexEnd]);
-        indexStart = indexEnd; indexEnd += 4;                       data.deviceType,    = unpack('<I', dataArray[indexStart:indexEnd]);
+        indexStart = 0;        indexEnd = 1;                        data.modeUpdate,    = unpack('<B', dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 4;                       data.deviceType,    = unpack('<I', dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += Version.getSize();       data.version        = Version.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 2;                       data.year,          = unpack('<H', dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 1;                       data.month,         = unpack('<B', dataArray[indexStart:indexEnd])
@@ -1729,7 +1729,7 @@ class DisplayClear(ISerializable):
 
         data.x, data.y, data.width, data.height, data.pixel = unpack('<hhhhB', dataArray)
 
-        data.pixel = DisplayPixel(data.pixel);
+        data.pixel = DisplayPixel(data.pixel)
         
         return data
 
@@ -1792,7 +1792,7 @@ class DisplayDrawPoint(ISerializable):
 
         data.x, data.y, data.pixel = unpack('<hhB', dataArray)
 
-        data.pixel = DisplayPixel(data.pixel);
+        data.pixel = DisplayPixel(data.pixel)
         
         return data
 
@@ -1827,8 +1827,8 @@ class DisplayDrawLine(ISerializable):
 
         data.x1, data.y1, data.x2, data.y2, data.pixel, data.line = unpack('<hhhhBB', dataArray)
 
-        data.pixel  = DisplayPixel(data.pixel);
-        data.line   = DisplayLine(data.line);
+        data.pixel  = DisplayPixel(data.pixel)
+        data.line   = DisplayLine(data.line)
         
         return data
 
@@ -1864,8 +1864,8 @@ class DisplayDrawRect(ISerializable):
 
         data.x, data.y, data.width, data.height, data.pixel, data.flagFill, data.line = unpack('<hhhhB?B', dataArray)
 
-        data.pixel  = DisplayPixel(data.pixel);
-        data.line   = DisplayLine(data.line);
+        data.pixel  = DisplayPixel(data.pixel)
+        data.line   = DisplayLine(data.line)
         
         return data
 
@@ -1899,7 +1899,7 @@ class DisplayDrawCircle(ISerializable):
 
         data.x, data.y, data.radius, data.pixel, data.flagFill = unpack('<hhhB?', dataArray)
 
-        data.pixel = DisplayPixel(data.pixel);
+        data.pixel = DisplayPixel(data.pixel)
         
         return data
 
@@ -1938,11 +1938,11 @@ class DisplayDrawString(ISerializable):
         if len(dataArray) <= cls.getSize():
             return None
 
-        data.x, data.y, data.font, data.pixel = unpack('<hhBB', dataArray[0:getSize()])
+        data.x, data.y, data.font, data.pixel = unpack('<hhBB', dataArray[0:cls.getSize()])
 
-        data.font       = DisplayFont(data.font);
-        data.pixel      = DisplayPixel(data.pixel);
-        data.message    = dataArray[getSize():len(dataArray)].decode()
+        data.font       = DisplayFont(data.font)
+        data.pixel      = DisplayPixel(data.pixel)
+        data.message    = dataArray[cls.getSize():len(dataArray)].decode()
         
         return data
 
@@ -1986,11 +1986,11 @@ class DisplayDrawStringAlign(ISerializable):
         if len(dataArray) <= cls.getSize():
             return None
 
-        data.x_start, data.x_end, data.y, data.align, data.font, data.pixel, data.message = unpack('<hhhBBBs', dataArray[0:getSize()])
-        data.align = DisplayAlign(data.align);
-        data.font = DisplayFont(data.font);
-        data.pixel = DisplayPixel(data.pixel);
-        data.message = dataArray[getSize():len(dataArray)].decode()
+        data.x_start, data.x_end, data.y, data.align, data.font, data.pixel, data.message = unpack('<hhhBBBs', dataArray[0:cls.getSize()])
+        data.align = DisplayAlign(data.align)
+        data.font = DisplayFont(data.font)
+        data.pixel = DisplayPixel(data.pixel)
+        data.message = dataArray[cls.getSize():len(dataArray)].decode()
         
         return data
 
@@ -2021,15 +2021,15 @@ class BuzzerMode(Enum):
 
 class BuzzerScale(Enum):
 
-    C1 = 0x00; CS1 = 0x01; D1 = 0x02; DS1 = 0x03; E1 = 0x04; F1 = 0x05; FS1 = 0x06; G1 = 0x07; GS1 = 0x08; A1 = 0x09; AS1 = 0x0A; B1 = 0x0B;
-    C2 = 0x0C; CS2 = 0x0D; D2 = 0x0E; DS2 = 0x0F; E2 = 0x10; F2 = 0x11; FS2 = 0x12; G2 = 0x13; GS2 = 0x14; A2 = 0x15; AS2 = 0x16; B2 = 0x17;
-    C3 = 0x18; CS3 = 0x19; D3 = 0x1A; DS3 = 0x1B; E3 = 0x1C; F3 = 0x1D; FS3 = 0x1E; G3 = 0x1F; GS3 = 0x20; A3 = 0x21; AS3 = 0x22; B3 = 0x23;
-    C4 = 0x24; CS4 = 0x25; D4 = 0x26; DS4 = 0x27; E4 = 0x28; F4 = 0x29; FS4 = 0x2A; G4 = 0x2B; GS4 = 0x2C; A4 = 0x2D; AS4 = 0x2E; B4 = 0x2F;
+    C1 = 0x00; CS1 = 0x01; D1 = 0x02; DS1 = 0x03; E1 = 0x04; F1 = 0x05; FS1 = 0x06; G1 = 0x07; GS1 = 0x08; A1 = 0x09; AS1 = 0x0A; B1 = 0x0B
+    C2 = 0x0C; CS2 = 0x0D; D2 = 0x0E; DS2 = 0x0F; E2 = 0x10; F2 = 0x11; FS2 = 0x12; G2 = 0x13; GS2 = 0x14; A2 = 0x15; AS2 = 0x16; B2 = 0x17
+    C3 = 0x18; CS3 = 0x19; D3 = 0x1A; DS3 = 0x1B; E3 = 0x1C; F3 = 0x1D; FS3 = 0x1E; G3 = 0x1F; GS3 = 0x20; A3 = 0x21; AS3 = 0x22; B3 = 0x23
+    C4 = 0x24; CS4 = 0x25; D4 = 0x26; DS4 = 0x27; E4 = 0x28; F4 = 0x29; FS4 = 0x2A; G4 = 0x2B; GS4 = 0x2C; A4 = 0x2D; AS4 = 0x2E; B4 = 0x2F
 
-    C5 = 0x30; CS5 = 0x31; D5 = 0x32; DS5 = 0x33; E5 = 0x34; F5 = 0x35; FS5 = 0x36; G5 = 0x37; GS5 = 0x38; A5 = 0x39; AS5 = 0x3A; B5 = 0x3B;
-    C6 = 0x3C; CS6 = 0x3D; D6 = 0x3E; DS6 = 0x3F; E6 = 0x40; F6 = 0x41; FS6 = 0x42; G6 = 0x43; GS6 = 0x44; A6 = 0x45; AS6 = 0x46; B6 = 0x47;
-    C7 = 0x48; CS7 = 0x49; D7 = 0x4A; DS7 = 0x4B; E7 = 0x4C; F7 = 0x4D; FS7 = 0x4E; G7 = 0x4F; GS7 = 0x50; A7 = 0x51; AS7 = 0x52; B7 = 0x53;
-    C8 = 0x54; CS8 = 0x55; D8 = 0x56; DS8 = 0x57; E8 = 0x58; F8 = 0x59; FS8 = 0x5A; G8 = 0x5B; GS8 = 0x5C; A8 = 0x5D; AS8 = 0x5E; B8 = 0x5F;
+    C5 = 0x30; CS5 = 0x31; D5 = 0x32; DS5 = 0x33; E5 = 0x34; F5 = 0x35; FS5 = 0x36; G5 = 0x37; GS5 = 0x38; A5 = 0x39; AS5 = 0x3A; B5 = 0x3B
+    C6 = 0x3C; CS6 = 0x3D; D6 = 0x3E; DS6 = 0x3F; E6 = 0x40; F6 = 0x41; FS6 = 0x42; G6 = 0x43; GS6 = 0x44; A6 = 0x45; AS6 = 0x46; B6 = 0x47
+    C7 = 0x48; CS7 = 0x49; D7 = 0x4A; DS7 = 0x4B; E7 = 0x4C; F7 = 0x4D; FS7 = 0x4E; G7 = 0x4F; GS7 = 0x50; A7 = 0x51; AS7 = 0x52; B7 = 0x53
+    C8 = 0x54; CS8 = 0x55; D8 = 0x56; DS8 = 0x57; E8 = 0x58; F8 = 0x59; FS8 = 0x5A; G8 = 0x5B; GS8 = 0x5C; A8 = 0x5D; AS8 = 0x5E; B8 = 0x5F
 
     EndOfType   = 0x60
 

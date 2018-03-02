@@ -283,7 +283,7 @@ class Drone:
     def _runHandler(self, header, dataArray):
         if self._parser.d[header.dataType] != None:
             self._storageHeader.d[header.dataType]   = header
-            self._storage.d[header.dataType]         = self._parser.d[header.dataType](dataArray);
+            self._storage.d[header.dataType]         = self._parser.d[header.dataType](dataArray)
             self._storageCount.d[header.dataType]    += 1
 
 
