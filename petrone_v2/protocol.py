@@ -2794,6 +2794,102 @@ class MotorSingle(ISerializable):
 
 
 
+class InformationAssembledForController(ISerializable):
+
+    def __init__(self):
+        self.angleRoll     = 0
+        self.anglePitch    = 0
+        self.angleYaw      = 0
+        
+        self.pressureTemperature    = 0
+        self.pressureAltitude       = 0
+
+        self.rangeGround            = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 18
+
+
+    def toArray(self):
+        return pack('<hhhfff',  self.angleRoll, self.anglePitch, self.angleYaw, 
+                                self.pressureTemperature, self.pressureAltitude, 
+                                self.rangeGround)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = InformationAssembledForController()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        (data.angleRoll, data.anglePitch, data.angleYaw, 
+        data.pressureTemperature, data.pressureAltitude, 
+        data.rangeGround) = unpack('<hhhfff', dataArray)
+        
+        return data
+
+
+
+
+class InformationAssembledForEntry(ISerializable):
+
+    def __init__(self):
+        self.accelX       = 0
+        self.accelY       = 0
+        self.accelZ       = 0
+
+        self.gyroRoll     = 0
+        self.gyroPitch    = 0
+        self.gyroYaw      = 0
+        
+        self.angleRoll     = 0
+        self.anglePitch    = 0
+        self.angleYaw      = 0
+        
+        self.pressureTemperature    = 0
+        self.pressureAltitude       = 0
+
+        self.imageFlowPositionX     = 0
+        self.imageFlowPositionY     = 0
+
+        self.rangeGround            = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 38
+
+
+    def toArray(self):
+        return pack('<hhhhhhhhhfffff',  self.accelX, self.accelY, self.accelZ, 
+                                        self.gyroRoll, self.gyroPitch, self.gyroYaw, 
+                                        self.angleRoll, self.anglePitch, self.angleYaw, 
+                                        self.pressureTemperature, self.pressureAltitude, 
+                                        self.imageFlowPositionX, self.imageFlowPositionY,
+                                        self.rangeGround)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = InformationAssembledForEntry()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        (data.accelX, data.accelY, data.accelZ, 
+        data.gyroRoll, data.gyroPitch, data.gyroYaw, 
+        data.angleRoll, data.anglePitch, data.angleYaw, 
+        data.pressureTemperature, data.pressureAltitude, 
+        data.imageFlowPositionX, data.imageFlowPositionY,
+        data.rangeGround) = unpack('<hhhhhhhhhfffff', dataArray)
+        
+        return data
+
+
+
 class InformationAssembledForImuMonitor(ISerializable):
 
     def __init__(self):
