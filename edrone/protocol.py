@@ -4,7 +4,7 @@ import numpy as np
 from struct import *
 from enum import Enum
 
-from petrone_v2.system import *
+from edrone.system import *
 
 
 # ISerializable Start
@@ -52,6 +52,8 @@ class DataType(Enum):
     Control                     = 0x10      # 조종 명령
 
     Command                     = 0x11      # 명령
+    Pairing                     = 0x12      # 페어링
+    Rssi                        = 0x13      # RSSI
 
     # Light
     LightManual                 = 0x20      # LED 수동 제어
@@ -81,55 +83,52 @@ class DataType(Enum):
     # 상태 설정
     State                       = 0x40      # 드론의 상태(비행 모드 방위기준 배터리량)
     Attitude                    = 0x41      # 드론의 자세(Angle)
-    AccelBias                   = 0x42      # 엑셀 바이어스 값
-    GyroBias                    = 0x43      # 자이로 바이어스 값
-    TrimAll                     = 0x44      # 전체 트림
-    TrimFlight                  = 0x45      # 비행 트림
-    TrimDrive                   = 0x46      # 주행 트림
+    Bias                        = 0x42      # 엑셀, 자이로 바이어스 값
+    Trim                        = 0x43      # 트림
+    Count                       = 0x44      # 카운트
 
     # Sensor raw data
     Imu                         = 0x50      # IMU Raw
     Pressure                    = 0x51      # 압력 센서 데이터
     Battery                     = 0x52      # 배터리
-    Range                       = 0x53      # 적외선 거리 센서
-    ImageFlow                   = 0x54      # ImageFlow
-    CameraImage                 = 0x55      # CameraImage
+    Range                       = 0x53      # 거리 센서
+    Flow                        = 0x54      # Flow
+
+    # Devices
+    Motor                       = 0x60      # 모터 제어 및 현재 제어값 확인
+    MotorSingle                 = 0x61      # 한 개의 모터 제어
+    Buzzer                      = 0x62      # 부저 제어
+    Vibrator                    = 0x63      # 진동 제어
 
     # Input
     Button                      = 0x70      # 버튼 입력
     Joystick                    = 0x71      # 조이스틱 입력
 
-    # Devices
-    Motor                       = 0x80      # 모터 제어 및 현재 제어값 확인
-    MotorSingle                 = 0x81      # 한 개의 모터 제어
-    IrMessage                   = 0x82      # IR 데이터 송수신
-    Buzzer                      = 0x83      # 부저 제어
-    Vibrator                    = 0x84      # 진동 제어
-
-    # 카운트
-    CountFlight                 = 0x90      # 비행 관련 카운트
-    CountDrive                  = 0x91      # 주행 관련 카운트
-
-    # RF
-    Pairing                     = 0xA0      # 페어링
-    Rssi                        = 0xA1      # RSSI
-
     # Display
-    DisplayClear                = 0xB0      # 화면 지우기
-    DisplayInvert               = 0xB1      # 화면 반전
-    DisplayDrawPoint            = 0xB2      # 점 그리기
-    DisplayDrawLine             = 0xB3      # 선 그리기
-    DisplayDrawRect             = 0xB4      # 사각형 그리기
-    DisplayDrawCircle           = 0xB5      # 원 그리기
-    DisplayDrawString           = 0xB6      # 문자열 쓰기
-    DisplayDrawStringAlign      = 0xB7      # 문자열 쓰기
+    DisplayClear                = 0x80      # 화면 지우기
+    DisplayInvert               = 0x81      # 화면 반전
+    DisplayDrawPoint            = 0x82      # 점 그리기
+    DisplayDrawLine             = 0x83      # 선 그리기
+    DisplayDrawRect             = 0x84      # 사각형 그리기
+    DisplayDrawCircle           = 0x85      # 원 그리기
+    DisplayDrawString           = 0x86      # 문자열 쓰기
+    DisplayDrawStringAlign      = 0x87      # 문자열 쓰기
+    DisplayDrawImage            = 0x88      # 그림 그리기
 
     # Information Assembled
-    InformationAssembledForController   = 0xD0 # 자주 갱신되는 비행 데이터 모음
-    InformationAssembledForEntry        = 0xD1 # 자주 갱신되는 비행 데이터 모음
-    InformationAssembledForImuMonitor   = 0xD2 # 자주 갱신되는 비행 데이터 모음
+    InformationAssembledForController   = 0xA0 # 자주 갱신되는 비행 데이터 모음
+    InformationAssembledForEntry        = 0xA1 # 자주 갱신되는 비행 데이터 모음
 
-    EndOfType                   = 0xB8
+    # Navigation
+    NavigationTarget                    = 0xD0,     # 네비게이션 목표점
+    NavigationLocation                  = 0xD1,     # 네비게이션 가상 위치
+    NavigationMonitor                   = 0xD2,
+    NavigationHeading                   = 0xD3,
+    NavigationCounter                   = 0xD4,
+    GpsRtkNavigationState               = 0xDA,     # RTK RAW 데이터 전송
+    GpsRtkExtendedRawMeasurementData    = 0xDB,     # RTK RAW 데이터 전송
+
+    EndOfType                   = 0xDC
 
 
 # DataType End
@@ -143,26 +142,35 @@ class CommandType(Enum):
     
     None_               = 0x00      # 없음
 
+    Stop                = 0x01      # 정지
+
     # 설정
-    ModeVehicle         = 0x10      # Vehicle 동작 모드 전환
+    ModeVehicle         = 0x02      # Vehicle 동작 모드 전환
+    Headless            = 0x03      # 헤드리스 모드 선택
+    Trim                = 0x04      # 트림 변경
 
-    # 제어
-    Headless            = 0x20      # 헤드리스 모드 선택
-    Trim                = 0x21      # 트림 변경
-    FlightEvent         = 0x22      # 비행 이벤트 실행
-    DriveEvent          = 0x23      # 주행 이벤트 실행
-    Stop                = 0x24      # 정지
+    ClearBias           = 0x05      # 자이로 바이어스 리셋(트림도 같이 초기화 됨)
+    ClearTrim           = 0x06      # 트림 초기화
 
-    ClearTrim           = 0x50      # 트림 초기화
-    ClearGyroBias       = 0x51      # 자이로 바이어스 리셋(트림도 같이 초기화 됨)
-
-    DataStorageWrite    = 0x80      # 변경사항이 있는 경우 데이터 저장소에 기록
+    FlightEvent         = 0x07      # 비행 이벤트 실행
 
     # 관리자
     ClearCounter        = 0xA0      # 카운터 클리어(관리자 권한을 획득했을 경우에만 동작)
     SetTestComplete     = 0xA1      # 테스트 완료 처리
 
-    EndOfType           = 0xA2
+    # Navigation
+    NavigationTargetClear   = 0xE0  # 네비게이션 목표점 초기화
+    NavigationStart         = 0xE1  # 네비게이션 시작(처음부터)
+    NavigationPause         = 0xE2  # 네비게이션 일시 정지
+    NavigationRestart       = 0xE3  # 네비게이션 다시 시작(일시 정지 후 다시 시작할 때 사용)
+    NavigationStop          = 0xE4  # 네비게이션 중단
+    NavigationNext          = 0xE5  # 네비게이션 목표점을 다음으로 변경
+    NavigationReturnToHome  = 0xE6  # 시작 위치로 귀환
+    
+    GpsRtkBase              = 0xEA
+    GpsRtkRover             = 0xEB
+
+    EndOfType           = 0xEC
 
 
 # CommandType End
@@ -363,7 +371,6 @@ class Version(ISerializable):
 
     def __init__(self):
         self.build          = 0
-        self.stage          = DevelopmentStage.Alpha
         self.minor          = 0
         self.major          = 0
 
@@ -376,7 +383,7 @@ class Version(ISerializable):
 
 
     def toArray(self):
-        return pack('<HBB', ((self.stage.value << 14) | self.build), self.minor, self.major)
+        return pack('<HBB', self.build, self.minor, self.major)
 
 
     @classmethod
@@ -389,8 +396,6 @@ class Version(ISerializable):
         data.v, = unpack('<I', dataArray)
 
         data.build, data.minor, data.major = unpack('<HBB', dataArray)
-        data.stage = DevelopmentStage((data.build >> 14) & 0x03)
-        data.build = data.build & 0x3FFF
 
         return data
 
@@ -430,7 +435,7 @@ class Information(ISerializable):
     def __init__(self):
         self.modeUpdate     = ModeUpdate.None_
 
-        self.deviceType     = DeviceType.None_
+        self.deviceID       = DeviceID.None_
         self.version        = Version()
 
         self.year           = 0
@@ -535,18 +540,20 @@ class Command(ISerializable):
 class Pairing(ISerializable):
 
     def __init__(self):
-        self.addressLocal   = 0
-        self.addressRemote  = 0
+        self.address0       = 0
+        self.address1       = 0
+        self.address2       = 0
+        self.scramble       = 0
         self.channel        = 0
 
 
     @classmethod
     def getSize(cls):
-        return 5
+        return 8
 
 
     def toArray(self):
-        return pack('<HHB', self.addressLocal, self.addressRemote, self.channel)
+        return pack('<HHHBB', self.address0, self.address1, self.address2, self.scramble, self.channel)
 
 
     @classmethod
@@ -556,7 +563,7 @@ class Pairing(ISerializable):
         if len(dataArray) != cls.getSize():
             return None
         
-        data.addressLocal, data.addressRemote, data.channel = unpack('<HHB', dataArray)
+        data.address0, data.address1, data.address2, data.scramble, data.channel = unpack('<HHHBB', dataArray)
         return data
 
 
@@ -625,6 +632,40 @@ class ControlQuad8(ISerializable):
 
 
 
+class Quad8AndRequestData(ISerializable):
+
+    def __init__(self):
+        self.roll       = 0
+        self.pitch      = 0
+        self.yaw        = 0
+        self.throttle   = 0
+        self.dataType   = DataType.None_
+
+
+    @classmethod
+    def getSize(cls):
+        return 5
+
+
+    def toArray(self):
+        return pack('<bbbbb', self.roll, self.pitch, self.yaw, self.throttle, self.dataType)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = Quad8AndRequestData()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.roll, data.pitch, data.yaw, data.throttle, data.dataType = unpack('<bbbbb', dataArray)
+        
+        data.dataType = DataType(data.dataType)
+
+        return data
+
+
+
 class ControlQuad16(ISerializable):
 
     def __init__(self):
@@ -654,7 +695,7 @@ class ControlQuad16(ISerializable):
         return data
 
 
-
+"""
 class ControlDouble8(ISerializable):
 
     def __init__(self):
@@ -708,15 +749,10 @@ class ControlDouble16(ISerializable):
         
         data.wheel, data.accel = unpack('<hh', dataArray)
         return data
+"""
 
 
-
-class TrimFlight(ControlQuad16):
-    pass
-
-
-
-class TrimDrive(ControlDouble16):
+class Trim(ControlQuad16):
     pass
 
 
@@ -729,60 +765,92 @@ class TrimDrive(ControlDouble16):
 
 class LightModeDrone(Enum):
     
-    None_               = 0x00
+    None_                   = 0x00
 
-    EyeNone             = 0x10
-    EyeManual           = 0x11      # 수동 제어
-    EyeHold             = 0x12      # 지정한 색상을 계속 켬
-    EyeFlicker          = 0x13      # 깜빡임    	
-    EyeFlickerDouble    = 0x14      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)    	
-    EyeDimming          = 0x15      # 밝기 제어하여 천천히 깜빡임
+    FrontNone               = 0x10
+    FrontManual             = 0x11      # 수동 제어
+    FrontHold               = 0x12      # 지정한 색상을 계속 켬
+    FrontFlicker            = 0x13      # 깜빡임    	
+    FrontFlickerDouble      = 0x14      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)    	
+    FrontDimming            = 0x15      # 밝기 제어하여 천천히 깜빡임
 
-    ArmNone             = 0x40
-    ArmManual           = 0x41      # 수동 제어
-    ArmHold             = 0x42      # 지정한 색상을 계속 켬
-    ArmFlicker          = 0x43      # 깜빡임    	
-    ArmFlickerDouble    = 0x44      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)    	
-    ArmDimming          = 0x45      # 밝기 제어하여 천천히 깜빡임
+    RearNone                = 0x20
+    RearManual              = 0x21      # 수동 제어
+    RearHold                = 0x22      # 지정한 색상을 계속 켬
+    RearFlicker             = 0x23      # 깜빡임    	
+    RearFlickerDouble       = 0x24      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)    	
+    RearDimming             = 0x25      # 밝기 제어하여 천천히 깜빡임
 
-    TailNone            = 0x70
-    TailManual          = 0x71      # 수동 제어
-    TailHold            = 0x72      # 지정한 색상을 계속 켬
-    TailFlicker         = 0x73      # 깜빡임    	
-    TailFlickerDouble   = 0x74      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)    	
-    TailDimming         = 0x75      # 밝기 제어하여 천천히 깜빡임
+    BodyNone                = 0x30
+    BodyManual              = 0x31      # 수동 제어
+    BodyHold                = 0x32      # 지정한 색상을 계속 켬
+    BodyFlicker             = 0x33      # 깜빡임    	
+    BodyFlickerDouble       = 0x34      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)    	
+    BodyDimming             = 0x35      # 밝기 제어하여 천천히 깜빡임
 
-    EndOfType           = 0x76
+    ANone                   = 0x40
+    AManual                 = 0x41      # 수동 제어
+    AHold                   = 0x42      # 지정한 색상을 계속 켬
+    AFlicker                = 0x43      # 깜빡임    	
+    AFlickerDouble          = 0x44      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)    	
+    ADimming                = 0x45      # 밝기 제어하여 천천히 깜빡임
+
+    BNone                   = 0x50
+    BManual                 = 0x51      # 수동 제어
+    BHold                   = 0x52      # 지정한 색상을 계속 켬
+    BFlicker                = 0x53      # 깜빡임    	
+    BFlickerDouble          = 0x54      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)    	
+    BDimming                = 0x55      # 밝기 제어하여 천천히 깜빡임
+
+    CNone                   = 0x60
+    CManual                 = 0x61      # 수동 제어
+    CHold                   = 0x62      # 지정한 색상을 계속 켬
+    CFlicker                = 0x63      # 깜빡임    	
+    CFlickerDouble          = 0x64      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)    	
+    CDimming                = 0x65      # 밝기 제어하여 천천히 깜빡임
+
+    EndOfType               = 0x66
 
 
 
 class LightFlagsDrone(Enum):
     
-    None_               = 0x00
+    None_               = 0x0000
 
-    EyeRed              = 0x80
-    EyeGreen            = 0x40
-    EyeBlue             = 0x20
+    Front               = 0x8000
+    Rear                = 0x4000
+    BodyRed             = 0x2000
+    BodyGreen           = 0x1000
+    BodyBlue            = 0x0800
 
-    ArmRed              = 0x10
-    ArmGreen            = 0x08
-    ArmBlue             = 0x04
-
-    TailGreen           = 0x02
+    A                   = 0x0400
+    B                   = 0x0200
+    CRed                = 0x0100
+    CGreen              = 0x0080
+    CBlue               = 0x0040
 
 
 class LightModeController(Enum):
     
     None_               = 0x00
 
-    TeamNone            = 0x10
-    TeamManual          = 0x11      # 수동 조작
-    TeamHold            = 0x12      
-    TeamFlicker         = 0x13      
-    TeamFlickerDouble   = 0x14      
-    TeamDimming         = 0x15      
+    # Left
+    LeftNone            = 0x10
+    LeftManual          = 0x11      # 수동 조작
+    LeftHold            = 0x12
+    LeftFlicker         = 0x13
+    LeftFlickerDouble   = 0x14
+    LeftDimming         = 0x15
 
-    EndOfType           = 0x16      
+    # Right
+    RightNone           = 0x20
+    RightManual         = 0x21      # 수동 조작
+    RightHold           = 0x22
+    RightFlicker        = 0x23
+    RightFlickerDouble  = 0x24
+    RightDimming        = 0x25
+
+    EndOfType           = 0x26
 
 
 
@@ -790,9 +858,13 @@ class LightFlagsController(Enum):
     
     None_               = 0x00
 
-    Red                 = 0x80
-    Green               = 0x40
-    Blue                = 0x20
+    LeftRed             = 0x80
+    LeftGreen           = 0x40
+    LeftBlue            = 0x20
+    
+    RightRed            = 0x10
+    RightGreen          = 0x08
+    RightBlue           = 0x04
 
 
 
@@ -2232,41 +2304,41 @@ class Joystick(ISerializable):
 
 class ButtonFlagController(Enum):
 
-    None_           = 0x0000
+    None_               = 0x0000
     
-    FrontLeft       = 0x0001
-    FrontRight      = 0x0002
+    FrontLeftTop        = 0x0001
+    FrontLeftBottom     = 0x0002
+    FrontRightTop       = 0x0004
+    FrontRightBottom    = 0x0008
     
-    MidTurnLeft     = 0x0004
-    MidTurnRight    = 0x0008
+    MidUp               = 0x0010
+    MidLeft             = 0x0020
+    MidRight            = 0x0040
+    MidDown             = 0x0080
     
-    MidUp           = 0x0010
-    MidLeft         = 0x0020
-    MidRight        = 0x0040
-    MidDown         = 0x0080
-    
-    RearLeft        = 0x0100
-    RearRight       = 0x0200
+    RearLeft            = 0x0100
+    RearCenter          = 0x0200
+    RearRight           = 0x0400
 
 
 
 class ButtonFlagDrone(Enum):
 
-    None_           = 0x0000
+    None_               = 0x0000
     
-    Reset           = 0x0001
+    Reset               = 0x0001
 
 
 
 class ButtonEvent(Enum):
 
-    None_             = 0x00
+    None_               = 0x00
     
-    Down              = 0x01  # 누르기 시작
-    Press             = 0x02  # 누르는 중
-    Up                = 0x03  # 뗌
+    Down                = 0x01  # 누르기 시작
+    Press               = 0x02  # 누르는 중
+    Up                  = 0x03  # 뗌
     
-    EndContinuePress  = 0x04  # 연속 입력 종료
+    EndContinuePress    = 0x04  # 연속 입력 종료
 
 
 
@@ -2314,7 +2386,6 @@ class State(ISerializable):
 
         self.modeSystem         = ModeSystem.None_
         self.modeFlight         = ModeFlight.None_
-        self.modeDrive          = ModeDrive.None_
 
         self.sensorOrientation  = SensorOrientation.None_
         self.headless           = Headless.None_
@@ -2323,11 +2394,11 @@ class State(ISerializable):
 
     @classmethod
     def getSize(cls):
-        return 7
+        return 6
 
 
     def toArray(self):
-        return pack('<BBBBBBB', self.modeVehicle.value, self.modeSystem.value, self.modeFlight.value, self.modeDrive.value, self.sensorOrientation.value, self.headless.value, self.battery)
+        return pack('<BBBBBB', self.modeVehicle.value, self.modeSystem.value, self.modeFlight.value, self.sensorOrientation.value, self.headless.value, self.battery)
 
 
     @classmethod
@@ -2337,13 +2408,12 @@ class State(ISerializable):
         if len(dataArray) != cls.getSize():
             return None
         
-        data.modeVehicle, data.modeSystem, data.modeFlight, data.modeDrive, data.sensorOrientation, data.headless, data.battery = unpack('<BBBBBBB', dataArray)
+        data.modeVehicle, data.modeSystem, data.modeFlight, data.sensorOrientation, data.headless, data.battery = unpack('<BBBBBB', dataArray)
 
         data.modeVehicle        = ModeVehicle(data.modeVehicle)
 
         data.modeSystem         = ModeSystem(data.modeSystem)
         data.modeFlight         = ModeFlight(data.modeFlight)
-        data.modeDrive          = ModeDrive(data.modeDrive)
 
         data.sensorOrientation  = SensorOrientation(data.sensorOrientation)
         data.headless           = Headless(data.headless)
@@ -2379,36 +2449,6 @@ class CountFlight(ISerializable):
             return None
         
         data.timeFlight, data.countTakeOff, data.countLanding, data.countAccident = unpack('<QHHH', dataArray)
-        
-        return data
-
-
-
-class CountDrive(ISerializable):
-    
-    def __init__(self):
-        self.timeDrive      = 0
-
-        self.countAccident  = 0
-
-
-    @classmethod
-    def getSize(cls):
-        return 10
-
-
-    def toArray(self):
-        return pack('<QH', self.timeDrive, self.countAccident)
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = CountDrive()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-        
-        data.timeDrive, data.countAccident = unpack('<QH', dataArray)
         
         return data
 
@@ -2485,37 +2525,34 @@ class Attitude(ISerializable):
 
 
 
-class GyroBias(Attitude):
-    pass
-
-
-
-class IrMessage(ISerializable):
-
+class Bias(ISerializable):
+    
     def __init__(self):
-        self.direction  = Direction.None_
-        self.irData     = 0
+        self.accelX     = 0
+        self.accelY     = 0
+        self.accelZ     = 0
+        self.gyroRoll   = 0
+        self.gyroPitch  = 0
+        self.gyroYaw    = 0
 
 
     @classmethod
     def getSize(cls):
-        return 5
+        return 12
 
 
     def toArray(self):
-        return pack('<BI', self.direction.value, self.irData)
+        return pack('<hhhhhh', self.accelX, self.accelY, self.accelZ, self.gyroRoll, self.gyroPitch, self.gyroYaw)
 
 
     @classmethod
     def parse(cls, dataArray):
-        data = IrMessage()
+        data = Bias()
         
         if len(dataArray) != cls.getSize():
             return None
         
-        data.direction, data.irData = unpack('<BI', dataArray)
-
-        data.direction = Direction(data.direction)
+        data.accelX, data.accelY, data.accelZ, data.gyroRoll, data.gyroPitch, data.gyroYaw = unpack('<hhhhhh', dataArray)
         
         return data
 
@@ -2560,23 +2597,17 @@ class Imu(ISerializable):
 class Battery(ISerializable):
 
     def __init__(self):
-        self.gradient                   = 0
-        self.yIntercept                 = 0
-        self.adjustGradient             = 0
-        self.adjustYIntercept           = 0
-        self.flagBatteryCalibration     = False
         self.batteryRaw                 = 0
         self.batteryPercent             = 0
-        self.voltage                    = 0
 
 
     @classmethod
     def getSize(cls):
-        return 27
+        return 6
 
 
     def toArray(self):
-        return pack('<ffffBhff', self.gradient, self.yIntercept, self.adjustGradient, self.adjustYIntercept, self.flagBatteryCalibration, self.batteryRaw, self.batteryPercent, self.voltage)
+        return pack('<hf', self.batteryRaw, self.batteryPercent)
 
 
     @classmethod
@@ -2586,9 +2617,7 @@ class Battery(ISerializable):
         if len(dataArray) != cls.getSize():
             return None
         
-        data.gradient, data.yIntercept, data.adjustGradient, data.adjustYIntercept, data.flagBatteryCalibration, data.batteryRaw, data.batteryPercent, data.voltage = unpack('<ffffBhff', dataArray)
-        
-        data.flagBatteryCalibration = bool(data.flagBatteryCalibration)
+        data.batteryRaw, data.batteryPercent = unpack('<hf', dataArray)
         
         return data
 
@@ -2599,15 +2628,16 @@ class Pressure(ISerializable):
     def __init__(self):
         self.temperature    = 0
         self.pressure       = 0
+        self.altitude       = 0
 
 
     @classmethod
     def getSize(cls):
-        return 8
+        return 12
 
 
     def toArray(self):
-        return pack('<ff', self.temperature, self.pressure)
+        return pack('<fff', self.temperature, self.pressure, self.altitude)
 
 
     @classmethod
@@ -2617,7 +2647,7 @@ class Pressure(ISerializable):
         if len(dataArray) != cls.getSize():
             return None
         
-        data.temperature, data.pressure = unpack('<ff', dataArray)
+        data.temperature, data.pressure, data.altitude = unpack('<fff', dataArray)
         
         return data
 
@@ -2656,7 +2686,7 @@ class Range(ISerializable):
 
 
 
-class ImageFlow(ISerializable):
+class Flow(ISerializable):
 
     def __init__(self):
         self.positionX     = 0
@@ -2674,7 +2704,7 @@ class ImageFlow(ISerializable):
 
     @classmethod
     def parse(cls, dataArray):
-        data = ImageFlow()
+        data = Flow()
         
         if len(dataArray) != cls.getSize():
             return None
@@ -2797,9 +2827,9 @@ class MotorSingle(ISerializable):
 class InformationAssembledForController(ISerializable):
 
     def __init__(self):
-        self.angleRoll     = 0
-        self.anglePitch    = 0
-        self.angleYaw      = 0
+        self.angleRoll              = 0
+        self.anglePitch             = 0
+        self.angleYaw               = 0
         
         self.pressureTemperature    = 0
         self.pressureAltitude       = 0
@@ -2837,39 +2867,29 @@ class InformationAssembledForController(ISerializable):
 class InformationAssembledForEntry(ISerializable):
 
     def __init__(self):
-        self.accelX       = 0
-        self.accelY       = 0
-        self.accelZ       = 0
-
-        self.gyroRoll     = 0
-        self.gyroPitch    = 0
-        self.gyroYaw      = 0
-        
-        self.angleRoll     = 0
-        self.anglePitch    = 0
-        self.angleYaw      = 0
+        self.angleRoll      = 0
+        self.anglePitch     = 0
+        self.angleYaw       = 0
         
         self.pressureTemperature    = 0
         self.pressureAltitude       = 0
 
-        self.imageFlowPositionX     = 0
-        self.imageFlowPositionY     = 0
+        self.flowX          = 0
+        self.flowY          = 0
 
-        self.rangeGround            = 0
+        self.rangeGround    = 0
 
 
     @classmethod
     def getSize(cls):
-        return 38
+        return 26
 
 
     def toArray(self):
-        return pack('<hhhhhhhhhfffff',  self.accelX, self.accelY, self.accelZ, 
-                                        self.gyroRoll, self.gyroPitch, self.gyroYaw, 
-                                        self.angleRoll, self.anglePitch, self.angleYaw, 
-                                        self.pressureTemperature, self.pressureAltitude, 
-                                        self.imageFlowPositionX, self.imageFlowPositionY,
-                                        self.rangeGround)
+        return pack('<hhhfffff',    self.angleRoll, self.anglePitch, self.angleYaw, 
+                                    self.pressureTemperature, self.pressureAltitude, 
+                                    self.flowX, self.flowY,
+                                    self.rangeGround)
 
 
     @classmethod
@@ -2879,46 +2899,10 @@ class InformationAssembledForEntry(ISerializable):
         if len(dataArray) != cls.getSize():
             return None
         
-        (data.accelX, data.accelY, data.accelZ, 
-        data.gyroRoll, data.gyroPitch, data.gyroYaw, 
-        data.angleRoll, data.anglePitch, data.angleYaw, 
+        (data.angleRoll, data.anglePitch, data.angleYaw, 
         data.pressureTemperature, data.pressureAltitude, 
         data.imageFlowPositionX, data.imageFlowPositionY,
-        data.rangeGround) = unpack('<hhhhhhhhhfffff', dataArray)
-        
-        return data
-
-
-
-class InformationAssembledForImuMonitor(ISerializable):
-
-    def __init__(self):
-        self.systemTime   = 0
-        self.accelX       = 0
-        self.accelY       = 0
-        self.accelZ       = 0
-        self.gyroRoll     = 0
-        self.gyroPitch    = 0
-        self.gyroYaw      = 0
-
-
-    @classmethod
-    def getSize(cls):
-        return 20
-
-
-    def toArray(self):
-        return pack('<Qhhhhhh', self.systemTime, self.accelX, self.accelY, self.accelZ, self.gyroRoll, self.gyroPitch, self.gyroYaw)
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = InformationAssembledForImuMonitor()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-        
-        data.systemTime, data.accelX, data.accelY, data.accelZ, data.gyroRoll, data.gyroPitch, data.gyroYaw = unpack('<Qhhhhhh', dataArray)
+        data.rangeGround) = unpack('<hhhfffff', dataArray)
         
         return data
 

@@ -1,24 +1,35 @@
 from enum import Enum
 
 
+class DeviceID(Enum):
+
+    Drone_4_P2_Drone        = 0x00041002    # Drone_4_P2_Drone
+    Drone_4_P0_Controller   = 0x00042000    # Drone_4_P0_Controller
+    Drone_4_P0_Link         = 0x00043000    # Drone_4_P0_Link
+
+
+
 class DeviceType(Enum):
-    
-    None_               = 0x00
 
-    Drone               = 0x30      # 드론
-    Controller          = 0x31      # 조종기
-    Link                = 0x32      # 링크 모듈
-    Tester              = 0x33      # 테스터
-    Monitor             = 0x34      # 모니터
-    Updater             = 0x35      # 펌웨어 업데이트 도구
-    Encrypter           = 0x36      # 암호화 도구
-    Scratch             = 0x37      # 스크래치
-    Entry               = 0x38      # 네이버 엔트리
-    ByScratch           = 0x39      # 바이스크래치
+    None_       = 0x00
 
-    EndOfType           = 0x40
+    Drone       = 0x10      # 드론(Server)
 
-    Broadcasting        = 0xFF
+    Controller  = 0x20      # 조종기(Client)
+
+    Link        = 0x30      # 링크 모듈(Client)
+    LinkServer  = 0x31      # 링크 모듈(Server, 링크 모듈이 서버로 동작하는 경우에만 통신 타입을 잠시 바꿈)
+
+    ByScratch   = 0x80      # 바이스크래치
+    Scratch     = 0x81      # 스크래치
+    Entry       = 0x82      # 네이버 엔트리
+
+    Tester      = 0xA0      # 테스터
+    Monitor     = 0xA1      # 모니터
+    Updater     = 0xA2      # 펌웨어 업데이트 도구
+    Encrypter   = 0xA3      # 암호화 도구
+
+    Broadcasting = 0xFF
 
 
 
@@ -44,12 +55,13 @@ class ModeVehicle(Enum):
     FlightNoGuard       = 0x11
     FlightFPV           = 0x12
 
-    Drive               = 0x20
-    DriveFPV            = 0x21
+    FlightAttitude      = 0x13
+    FlightPosition      = 0x14
+    FlightFunction      = 0x15
 
-    Test                = 0x30
+    Test                = 0xF0
 
-    EndOfType           = 0x31
+    EndOfType           = 0xF1
 
 
 
@@ -58,30 +70,13 @@ class ModeFlight(Enum):
     None_               = 0x00
 
     Ready               = 0x10
-    TakeOff             = 0x11
-    Flight              = 0x12
-    Landing             = 0x13
-    Flip                = 0x14
-    Reverse             = 0x15
 
-    Stop                = 0x20
-
-    Accident            = 0x30
-    Error               = 0x31
-
-    Test                = 0x40
-
-    EndOfType           = 0x41
-
-
-
-class ModeDrive(Enum):
-    
-    None_               = 0x00
-
-    Ready               = 0x10
     Start               = 0x11
-    Drive               = 0x12
+    TakeOff             = 0x12
+    Flight              = 0x13
+    Landing             = 0x14
+    Flip                = 0x15
+    Reverse             = 0x16
 
     Stop                = 0x20
 
@@ -126,8 +121,8 @@ class ErrorFlagsForSensor(Enum):
     RangeGround_NoAnswer        = 0x00000100    # 바닥 거리센서 응답 없음
     RangeGround_WrongValue      = 0x00000200
 
-    Camera_NoAnswer             = 0x00001000    # 카메라 응답 없음
-    OpticalFlow_WrongValue      = 0x00002000
+    Flow_NoAnswer               = 0x00001000    # 카메라 응답 없음
+    Flow_WrongValue             = 0x00002000
 
     Battery_NoAnswer            = 0x00010000    # 배터리 응답 없음
     Battery_WrongValue          = 0x00020000
@@ -143,15 +138,6 @@ class ErrorFlagsForState(Enum):
 
 
 
-class DevelopmentStage(Enum):
-    
-    Alpha               = 0x00
-    Beta                = 0x01 
-    ReleaseCandidate    = 0x02
-    Release             = 0x03
-
-
-
 class FlightEvent(Enum):
     
     None_               = 0x00
@@ -162,25 +148,17 @@ class FlightEvent(Enum):
 
     Reverse             = 0x13
 
+    FlipFront           = 0x14
+    FlipRear            = 0x15
+    FlipLeft            = 0x16
+    FlipRight           = 0x17
+
     Shot                = 0x18
     UnderAttack         = 0x19
 
     ResetHeading        = 0x1A
 
     EndOfType           = 0x1B
-
-
-
-class DriveEvent(Enum):
-    
-    None_               = 0x00
-
-    Stop                = 0x10
-    
-    Shot                = 0x11
-    UnderAttack         = 0x12
-
-    EndOfType           = 0x13
 
 
 

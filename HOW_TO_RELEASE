@@ -9,12 +9,12 @@ PYPI 등록
 
 
 프로젝트 삭제
-> pip uninstall petrone_v2
+> pip uninstall edrone
 
 
 프로젝트 설치
-> pip install petrone_v2
-> pip --no-cache-dir install petrone_v2
+> pip install edrone
+> pip --no-cache-dir install edrone
 
 PyPI 경로
-https://pypi.python.org/pypi/petrone_v2
+https://pypi.python.org/pypi/edrone

@@ -13,11 +13,11 @@ from operator import eq
 import colorama
 from colorama import Fore, Back, Style
 
-from petrone_v2.protocol import *
-from petrone_v2.storage import *
-from petrone_v2.receiver import *
-from petrone_v2.system import *
-from petrone_v2.crc import *
+from edrone.protocol import *
+from edrone.storage import *
+from edrone.receiver import *
+from edrone.system import *
+from edrone.crc import *
 
 
 
@@ -125,7 +125,7 @@ class Drone:
             return True
         else:
             # 오류 메세지 출력
-            self._printError("Could not connect to PETRONE V2.")
+            self._printError("Could not connect to E-DRONE.")
 
             return False
 
@@ -451,6 +451,24 @@ class Drone:
 # Control Start
 
 
+    def sendStart(self):
+        
+        header = Header()
+        
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = Command()
+
+        data.commandType    = CommandType.FlightEvent
+        data.option         = FlightEvent.Start.value
+
+        return self.transfer(header, data)
+
+
+
     def sendTakeOff(self):
         
         header = Header()
@@ -543,7 +561,7 @@ class Drone:
         return self.sendControl(roll, pitch, yaw, throttle)
 
 
-
+"""
     def sendControlDrive(self, wheel, accel):
         
         if  ( (not isinstance(wheel, int)) or (not isinstance(accel, int)) ):
@@ -578,7 +596,7 @@ class Drone:
             sleep(0.02)
 
         return self.sendControlDrive(wheel, accel)
-
+"""
 
 # Control End
 
@@ -678,38 +696,17 @@ class Drone:
 
         header = Header()
         
-        header.dataType = DataType.TrimFlight
-        header.length   = TrimFlight.getSize()
+        header.dataType = DataType.Trim
+        header.length   = Trim.getSize()
         header.from_    = DeviceType.Tester
         header.to_      = DeviceType.Drone
 
-        data = TrimFlight()
+        data = Trim()
 
         data.roll       = roll
         data.pitch      = pitch
         data.yaw        = yaw
         data.throttle   = throttle
-
-        return self.transfer(header, data)
-
-
-
-    def sendTrimDrive(self, wheel, accel):
-        
-        if  ( (not isinstance(wheel, int)) or (not isinstance(accel, int)) ):
-            return None
-
-        header = Header()
-        
-        header.dataType = DataType.TrimDrive
-        header.length   = TrimDrive.getSize()
-        header.from_    = DeviceType.Tester
-        header.to_      = DeviceType.Drone
-
-        data = TrimDrive()
-
-        data.wheel      = wheel
-        data.accel      = accel
 
         return self.transfer(header, data)
 
@@ -736,27 +733,6 @@ class Drone:
 
 
 
-    def sendDriveEvent(self, driveEvent):
-        
-        if  ( (not isinstance(driveEvent, DriveEvent)) ):
-            return None
-
-        header = Header()
-        
-        header.dataType = DataType.Command
-        header.length   = Command.getSize()
-        header.from_    = DeviceType.Tester
-        header.to_      = DeviceType.Drone
-
-        data = Command()
-
-        data.commandType    = CommandType.DriveEvent
-        data.option         = driveEvent.value
-
-        return self.transfer(header, data)
-
-
-
     def sendClearTrim(self):
         
         header = Header()
@@ -775,7 +751,7 @@ class Drone:
 
 
 
-    def sendClearGyroBias(self):
+    def sendClearBias(self):
         
         header = Header()
         
@@ -786,7 +762,7 @@ class Drone:
 
         data = Command()
 
-        data.commandType    = CommandType.ClearGyroBias
+        data.commandType    = CommandType.ClearBias
         data.option         = 0
 
         return self.transfer(header, data)
@@ -849,26 +825,6 @@ class Drone:
         data.target     = target
         data.rotation   = rotation
         data.value      = value
-
-        return self.transfer(header, data)
-
-
-
-    def sendIrMessage(self, value):
-        
-        if  ((not isinstance(value, int))):
-            return None
-
-        header = Header()
-        
-        header.dataType = DataType.IrMessage
-        header.length   = IrMessage.getSize()
-        header.from_    = DeviceType.Tester
-        header.to_      = DeviceType.Drone
-
-        data = IrMessage()
-
-        data.irData     = value
 
         return self.transfer(header, data)
 

@@ -1,7 +1,7 @@
 import time
 
-from petrone_v2.protocol import *
-from petrone_v2.system import *
+from edrone.protocol import *
+from edrone.system import *
 
 
 # EventHandler
@@ -53,26 +53,21 @@ class Parser:
 
         self.d[DataType.State]          = State.parse
         self.d[DataType.Attitude]       = Attitude.parse
-        self.d[DataType.AccelBias]      = AccelBias.parse
-        self.d[DataType.GyroBias]       = GyroBias.parse
-        self.d[DataType.TrimFlight]     = TrimFlight.parse
-        self.d[DataType.TrimDrive]      = TrimDrive.parse
+        self.d[DataType.Bias]           = Bias.parse
+        self.d[DataType.Trim]           = Trim.parse
 
         self.d[DataType.Imu]            = Imu.parse
         self.d[DataType.Pressure]       = Pressure.parse
         self.d[DataType.Battery]        = Battery.parse
         self.d[DataType.Range]          = Range.parse
-        self.d[DataType.ImageFlow]      = ImageFlow.parse
+        self.d[DataType.Flow]           = Flow.parse
         self.d[DataType.Button]         = Button.parse
         self.d[DataType.Joystick]       = Joystick.parse
-        self.d[DataType.IrMessage]      = IrMessage.parse
-        self.d[DataType.CountFlight]    = CountFlight.parse
-        self.d[DataType.CountDrive]     = CountDrive.parse
+        self.d[DataType.Count]          = Count.parse
         self.d[DataType.Pairing]        = Pairing.parse
         self.d[DataType.Rssi]           = Rssi.parse
 
         self.d[DataType.InformationAssembledForController]  = InformationAssembledForController.parse
         self.d[DataType.InformationAssembledForEntry]       = InformationAssembledForEntry.parse
-        self.d[DataType.InformationAssembledForImuMonitor]  = InformationAssembledForImuMonitor.parse
 
 

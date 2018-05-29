@@ -5,9 +5,9 @@
 from setuptools import setup, find_packages
 
 setup(
-    name = "petrone_v2",
-    version = "0.1.77",
-    description = "Library for BYROBOT PETRONE V2",
+    name = "edrone",
+    version = "0.1.1",
+    description = "Library for E-DRONE",
     author = "BYROBOT",
     author_email = "dev@byrobot.co.kr",
     url = "http://www.byrobot.co.kr",

@@ -1,8 +1,8 @@
-petrone_v2
+edrone
 
 
 PyPI
-https://pypi.python.org/pypi/petrone_v2
+https://pypi.python.org/pypi/edrone
 
 
 BYROBOT Dev
@@ -10,7 +10,7 @@ http://dev.byrobot.co.kr/
 
 
 Documents
-https://byrobot.github.io/documents/kr/products/petrone_v2/library/python/petrone_v2/
+https://byrobot.github.io/documents/kr/products/edrone/library/python/edrone/
 
 
 Forum

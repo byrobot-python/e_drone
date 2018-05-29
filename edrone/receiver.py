@@ -1,7 +1,7 @@
 import time
 
-from petrone_v2.protocol import *
-from petrone_v2.crc import CRC16
+from edrone.protocol import *
+from edrone.crc import CRC16
 
 
 
