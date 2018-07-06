@@ -368,7 +368,7 @@ class Version(ISerializable):
         self.minor          = 0
         self.major          = 0
 
-        self.v              = 0         # build, stage, minor, major을 하나의 UInt32로 묶은 것(버젼 비교 시 사용)
+        self.v              = 0         # build, minor, major을 하나의 UInt32로 묶은 것(버젼 비교 시 사용)
 
 
     @classmethod
@@ -747,7 +747,7 @@ class ControlDouble16(ISerializable):
 """
 
 
-class Trim(ControlQuad16):
+class TrimFlight(ControlQuad16):
     pass
 
 
@@ -765,43 +765,43 @@ class LightModeDrone(Enum):
     FrontNone               = 0x10
     FrontManual             = 0x11      # 수동 제어
     FrontHold               = 0x12      # 지정한 색상을 계속 켬
-    FrontFlicker            = 0x13      # 깜빡임    	
-    FrontFlickerDouble      = 0x14      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)    	
+    FrontFlicker            = 0x13      # 깜빡임
+    FrontFlickerDouble      = 0x14      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
     FrontDimming            = 0x15      # 밝기 제어하여 천천히 깜빡임
 
     RearNone                = 0x20
     RearManual              = 0x21      # 수동 제어
     RearHold                = 0x22      # 지정한 색상을 계속 켬
-    RearFlicker             = 0x23      # 깜빡임    	
-    RearFlickerDouble       = 0x24      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)    	
+    RearFlicker             = 0x23      # 깜빡임
+    RearFlickerDouble       = 0x24      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
     RearDimming             = 0x25      # 밝기 제어하여 천천히 깜빡임
 
     BodyNone                = 0x30
     BodyManual              = 0x31      # 수동 제어
     BodyHold                = 0x32      # 지정한 색상을 계속 켬
-    BodyFlicker             = 0x33      # 깜빡임    	
-    BodyFlickerDouble       = 0x34      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)    	
+    BodyFlicker             = 0x33      # 깜빡임
+    BodyFlickerDouble       = 0x34      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
     BodyDimming             = 0x35      # 밝기 제어하여 천천히 깜빡임
 
     ANone                   = 0x40
     AManual                 = 0x41      # 수동 제어
     AHold                   = 0x42      # 지정한 색상을 계속 켬
-    AFlicker                = 0x43      # 깜빡임    	
-    AFlickerDouble          = 0x44      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)    	
+    AFlicker                = 0x43      # 깜빡임
+    AFlickerDouble          = 0x44      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
     ADimming                = 0x45      # 밝기 제어하여 천천히 깜빡임
 
     BNone                   = 0x50
     BManual                 = 0x51      # 수동 제어
     BHold                   = 0x52      # 지정한 색상을 계속 켬
-    BFlicker                = 0x53      # 깜빡임    	
-    BFlickerDouble          = 0x54      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)    	
+    BFlicker                = 0x53      # 깜빡임
+    BFlickerDouble          = 0x54      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
     BDimming                = 0x55      # 밝기 제어하여 천천히 깜빡임
 
     CNone                   = 0x60
     CManual                 = 0x61      # 수동 제어
     CHold                   = 0x62      # 지정한 색상을 계속 켬
-    CFlicker                = 0x63      # 깜빡임    	
-    CFlickerDouble          = 0x64      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)    	
+    CFlicker                = 0x63      # 깜빡임
+    CFlickerDouble          = 0x64      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
     CDimming                = 0x65      # 밝기 제어하여 천천히 깜빡임
 
     EndOfType               = 0x66
@@ -2243,11 +2243,6 @@ class Vector(ISerializable):
         data.x, data.y, data.z = unpack('<hhh', dataArray)
         
         return data
-
-
-
-class AccelBias(Vector):
-    pass
 
 
 

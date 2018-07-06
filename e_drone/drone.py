@@ -656,7 +656,7 @@ class Drone:
 
 
 
-    def sendTrim(self, roll, pitch, yaw, throttle):
+    def sendTrimFlight(self, roll, pitch, yaw, throttle):
         
         if  ( (not isinstance(roll, int)) or (not isinstance(pitch, int)) or (not isinstance(yaw, int)) or (not isinstance(throttle, int)) ):
             return None
@@ -664,11 +664,11 @@ class Drone:
         header = Header()
         
         header.dataType = DataType.Trim
-        header.length   = Trim.getSize()
+        header.length   = TrimFlight.getSize()
         header.from_    = DeviceType.Tester
         header.to_      = DeviceType.Drone
 
-        data = Trim()
+        data = TrimFlight()
 
         data.roll       = roll
         data.pitch      = pitch

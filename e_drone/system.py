@@ -105,10 +105,10 @@ class ErrorFlagsForSensor(Enum):
 
     None_                       = 0x00000000
 
-    Motion_NoAnswer             = 0x00000001    # IMU 응답 없음
+    Motion_NoAnswer             = 0x00000001    # Motion 센서 응답 없음
     Motion_WrongValue           = 0x00000002
-    Motion_NotCalibrated        = 0x00000004    # Gyro Bias 보정이 완료되지 않음
-    Motion_Calibrating          = 0x00000008    # Gyro Bias 보정 중
+    Motion_NotCalibrated        = 0x00000004    # Bias 보정이 완료되지 않음
+    Motion_Calibrating          = 0x00000008    # Bias 보정 중
 
     Pressure_NoAnswer           = 0x00000010    # 압력센서 응답 없음
     Pressure_WrongValue         = 0x00000020
@@ -116,12 +116,11 @@ class ErrorFlagsForSensor(Enum):
     Range_NoAnswer              = 0x00000100    # 바닥 거리센서 응답 없음
     Range_WrongValue            = 0x00000200
 
-    Flow_NoAnswer               = 0x00001000    # 카메라 응답 없음
+    Flow_NoAnswer               = 0x00001000    # Flow 센서 응답 없음
     Flow_WrongValue             = 0x00002000
 
     Battery_NoAnswer            = 0x00010000    # 배터리 응답 없음
     Battery_WrongValue          = 0x00020000
-    Battery_NotCalibrated       = 0x00040000    # 배터리 입력값 보정이 완료되지 않음
 
 
 
