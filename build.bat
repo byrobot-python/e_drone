@@ -4,7 +4,7 @@ rem 이전 배포판 삭제
 del /f /q .\dist\*.*
 
 rem 삭제
-"C:\Users\Sanghyo Lee\Anaconda3\Scripts\pip.exe" uninstall edrone -q
+"C:\Users\Sanghyo Lee\Anaconda3\Scripts\pip.exe" uninstall e_drone -q
 
 rem 빌드
 "C:\Users\Sanghyo Lee\Anaconda3\python.exe" setup.py sdist
@@ -17,6 +17,6 @@ rem PYPI 등록
 rem "C:\Users\Sanghyo Lee\Anaconda3\Scripts\twine.exe" upload --repository-url https://test.pypi.org/legacy/ dist/*
 
 rem 설치
-"C:\Users\Sanghyo Lee\Anaconda3\Scripts\pip.exe" --no-cache-dir install edrone
+"C:\Users\Sanghyo Lee\Anaconda3\Scripts\pip.exe" --no-cache-dir install e_drone
 
 pause

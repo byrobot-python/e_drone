@@ -5,7 +5,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name = "edrone",
+    name = "e_drone",
     version = "0.1.1",
     description = "Library for E-DRONE",
     author = "BYROBOT",
