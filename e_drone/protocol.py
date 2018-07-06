@@ -42,7 +42,7 @@ class DataType(Enum):
     Reserved_1                  = 0x06      # 예약
     SystemInformation           = 0x07      # 시스템 정보
     Monitor                     = 0x08      # 디버깅용 값 배열 전송. 첫번째 바이트에 타입 두 번째 바이트에 페이지 지정(수신 받는 데이터의 저장 경로 구분)
-    SystemCounter               = 0x09      # 시스템 카운터
+    SystemCount                 = 0x09      # 시스템 카운트
     Information                 = 0x0A      # 장치 정보
     UpdateLocation              = 0x0B      # 펌웨어 업데이트 위치 정정
     Update                      = 0x0C      # 펌웨어 업데이트
@@ -60,39 +60,32 @@ class DataType(Enum):
 
     LightMode                   = 0x21      # LED 모드 지정
     LightModeCommand            = 0x22      # LED 모드 커맨드
-    LightModeCommandIr          = 0x23      # LED 모드 커맨드 IR 데이터 송신
-    LightModeColor              = 0x24      # LED 모드 3색 직접 지정
-    LightModeColorCommand       = 0x25      # LED 모드 3색 직접 지정 커맨드
-    LightModeColorCommandIr     = 0x26      # LED 모드 3색 직접 지정 커맨드 IR 데이터 송신
-    LightModeColors             = 0x27      # LED 모드 팔레트의 색상으로 지정
-    LightModeColorsCommand      = 0x28      # LED 모드 팔레트의 색상으로 지정 커맨드
-    LightModeColorsCommandIr    = 0x29      # LED 모드 팔레트의 색상으로 지정 커맨드 IR 데이터 송신
+    LightModeColor              = 0x23      # LED 모드 3색 직접 지정
+    LightModeColorCommand       = 0x24      # LED 모드 3색 직접 지정 커맨드
+    LightModeColors             = 0x25      # LED 모드 팔레트의 색상으로 지정
+    LightModeColorsCommand      = 0x26      # LED 모드 팔레트의 색상으로 지정 커맨드
 
-    LightEvent                  = 0x2A      # LED 이벤트
-    LightEventCommand           = 0x2B      # LED 이벤트 커맨드
-    LightEventCommandIr         = 0x2C      # LED 이벤트 커맨드 IR 데이터 송신
-    LightEventColor             = 0x2D      # LED 이벤트 3색 직접 지정
-    LightEventColorCommand      = 0x2E      # LED 이벤트 3색 직접 지정 커맨드
-    LightEventColorCommandIr    = 0x2F      # LED 이벤트 3색 직접 지정 커맨드 IR 데이터 송신
-    LightEventColors            = 0x30      # LED 이벤트 팔레트의 색상으로 지정
-    LightEventColorsCommand     = 0x31      # LED 이벤트 팔레트의 색상으로 지정 커맨드
-    LightEventColorsCommandIr   = 0x32      # LED 이벤트 팔레트의 색상으로 지정 커맨드 IR 데이터 송신
+    LightEvent                  = 0x27      # LED 이벤트
+    LightEventCommand           = 0x28      # LED 이벤트 커맨드
+    LightEventColor             = 0x29      # LED 이벤트 3색 직접 지정
+    LightEventColorCommand      = 0x2A      # LED 이벤트 3색 직접 지정 커맨드
+    LightEventColors            = 0x2B      # LED 이벤트 팔레트의 색상으로 지정
+    LightEventColorsCommand     = 0x2C      # LED 이벤트 팔레트의 색상으로 지정 커맨드
 
-    LightModeDefaultColor       = 0x33      # LED 초기 모드 3색 직접 지정
+    LightModeDefaultColor       = 0x2D      # LED 초기 모드 3색 직접 지정
 
-    # 상태 설정
+    # 상태, 센서
     State                       = 0x40      # 드론의 상태(비행 모드 방위기준 배터리량)
     Attitude                    = 0x41      # 드론의 자세(Angle)
-    Bias                        = 0x42      # 엑셀, 자이로 바이어스 값
-    Trim                        = 0x43      # 트림
-    Count                       = 0x44      # 카운트
+    Altitude                    = 0x42      # 높이, 고도
+    Motion                      = 0x43      # Motion 센서 데이터(IMU)
+    Flow                        = 0x44      # Flow
 
-    # Sensor raw data
-    Imu                         = 0x50      # IMU Raw
-    Pressure                    = 0x51      # 압력 센서 데이터
-    Battery                     = 0x52      # 배터리
-    Range                       = 0x53      # 거리 센서
-    Flow                        = 0x54      # Flow
+    # 설정
+    Count                       = 0x50      # 카운트
+    Bias                        = 0x51      # 엑셀, 자이로 바이어스 값
+    Trim                        = 0x52      # 트림
+    Weight                      = 0x53      # 무게
 
     # Devices
     Motor                       = 0x60      # 모터 제어 및 현재 제어값 확인
@@ -116,8 +109,8 @@ class DataType(Enum):
     DisplayDrawImage            = 0x88      # 그림 그리기
 
     # Information Assembled
-    InformationAssembledForController   = 0xA0 # 자주 갱신되는 비행 데이터 모음
-    InformationAssembledForEntry        = 0xA1 # 자주 갱신되는 비행 데이터 모음
+    InformationAssembledForController   = 0xA0      # 자주 갱신되는 비행 데이터 모음
+    InformationAssembledForEntry        = 0xA1      # 자주 갱신되는 비행 데이터 모음
 
     # Navigation
     NavigationTarget                    = 0xD0,     # 네비게이션 목표점
@@ -125,10 +118,11 @@ class DataType(Enum):
     NavigationMonitor                   = 0xD2,
     NavigationHeading                   = 0xD3,
     NavigationCounter                   = 0xD4,
+
     GpsRtkNavigationState               = 0xDA,     # RTK RAW 데이터 전송
     GpsRtkExtendedRawMeasurementData    = 0xDB,     # RTK RAW 데이터 전송
 
-    EndOfType                   = 0xDC
+    EndOfType                           = 0xDC
 
 
 # DataType End
@@ -140,37 +134,37 @@ class DataType(Enum):
 
 class CommandType(Enum):
     
-    None_               = 0x00      # 없음
+    None_                   = 0x00      # 없음
 
-    Stop                = 0x01      # 정지
+    Stop                    = 0x01      # 정지
 
     # 설정
-    ModeVehicle         = 0x02      # Vehicle 동작 모드 전환
-    Headless            = 0x03      # 헤드리스 모드 선택
-    Trim                = 0x04      # 트림 변경
+    ModeControlFlight       = 0x02      # 비행 제어 모드 설정
+    Headless                = 0x03      # 헤드리스 모드 선택
+    Trim                    = 0x04      # 트림 변경
 
-    ClearBias           = 0x05      # 자이로 바이어스 리셋(트림도 같이 초기화 됨)
-    ClearTrim           = 0x06      # 트림 초기화
+    ClearBias               = 0x05      # 자이로 바이어스 리셋(트림도 같이 초기화 됨)
+    ClearTrim               = 0x06      # 트림 초기화
 
-    FlightEvent         = 0x07      # 비행 이벤트 실행
+    FlightEvent             = 0x07      # 비행 이벤트 실행
 
     # 관리자
-    ClearCounter        = 0xA0      # 카운터 클리어(관리자 권한을 획득했을 경우에만 동작)
-    SetTestComplete     = 0xA1      # 테스트 완료 처리
+    ClearCounter            = 0xA0      # 카운터 클리어(관리자 권한을 획득했을 경우에만 동작)
+    SetTestComplete         = 0xA1      # 테스트 완료 처리
 
     # Navigation
-    NavigationTargetClear   = 0xE0  # 네비게이션 목표점 초기화
-    NavigationStart         = 0xE1  # 네비게이션 시작(처음부터)
-    NavigationPause         = 0xE2  # 네비게이션 일시 정지
-    NavigationRestart       = 0xE3  # 네비게이션 다시 시작(일시 정지 후 다시 시작할 때 사용)
-    NavigationStop          = 0xE4  # 네비게이션 중단
-    NavigationNext          = 0xE5  # 네비게이션 목표점을 다음으로 변경
-    NavigationReturnToHome  = 0xE6  # 시작 위치로 귀환
+    NavigationTargetClear   = 0xE0      # 네비게이션 목표점 초기화
+    NavigationStart         = 0xE1      # 네비게이션 시작(처음부터)
+    NavigationPause         = 0xE2      # 네비게이션 일시 정지
+    NavigationRestart       = 0xE3      # 네비게이션 다시 시작(일시 정지 후 다시 시작할 때 사용)
+    NavigationStop          = 0xE4      # 네비게이션 중단
+    NavigationNext          = 0xE5      # 네비게이션 목표점을 다음으로 변경
+    NavigationReturnToHome  = 0xE6      # 시작 위치로 귀환
     
     GpsRtkBase              = 0xEA
     GpsRtkRover             = 0xEB
 
-    EndOfType           = 0xEC
+    EndOfType               = 0xEC
 
 
 # CommandType End
@@ -435,7 +429,7 @@ class Information(ISerializable):
     def __init__(self):
         self.modeUpdate     = ModeUpdate.None_
 
-        self.deviceID       = DeviceID.None_
+        self.modelNumber    = ModelNumber.None_
         self.version        = Version()
 
         self.year           = 0
@@ -451,7 +445,7 @@ class Information(ISerializable):
     def toArray(self):
         dataArray = bytearray()
         dataArray.extend(pack('<B', self.modeUpdate.value))
-        dataArray.extend(pack('<I', self.deviceType.value))
+        dataArray.extend(pack('<I', self.modelNumber.value))
         dataArray.extend(self.version.toArray())
         dataArray.extend(pack('<H', self.year))
         dataArray.extend(pack('<B', self.month))
@@ -467,14 +461,14 @@ class Information(ISerializable):
             return None
         
         indexStart = 0;        indexEnd = 1;                        data.modeUpdate,    = unpack('<B', dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 4;                       data.deviceType,    = unpack('<I', dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 4;                       data.modelNumber,   = unpack('<I', dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += Version.getSize();       data.version        = Version.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 2;                       data.year,          = unpack('<H', dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 1;                       data.month,         = unpack('<B', dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 1;                       data.day,           = unpack('<B', dataArray[indexStart:indexEnd])
 
         data.modeUpdate     = ModeUpdate(data.modeUpdate)
-        data.deviceType     = DeviceType(data.deviceType)
+        data.modelNumber    = ModelNumber(data.modelNumber)
 
         return data
 
@@ -661,7 +655,7 @@ class Quad8AndRequestData(ISerializable):
         data.roll, data.pitch, data.yaw, data.throttle, data.dataType = unpack('<bbbbb', dataArray)
         
         data.dataType = DataType(data.dataType)
-
+        
         return data
 
 
@@ -692,6 +686,7 @@ class ControlQuad16(ISerializable):
             return None
         
         data.roll, data.pitch, data.yaw, data.throttle = unpack('<hhhh', dataArray)
+        
         return data
 
 
@@ -830,27 +825,20 @@ class LightFlagsDrone(Enum):
     CBlue               = 0x0040
 
 
+
 class LightModeController(Enum):
     
     None_               = 0x00
 
-    # Left
-    LeftNone            = 0x10
-    LeftManual          = 0x11      # 수동 조작
-    LeftHold            = 0x12
-    LeftFlicker         = 0x13
-    LeftFlickerDouble   = 0x14
-    LeftDimming         = 0x15
+    # Body
+    BodyNone            = 0x10
+    BodyManual          = 0x11      # 수동 조작
+    BodyHold            = 0x12
+    BodyFlicker         = 0x13
+    BodyFlickerDouble   = 0x14
+    BodyDimming         = 0x15
 
-    # Right
-    RightNone           = 0x20
-    RightManual         = 0x21      # 수동 조작
-    RightHold           = 0x22
-    RightFlicker        = 0x23
-    RightFlickerDouble  = 0x24
-    RightDimming        = 0x25
-
-    EndOfType           = 0x26
+    EndOfType           = 0x16
 
 
 
@@ -858,13 +846,9 @@ class LightFlagsController(Enum):
     
     None_               = 0x00
 
-    LeftRed             = 0x80
-    LeftGreen           = 0x40
-    LeftBlue            = 0x20
-    
-    RightRed            = 0x10
-    RightGreen          = 0x08
-    RightBlue           = 0x04
+    BodyRed             = 0x80
+    BodyGreen           = 0x40
+    BodyBlue            = 0x20
 
 
 
@@ -1163,42 +1147,6 @@ class LightModeCommand(ISerializable):
 
 
 
-class LightModeCommandIr(ISerializable):
-
-    def __init__(self):
-        self.mode       = LightMode()
-        self.command    = Command()
-        self.irData     = 0
-
-
-    @classmethod
-    def getSize(cls):
-        return LightMode.getSize() + Command.getSize() + 4
-
-
-    def toArray(self):
-        dataArray = bytearray()
-        dataArray.extend(self.mode.toArray())
-        dataArray.extend(self.command.toArray())
-        dataArray.extend(pack('<I', self.irData))
-        return dataArray
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = LightModeCommandIr()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-
-        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 4;                       data.irData,    = unpack('<I', dataArray[indexStart:indexEnd])
-
-        return data
-
-
-
 class LightModeColor(ISerializable):
     
     def __init__(self):
@@ -1262,44 +1210,6 @@ class LightModeColorCommand(ISerializable):
         indexStart = 0;        indexEnd = LightMode.getSize();    data.mode       = LightMode.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += Color.getSize();       data.color      = Color.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += Command.getSize();     data.command    = Command.parse(dataArray[indexStart:indexEnd])
-        return data
-
-
-
-class LightModeColorCommandIr(ISerializable):
-    
-    def __init__(self):
-        self.mode       = LightMode()
-        self.color      = Color()
-        self.command    = Command()
-        self.irData     = 0
-
-
-    @classmethod
-    def getSize(cls):
-        return LightMode.getSize() + Color.getSize() + Command.getSize() + 4
-
-
-    def toArray(self):
-        dataArray = bytearray()
-        dataArray.extend(self.mode.toArray())
-        dataArray.extend(self.color.toArray())
-        dataArray.extend(self.command.toArray())
-        dataArray.extend(pack('<I', self.irData))
-        return dataArray
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = LightModeColorCommandIr()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-
-        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 4;                       data.irData,    = unpack('<I', dataArray[indexStart:indexEnd])
         return data
 
 
@@ -1377,47 +1287,6 @@ class LightModeColorsCommand(ISerializable):
 
 
 
-class LightModeColorsCommandIr(ISerializable):
-    
-    def __init__(self):
-        self.mode       = LightMode()
-        self.colors     = Colors.Black
-        self.command    = Command()
-        self.irData     = 0
-
-
-    @classmethod
-    def getSize(cls):
-        return LightMode.getSize() + 1 + Command.getSize() + 4
-
-
-    def toArray(self):
-        dataArray = bytearray()
-        dataArray.extend(self.mode.toArray())
-        dataArray.extend(pack('<B', self.colors.value))
-        dataArray.extend(self.command.toArray())
-        dataArray.extend(pack('<I', self.irData))
-        return dataArray
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = LightModeColorsCommandIr()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-
-        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 1;                       data.colors,    = unpack('<B', dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 4;                       data.irData,    = unpack('<I', dataArray[indexStart:indexEnd])
-
-        data.colors     = Colors(data.colors)
-
-        return data
-
-
-
 class LightEventCommand(ISerializable):
     
     def __init__(self):
@@ -1446,42 +1315,6 @@ class LightEventCommand(ISerializable):
 
         indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
-        
-        return data
-
-
-
-class LightEventCommandIr(ISerializable):
-    
-    def __init__(self):
-        self.event      = LightEvent()
-        self.command    = Command()
-        self.irData     = 0
-
-
-    @classmethod
-    def getSize(cls):
-        return LightEvent.getSize() + Command.getSize() + 4
-
-
-    def toArray(self):
-        dataArray = bytearray()
-        dataArray.extend(self.event.toArray())
-        dataArray.extend(self.command.toArray())
-        dataArray.extend(pack('<I', self.irData))
-        return dataArray
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = LightEventCommandIr()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 4;                       data.irData,    = unpack('<I', dataArray[indexStart:indexEnd])
         
         return data
 
@@ -1551,45 +1384,6 @@ class LightEventColorCommand(ISerializable):
         indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
-        
-        return data
-
-
-
-class LightEventColorCommandIr(ISerializable):
-    
-    def __init__(self):
-        self.event      = LightEvent()
-        self.color      = Color()
-        self.command    = Command()
-        self.irData     = 0
-
-
-    @classmethod
-    def getSize(cls):
-        return LightEvent.getSize() + Color.getSize() + Command.getSize() + 4
-
-
-    def toArray(self):
-        dataArray = bytearray()
-        dataArray.extend(self.event.toArray())
-        dataArray.extend(self.color.toArray())
-        dataArray.extend(self.command.toArray())
-        dataArray.extend(pack('<I', self.irData))
-        return dataArray
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = LightEventColorCommandIr()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 4;                       data.irData,    = unpack('<I', dataArray[indexStart:indexEnd])
         
         return data
 
@@ -1667,47 +1461,6 @@ class LightEventColorsCommand(ISerializable):
         return data
 
 
-
-class LightEventColorsCommandIr(ISerializable):
-    
-    def __init__(self):
-        self.event      = LightEvent()
-        self.colors     = Colors.Black
-        self.command    = Command()
-        self.irData     = 0
-
-
-    @classmethod
-    def getSize(cls):
-        return LightEvent.getSize() + 1 + Command.getSize() + 4
-
-
-    def toArray(self):
-        dataArray = bytearray()
-        dataArray.extend(self.event.toArray())
-        dataArray.extend(pack('<B', self.colors.value))
-        dataArray.extend(self.command.toArray())
-        dataArray.extend(pack('<I', self.irData))
-        return dataArray
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = LightEventColorsCommandIr()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 1;                       data.colors,    = unpack('<B', dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 4;                       data.irData,    = unpack('<I', dataArray[indexStart:indexEnd])
-
-        data.colors     = Colors(data.colors)
-
-        return data
-
-
 # Light End
 
 
@@ -1719,6 +1472,7 @@ class DisplayPixel(Enum):
     
     Black               = 0x00
     White               = 0x01
+    Inverse             = 0x02
 
 
 
@@ -2311,14 +2065,16 @@ class ButtonFlagController(Enum):
     FrontRightTop       = 0x0004
     FrontRightBottom    = 0x0008
     
-    MidUp               = 0x0010
-    MidLeft             = 0x0020
-    MidRight            = 0x0040
-    MidDown             = 0x0080
+    TopLeft             = 0x0010
+    TopRight            = 0x0020    # POWER ON/OFF
     
-    RearLeft            = 0x0100
-    RearCenter          = 0x0200
-    RearRight           = 0x0400
+    MidUp               = 0x0040
+    MidLeft             = 0x0080
+    MidRight            = 0x0100
+    MidDown             = 0x0200
+    
+    BottomLeft          = 0x0400
+    BottomRight         = 0x0800
 
 
 
@@ -2382,23 +2138,23 @@ class Button(ISerializable):
 class State(ISerializable):
 
     def __init__(self):
-        self.modeVehicle        = ModeVehicle.None_
-
         self.modeSystem         = ModeSystem.None_
         self.modeFlight         = ModeFlight.None_
 
-        self.sensorOrientation  = SensorOrientation.None_
+        self.modeControlFlight  = ModeControlFlight.None_
+        self.modeMovement       = ModeMovement.None_
         self.headless           = Headless.None_
+        self.sensorOrientation  = SensorOrientation.None_
         self.battery            = 0
 
 
     @classmethod
     def getSize(cls):
-        return 6
+        return 7
 
 
     def toArray(self):
-        return pack('<BBBBBB', self.modeVehicle.value, self.modeSystem.value, self.modeFlight.value, self.sensorOrientation.value, self.headless.value, self.battery)
+        return pack('<BBBBBBB', self.modeSystem.value, self.modeFlight.value, self.modeControlFlight.value, self.modeMovement.value, self.headless.value, self.sensorOrientation.value, self.battery)
 
 
     @classmethod
@@ -2408,21 +2164,21 @@ class State(ISerializable):
         if len(dataArray) != cls.getSize():
             return None
         
-        data.modeVehicle, data.modeSystem, data.modeFlight, data.sensorOrientation, data.headless, data.battery = unpack('<BBBBBB', dataArray)
-
-        data.modeVehicle        = ModeVehicle(data.modeVehicle)
+        data.modeSystem, data.modeFlight, data.modeControlFlight, data.modeMovement, data.headless, data.sensorOrientation, data.battery = unpack('<BBBBBBB', dataArray)
 
         data.modeSystem         = ModeSystem(data.modeSystem)
         data.modeFlight         = ModeFlight(data.modeFlight)
 
-        data.sensorOrientation  = SensorOrientation(data.sensorOrientation)
+        data.modeControlFlight  = ModeControlFlight(data.modeControlFlight)
+        data.modeMovement       = ModeMovement(data.modeMovement)
         data.headless           = Headless(data.headless)
+        data.sensorOrientation  = SensorOrientation(data.sensorOrientation)
         
         return data
 
 
 
-class CountFlight(ISerializable):
+class Count(ISerializable):
 
     def __init__(self):
         self.timeFlight     = 0
@@ -2443,7 +2199,7 @@ class CountFlight(ISerializable):
 
     @classmethod
     def parse(cls, dataArray):
-        data = CountFlight()
+        data = Count()
         
         if len(dataArray) != cls.getSize():
             return None
@@ -2558,7 +2314,7 @@ class Bias(ISerializable):
 
 
 
-class Imu(ISerializable):
+class Motion(ISerializable):
 
     def __init__(self):
         self.accelX     = 0
@@ -2583,7 +2339,7 @@ class Imu(ISerializable):
 
     @classmethod
     def parse(cls, dataArray):
-        data = Imu()
+        data = Motion()
         
         if len(dataArray) != cls.getSize():
             return None
@@ -2594,93 +2350,32 @@ class Imu(ISerializable):
 
 
 
-class Battery(ISerializable):
-
-    def __init__(self):
-        self.batteryRaw                 = 0
-        self.batteryPercent             = 0
-
-
-    @classmethod
-    def getSize(cls):
-        return 6
-
-
-    def toArray(self):
-        return pack('<hf', self.batteryRaw, self.batteryPercent)
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = Battery()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-        
-        data.batteryRaw, data.batteryPercent = unpack('<hf', dataArray)
-        
-        return data
-
-
-
-class Pressure(ISerializable):
+class Altitude(ISerializable):
 
     def __init__(self):
         self.temperature    = 0
         self.pressure       = 0
         self.altitude       = 0
+        self.rangeHeight    = 0
 
 
     @classmethod
     def getSize(cls):
-        return 12
+        return 16
 
 
     def toArray(self):
-        return pack('<fff', self.temperature, self.pressure, self.altitude)
+        return pack('<ffff', self.temperature, self.pressure, self.altitude, self.rangeHeight)
 
 
     @classmethod
     def parse(cls, dataArray):
-        data = Pressure()
+        data = Altitude()
         
         if len(dataArray) != cls.getSize():
             return None
         
-        data.temperature, data.pressure, data.altitude = unpack('<fff', dataArray)
-        
-        return data
-
-
-
-class Range(ISerializable):
-
-    def __init__(self):
-        self.left       = 0
-        self.front      = 0
-        self.right      = 0
-        self.rear       = 0
-        self.top        = 0
-        self.bottom     = 0
-
-
-    @classmethod
-    def getSize(cls):
-        return 24
-
-
-    def toArray(self):
-        return pack('<ffffff', self.left, self.front, self.right, self.rear, self.top, self.bottom)
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = Range()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-        
-        data.left, data.front, data.right, data.rear, data.top, data.bottom = unpack('<ffffff', dataArray)
+        data.temperature, data.pressure, data.altitude, data.rangeHeight = unpack('<ffff', dataArray)
         
         return data
 
@@ -2689,8 +2384,8 @@ class Range(ISerializable):
 class Flow(ISerializable):
 
     def __init__(self):
-        self.positionX     = 0
-        self.positionY     = 0
+        self.x     = 0
+        self.y     = 0
 
 
     @classmethod
@@ -2699,7 +2394,7 @@ class Flow(ISerializable):
 
 
     def toArray(self):
-        return pack('<ff', self.positionX, self.positionY)
+        return pack('<ff', self.x, self.y)
 
 
     @classmethod
@@ -2709,10 +2404,37 @@ class Flow(ISerializable):
         if len(dataArray) != cls.getSize():
             return None
         
-        data.positionX, data.positionY = unpack('<ff', dataArray)
+        data.x, data.y = unpack('<ff', dataArray)
         
         return data
 
+
+
+class Weight(ISerializable):
+
+    def __init__(self):
+        self.weight     = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 4
+
+
+    def toArray(self):
+        return pack('<f', self.weight)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = Weight()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.weight, = unpack('<f', dataArray)
+        
+        return data
 
 
 # Sensor End
@@ -2831,21 +2553,32 @@ class InformationAssembledForController(ISerializable):
         self.anglePitch             = 0
         self.angleYaw               = 0
         
-        self.pressureTemperature    = 0
-        self.pressureAltitude       = 0
-
-        self.rangeGround            = 0
+        self.rpm                    = 0
+        
+        self.positionX              = 0
+        self.positionY              = 0
+        self.positionZ              = 0
+        
+        self.speedX                 = 0
+        self.speedY                 = 0
+        
+        self.rangeHeight            = 0
+        
+        self.rssi                   = 0
 
 
     @classmethod
     def getSize(cls):
-        return 18
+        return 16
 
 
     def toArray(self):
-        return pack('<hhhfff',  self.angleRoll, self.anglePitch, self.angleYaw, 
-                                self.pressureTemperature, self.pressureAltitude, 
-                                self.rangeGround)
+        return pack('<bbhHhhhbbBb', self.angleRoll, self.anglePitch, self.angleYaw, 
+                                    self.rpm,
+                                    self.positionX, self.positionY, self.positionZ, 
+                                    self.speedX, self.speedY, 
+                                    self.rangeHeight,
+                                    self.rssi)
 
 
     @classmethod
@@ -2856,8 +2589,11 @@ class InformationAssembledForController(ISerializable):
             return None
         
         (data.angleRoll, data.anglePitch, data.angleYaw, 
-        data.pressureTemperature, data.pressureAltitude, 
-        data.rangeGround) = unpack('<hhhfff', dataArray)
+        data.rpm,
+        data.positionX, data.positionY, data.positionZ, 
+        data.speedX, data.speedY, 
+        data.rangeHeight,
+        data.rssi) = unpack('<bbhHhhhbbBb', dataArray)
         
         return data
 

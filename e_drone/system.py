@@ -1,11 +1,11 @@
 from enum import Enum
 
 
-class DeviceID(Enum):
+class ModelNumber(Enum):
 
-    Drone_4_P2_Drone        = 0x00041002    # Drone_4_P2_Drone
-    Drone_4_P0_Controller   = 0x00042000    # Drone_4_P0_Controller
-    Drone_4_P0_Link         = 0x00043000    # Drone_4_P0_Link
+    Drone_4_Drone_P3        = 0x00041003    # Drone_4_Drone_P3
+    Drone_4_Controlle_P1    = 0x00042001    # Drone_4_Controlle_P1
+    Drone_4_Link_P0         = 0x00043000    # Drone_4_Link_P0
 
 
 
@@ -47,21 +47,16 @@ class ModeSystem(Enum):
 
 
 
-class ModeVehicle(Enum):
+class ModeControlFlight(Enum):
     
     None_               = 0x00
 
-    FlightGuard         = 0x10
-    FlightNoGuard       = 0x11
-    FlightFPV           = 0x12
-
-    FlightAttitude      = 0x13
-    FlightPosition      = 0x14
-    FlightFunction      = 0x15
-
-    Test                = 0xF0
-
-    EndOfType           = 0xF1
+    Attitude            = 0x10      # 자세 - X,Y는 각도(deg)로 입력받음, Z,Yaw는 속도(m/s)로 입력 받음
+    Position            = 0x11      # 위치 - X,Y,Z,Yaw는 속도(m/s)로 입력 받음
+    Function            = 0x12      # 기능 - X,Y,Z,Yaw는 속도(m/s)로 입력 받음
+    Rate                = 0x13      # Rate - X,Y는 각속도(deg/s)로 입력받음, Z,Yaw는 속도(m/s)로 입력 받음e
+    
+    EndOfType           = 0x14
 
 
 
@@ -110,16 +105,16 @@ class ErrorFlagsForSensor(Enum):
 
     None_                       = 0x00000000
 
-    Imu_NoAnswer                = 0x00000001    # IMU 응답 없음
-    Imu_WrongValue              = 0x00000002
-    Imu_NotCalibrated           = 0x00000004    # Gyro Bias 보정이 완료되지 않음
-    Imu_Calibrating             = 0x00000008    # Gyro Bias 보정 중
+    Motion_NoAnswer             = 0x00000001    # IMU 응답 없음
+    Motion_WrongValue           = 0x00000002
+    Motion_NotCalibrated        = 0x00000004    # Gyro Bias 보정이 완료되지 않음
+    Motion_Calibrating          = 0x00000008    # Gyro Bias 보정 중
 
     Pressure_NoAnswer           = 0x00000010    # 압력센서 응답 없음
     Pressure_WrongValue         = 0x00000020
 
-    RangeGround_NoAnswer        = 0x00000100    # 바닥 거리센서 응답 없음
-    RangeGround_WrongValue      = 0x00000200
+    Range_NoAnswer              = 0x00000100    # 바닥 거리센서 응답 없음
+    Range_WrongValue            = 0x00000200
 
     Flow_NoAnswer               = 0x00001000    # 카메라 응답 없음
     Flow_WrongValue             = 0x00002000
@@ -153,12 +148,9 @@ class FlightEvent(Enum):
     FlipLeft            = 0x16
     FlipRight           = 0x17
 
-    Shot                = 0x18
-    UnderAttack         = 0x19
+    ResetHeading        = 0xA0
 
-    ResetHeading        = 0x1A
-
-    EndOfType           = 0x1B
+    EndOfType           = 0xA1
 
 
 
@@ -174,7 +166,9 @@ class Direction(Enum):
     Top                 = 0x05
     Bottom              = 0x06
 
-    EndOfType           = 0x07
+    Center              = 0x07
+
+    EndOfType           = 0x08
 
 
 

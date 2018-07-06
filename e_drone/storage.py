@@ -51,21 +51,22 @@ class Parser:
         self.d[DataType.Information]    = Information.parse
         self.d[DataType.Address]        = Address.parse
 
-        self.d[DataType.State]          = State.parse
-        self.d[DataType.Attitude]       = Attitude.parse
-        self.d[DataType.Bias]           = Bias.parse
-        self.d[DataType.Trim]           = Trim.parse
-
-        self.d[DataType.Imu]            = Imu.parse
-        self.d[DataType.Pressure]       = Pressure.parse
-        self.d[DataType.Battery]        = Battery.parse
-        self.d[DataType.Range]          = Range.parse
-        self.d[DataType.Flow]           = Flow.parse
-        self.d[DataType.Button]         = Button.parse
-        self.d[DataType.Joystick]       = Joystick.parse
-        self.d[DataType.Count]          = Count.parse
         self.d[DataType.Pairing]        = Pairing.parse
         self.d[DataType.Rssi]           = Rssi.parse
+
+        self.d[DataType.State]          = State.parse
+        self.d[DataType.Attitude]       = Attitude.parse
+        self.d[DataType.Altitude]       = Altitude.parse
+        self.d[DataType.Motion]         = Motion.parse
+        self.d[DataType.Flow]           = Flow.parse
+
+        self.d[DataType.Count]          = Count.parse
+        self.d[DataType.Bias]           = Bias.parse
+        self.d[DataType.Trim]           = Trim.parse
+        self.d[DataType.Weight]         = Weight.parse
+
+        self.d[DataType.Button]         = Button.parse
+        self.d[DataType.Joystick]       = Joystick.parse
 
         self.d[DataType.InformationAssembledForController]  = InformationAssembledForController.parse
         self.d[DataType.InformationAssembledForEntry]       = InformationAssembledForEntry.parse
