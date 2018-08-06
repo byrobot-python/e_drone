@@ -77,9 +77,10 @@ class DataType(Enum):
     # 상태, 센서
     State                       = 0x40      # 드론의 상태(비행 모드 방위기준 배터리량)
     Attitude                    = 0x41      # 드론의 자세(Angle)
-    Altitude                    = 0x42      # 높이, 고도
-    Motion                      = 0x43      # Motion 센서 데이터(IMU)
-    Flow                        = 0x44      # Flow
+    Position                    = 0x42      # 위치
+    Altitude                    = 0x43      # 높이, 고도
+    Motion                      = 0x44      # Motion 센서 데이터(IMU)
+    Flow                        = 0x45      # Flow 센서 RAW 데이터
 
     # 설정
     Count                       = 0x50      # 카운트
@@ -690,62 +691,6 @@ class ControlQuad16(ISerializable):
         return data
 
 
-"""
-class ControlDouble8(ISerializable):
-
-    def __init__(self):
-        self.wheel      = 0
-        self.accel      = 0
-
-
-    @classmethod
-    def getSize(cls):
-        return 2
-
-
-    def toArray(self):
-        return pack('<bb', self.wheel, self.accel)
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = ControlDouble8()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-        
-        data.wheel, data.accel = unpack('<bb', dataArray)
-        return data
-
-
-
-class ControlDouble16(ISerializable):
-
-    def __init__(self):
-        self.wheel      = 0
-        self.accel      = 0
-
-
-    @classmethod
-    def getSize(cls):
-        return 4
-
-
-    def toArray(self):
-        return pack('<hh', self.wheel, self.accel)
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = ControlDouble16()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-        
-        data.wheel, data.accel = unpack('<hh', dataArray)
-        return data
-"""
-
 
 class TrimFlight(ControlQuad16):
     pass
@@ -812,17 +757,17 @@ class LightFlagsDrone(Enum):
     
     None_               = 0x0000
 
-    Front               = 0x8000
-    Rear                = 0x4000
-    BodyRed             = 0x2000
-    BodyGreen           = 0x1000
-    BodyBlue            = 0x0800
+    Front               = 0x0001
+    Rear                = 0x0002
+    BodyRed             = 0x0004
+    BodyGreen           = 0x0008
+    BodyBlue            = 0x0010
 
-    A                   = 0x0400
-    B                   = 0x0200
-    CRed                = 0x0100
-    CGreen              = 0x0080
-    CBlue               = 0x0040
+    A                   = 0x0020
+    B                   = 0x0040
+    CRed                = 0x0080
+    CGreen              = 0x0100
+    CBlue               = 0x0200
 
 
 
@@ -846,9 +791,9 @@ class LightFlagsController(Enum):
     
     None_               = 0x00
 
-    BodyRed             = 0x80
-    BodyGreen           = 0x40
-    BodyBlue            = 0x20
+    BodyRed             = 0x01
+    BodyGreen           = 0x02
+    BodyBlue            = 0x04
 
 
 
@@ -1038,11 +983,11 @@ class LightManual(ISerializable):
 
     @classmethod
     def getSize(cls):
-        return 2
+        return 3
 
 
     def toArray(self):
-        return pack('<BB', self.flags, self.brightness)
+        return pack('<HB', self.flags, self.brightness)
 
 
     @classmethod
@@ -1052,7 +997,7 @@ class LightManual(ISerializable):
         if len(dataArray) != cls.getSize():
             return None
         
-        data.flags, data.brightness = unpack('<BB', dataArray)
+        data.flags, data.brightness = unpack('<HB', dataArray)
         return data
 
 
@@ -1496,6 +1441,7 @@ class DisplayLine(Enum):
     Solid               = 0x00
     Dotted              = 0x01
     Dashed              = 0x02
+
 
 
 class DisplayClearAll(ISerializable):
@@ -2591,7 +2537,6 @@ class InformationAssembledForController(ISerializable):
         data.rssi) = unpack('<bbhHhhhbbBb', dataArray)
         
         return data
-
 
 
 

@@ -222,4 +222,3 @@ class Trim(Enum):
 
     EndOfType           = 0x0A
 
-
