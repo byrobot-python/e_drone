@@ -4,7 +4,7 @@ import numpy as np
 from struct import *
 from enum import Enum
 
-from edrone.system import *
+from e_drone.system import *
 
 
 # ISerializable Start
@@ -362,6 +362,35 @@ class Message():
 
 
 
+class SystemInformation(ISerializable):
+
+    def __init__(self):
+        self.crc32bootloader    = 0
+        self.crc32application   = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 8
+
+
+    def toArray(self):
+        return pack('<II', self.crc32bootloader, self.crc32application)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = SystemInformation()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.crc32bootloader, data.crc32application = unpack('<II', dataArray)
+
+        return data
+
+
+
 class Version(ISerializable):
 
     def __init__(self):
@@ -391,35 +420,6 @@ class Version(ISerializable):
         data.v, = unpack('<I', dataArray)
 
         data.build, data.minor, data.major = unpack('<HBB', dataArray)
-
-        return data
-
-
-
-class SystemInformation(ISerializable):
-
-    def __init__(self):
-        self.crc32bootloader    = 0
-        self.crc32application   = 0
-
-
-    @classmethod
-    def getSize(cls):
-        return 8
-
-
-    def toArray(self):
-        return pack('<II', self.crc32bootloader, self.crc32application)
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = SystemInformation()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-        
-        data.crc32bootloader, data.crc32application = unpack('<II', dataArray)
 
         return data
 
@@ -475,6 +475,34 @@ class Information(ISerializable):
 
 
 
+class UpdateLocation(ISerializable):
+
+    def __init__(self):
+        self.indexBlockNext    = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 2
+
+
+    def toArray(self):
+        return pack('<H', self.indexBlockNext)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = UpdateLocation()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.indexBlockNext = unpack('<H', dataArray)
+
+        return data
+
+
+
 class Address(ISerializable):
 
     def __init__(self):
@@ -498,36 +526,6 @@ class Address(ISerializable):
             return None
         
         data.address = dataArray[0:16]
-        return data
-
-
-
-class Command(ISerializable):
-
-    def __init__(self):
-        self.commandType    = CommandType.None_
-        self.option         = 0
-
-
-    @classmethod
-    def getSize(cls):
-        return 2
-
-
-    def toArray(self):
-        return pack('<BB', self.commandType.value, self.option)
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = Command()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-        
-        data.commandType, data.option = unpack('<BB', dataArray)
-        data.commandType = CommandType(data.commandType)
-
         return data
 
 
@@ -586,6 +584,36 @@ class Rssi(ISerializable):
             return None
         
         data.rssi, = unpack('<b', dataArray)
+
+        return data
+
+
+
+class Command(ISerializable):
+
+    def __init__(self):
+        self.commandType    = CommandType.None_
+        self.option         = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 2
+
+
+    def toArray(self):
+        return pack('<BB', self.commandType.value, self.option)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = Command()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.commandType, data.option = unpack('<BB', dataArray)
+        data.commandType = CommandType(data.commandType)
 
         return data
 
@@ -689,11 +717,6 @@ class ControlQuad16(ISerializable):
         data.roll, data.pitch, data.yaw, data.throttle = unpack('<hhhh', dataArray)
         
         return data
-
-
-
-class TrimFlight(ControlQuad16):
-    pass
 
 
 # Control End
@@ -1891,8 +1914,86 @@ class Vibrator(ISerializable):
         return data
 
 
-
 # Vibrator End
+
+
+
+# Button Start
+
+
+class ButtonFlagController(Enum):
+
+    None_               = 0x0000
+    
+    FrontLeftTop        = 0x0001
+    FrontLeftBottom     = 0x0002
+    FrontRightTop       = 0x0004
+    FrontRightBottom    = 0x0008
+    
+    TopLeft             = 0x0010
+    TopRight            = 0x0020    # POWER ON/OFF
+    
+    MidUp               = 0x0040
+    MidLeft             = 0x0080
+    MidRight            = 0x0100
+    MidDown             = 0x0200
+    
+    BottomLeft          = 0x0400
+    BottomRight         = 0x0800
+
+
+
+class ButtonFlagDrone(Enum):
+
+    None_               = 0x0000
+    
+    Reset               = 0x0001
+
+
+
+class ButtonEvent(Enum):
+
+    None_               = 0x00
+    
+    Down                = 0x01  # 누르기 시작
+    Press               = 0x02  # 누르는 중
+    Up                  = 0x03  # 뗌
+    
+    EndContinuePress    = 0x04  # 연속 입력 종료
+
+
+
+class Button(ISerializable):
+
+    def __init__(self):
+        self.button     = 0
+        self.event      = ButtonEvent.None_
+
+
+    @classmethod
+    def getSize(cls):
+        return 3
+
+
+    def toArray(self):
+        return pack('<HB', self.button, self.event.value)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = Button()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.button, data.event = unpack('<HB', dataArray)
+
+        data.event = ButtonEvent(data.event)
+        
+        return data
+
+
+# Button End
 
 
 
@@ -1999,85 +2100,6 @@ class Joystick(ISerializable):
 
 
 
-# Button Start
-
-
-class ButtonFlagController(Enum):
-
-    None_               = 0x0000
-    
-    FrontLeftTop        = 0x0001
-    FrontLeftBottom     = 0x0002
-    FrontRightTop       = 0x0004
-    FrontRightBottom    = 0x0008
-    
-    TopLeft             = 0x0010
-    TopRight            = 0x0020    # POWER ON/OFF
-    
-    MidUp               = 0x0040
-    MidLeft             = 0x0080
-    MidRight            = 0x0100
-    MidDown             = 0x0200
-    
-    BottomLeft          = 0x0400
-    BottomRight         = 0x0800
-
-
-
-class ButtonFlagDrone(Enum):
-
-    None_               = 0x0000
-    
-    Reset               = 0x0001
-
-
-
-class ButtonEvent(Enum):
-
-    None_               = 0x00
-    
-    Down                = 0x01  # 누르기 시작
-    Press               = 0x02  # 누르는 중
-    Up                  = 0x03  # 뗌
-    
-    EndContinuePress    = 0x04  # 연속 입력 종료
-
-
-
-class Button(ISerializable):
-
-    def __init__(self):
-        self.button     = 0
-        self.event      = ButtonEvent.None_
-
-
-    @classmethod
-    def getSize(cls):
-        return 3
-
-
-    def toArray(self):
-        return pack('<HB', self.button, self.event.value)
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = Button()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-        
-        data.button, data.event = unpack('<HB', dataArray)
-
-        data.event = ButtonEvent(data.event)
-        
-        return data
-
-
-# Button End
-
-
-
 # Information Start
 
 
@@ -2124,74 +2146,6 @@ class State(ISerializable):
 
 
 
-class Count(ISerializable):
-
-    def __init__(self):
-        self.timeFlight     = 0
-
-        self.countTakeOff   = 0
-        self.countLanding   = 0
-        self.countAccident  = 0
-
-
-    @classmethod
-    def getSize(cls):
-        return 14
-
-
-    def toArray(self):
-        return pack('<QHHH', self.timeFlight, self.countTakeOff, self.countLanding, self.countAccident)
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = Count()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-        
-        data.timeFlight, data.countTakeOff, data.countLanding, data.countAccident = unpack('<QHHH', dataArray)
-        
-        return data
-
-
-# Information End
-
-
-
-# Sensor Start
-
-
-class Vector(ISerializable):
-
-    def __init__(self):
-        self.x      = 0
-        self.y      = 0
-        self.z      = 0
-
-
-    @classmethod
-    def getSize(cls):
-        return 6
-
-
-    def toArray(self):
-        return pack('<hhh', self.x, self.y, self.z)
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = Vector()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-        
-        data.x, data.y, data.z = unpack('<hhh', dataArray)
-        
-        return data
-
-
-
 class Attitude(ISerializable):
 
     def __init__(self):
@@ -2219,18 +2173,15 @@ class Attitude(ISerializable):
         data.roll, data.pitch, data.yaw = unpack('<hhh', dataArray)
         
         return data
+        
 
 
+class Position(ISerializable):
 
-class Bias(ISerializable):
-    
     def __init__(self):
-        self.accelX     = 0
-        self.accelY     = 0
-        self.accelZ     = 0
-        self.gyroRoll   = 0
-        self.gyroPitch  = 0
-        self.gyroYaw    = 0
+        self.x      = 0
+        self.y      = 0
+        self.z      = 0
 
 
     @classmethod
@@ -2239,17 +2190,48 @@ class Bias(ISerializable):
 
 
     def toArray(self):
-        return pack('<hhhhhh', self.accelX, self.accelY, self.accelZ, self.gyroRoll, self.gyroPitch, self.gyroYaw)
+        return pack('<fff', self.x, self.y, self.z)
 
 
     @classmethod
     def parse(cls, dataArray):
-        data = Bias()
+        data = Position()
         
         if len(dataArray) != cls.getSize():
             return None
         
-        data.accelX, data.accelY, data.accelZ, data.gyroRoll, data.gyroPitch, data.gyroYaw = unpack('<hhhhhh', dataArray)
+        data.x, data.y, data.z = unpack('<fff', dataArray)
+        
+        return data
+
+
+
+class Altitude(ISerializable):
+
+    def __init__(self):
+        self.temperature    = 0
+        self.pressure       = 0
+        self.altitude       = 0
+        self.rangeHeight    = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 16
+
+
+    def toArray(self):
+        return pack('<ffff', self.temperature, self.pressure, self.altitude, self.rangeHeight)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = Altitude()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.temperature, data.pressure, data.altitude, data.rangeHeight = unpack('<ffff', dataArray)
         
         return data
 
@@ -2291,37 +2273,6 @@ class Motion(ISerializable):
 
 
 
-class Altitude(ISerializable):
-
-    def __init__(self):
-        self.temperature    = 0
-        self.pressure       = 0
-        self.altitude       = 0
-        self.rangeHeight    = 0
-
-
-    @classmethod
-    def getSize(cls):
-        return 16
-
-
-    def toArray(self):
-        return pack('<ffff', self.temperature, self.pressure, self.altitude, self.rangeHeight)
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = Altitude()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-        
-        data.temperature, data.pressure, data.altitude, data.rangeHeight = unpack('<ffff', dataArray)
-        
-        return data
-
-
-
 class Flow(ISerializable):
 
     def __init__(self):
@@ -2348,6 +2299,112 @@ class Flow(ISerializable):
         data.x, data.y = unpack('<ff', dataArray)
         
         return data
+
+
+# Information End
+
+
+
+# Sensor Start
+
+
+class Vector(ISerializable):
+
+    def __init__(self):
+        self.x      = 0
+        self.y      = 0
+        self.z      = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 6
+
+
+    def toArray(self):
+        return pack('<hhh', self.x, self.y, self.z)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = Vector()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.x, data.y, data.z = unpack('<hhh', dataArray)
+        
+        return data
+
+
+
+class Count(ISerializable):
+
+    def __init__(self):
+        self.timeFlight     = 0
+
+        self.countTakeOff   = 0
+        self.countLanding   = 0
+        self.countAccident  = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 14
+
+
+    def toArray(self):
+        return pack('<QHHH', self.timeFlight, self.countTakeOff, self.countLanding, self.countAccident)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = Count()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.timeFlight, data.countTakeOff, data.countLanding, data.countAccident = unpack('<QHHH', dataArray)
+        
+        return data
+
+
+
+class Bias(ISerializable):
+    
+    def __init__(self):
+        self.accelX     = 0
+        self.accelY     = 0
+        self.accelZ     = 0
+        self.gyroRoll   = 0
+        self.gyroPitch  = 0
+        self.gyroYaw    = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 12
+
+
+    def toArray(self):
+        return pack('<hhhhhh', self.accelX, self.accelY, self.accelZ, self.gyroRoll, self.gyroPitch, self.gyroYaw)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = Bias()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.accelX, data.accelY, data.accelZ, data.gyroRoll, data.gyroPitch, data.gyroYaw = unpack('<hhhhhh', dataArray)
+        
+        return data
+
+
+
+class Trim(ControlQuad16):
+    pass
 
 
 

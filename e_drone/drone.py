@@ -13,11 +13,11 @@ from operator import eq
 import colorama
 from colorama import Fore, Back, Style
 
-from edrone.protocol import *
-from edrone.storage import *
-from edrone.receiver import *
-from edrone.system import *
-from edrone.crc import *
+from e_drone.protocol import *
+from e_drone.storage import *
+from e_drone.receiver import *
+from e_drone.system import *
+from e_drone.crc import *
 
 
 
@@ -109,11 +109,7 @@ class Drone:
 
         self._serialport = serial.Serial(
             port        = portname,
-            baudrate    = 115200,
-            parity      = serial.PARITY_NONE,
-            stopbits    = serial.STOPBITS_ONE,
-            bytesize    = serial.EIGHTBITS,
-            timeout     = 0)
+            baudrate    = 115200)
 
         if( self.isOpen() ):
             self._flagThreadRun = True
@@ -453,24 +449,6 @@ class Drone:
 
 
 # Control Start
-
-
-    def sendStart(self):
-        
-        header = Header()
-        
-        header.dataType = DataType.Command
-        header.length   = Command.getSize()
-        header.from_    = DeviceType.Tester
-        header.to_      = DeviceType.Drone
-
-        data = Command()
-
-        data.commandType    = CommandType.FlightEvent
-        data.option         = FlightEvent.Start.value
-
-        return self.transfer(header, data)
-
 
 
     def sendTakeOff(self):

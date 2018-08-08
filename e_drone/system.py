@@ -3,6 +3,8 @@ from enum import Enum
 
 class ModelNumber(Enum):
 
+    None_                   = 0x00000000
+
     Drone_4_Drone_P3        = 0x00041003    # Drone_4_Drone_P3
     Drone_4_Controlle_P1    = 0x00042001    # Drone_4_Controlle_P1
     Drone_4_Link_P0         = 0x00043000    # Drone_4_Link_P0
@@ -205,7 +207,7 @@ class Headless(Enum):
 
 
 
-class Trim(Enum):
+class TrimIncDec(Enum):
     
     None_               = 0x00  # 없음
 
@@ -221,4 +223,17 @@ class Trim(Enum):
     Reset               = 0x09  # 전체 트림 리셋
 
     EndOfType           = 0x0A
+
+
+
+class ModeMovement(Enum):
+    
+    None_               = 0x00
+
+    Hovering            = 0x01      # Hovering
+    Moving              = 0x02      # Moving
+
+    EndOfType           = 0x04
+
+
 

@@ -1,7 +1,7 @@
 import time
 
-from edrone.protocol import *
-from edrone.crc import CRC16
+from e_drone.protocol import *
+from e_drone.crc import CRC16
 
 
 
