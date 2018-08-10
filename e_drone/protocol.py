@@ -461,12 +461,12 @@ class Information(ISerializable):
         if len(dataArray) != cls.getSize():
             return None
         
-        indexStart = 0;        indexEnd = 1;                        data.modeUpdate,    = unpack('<B', dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 4;                       data.modelNumber,   = unpack('<I', dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Version.getSize();       data.version        = Version.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 2;                       data.year,          = unpack('<H', dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 1;                       data.month,         = unpack('<B', dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 1;                       data.day,           = unpack('<B', dataArray[indexStart:indexEnd])
+        indexStart = 0;        indexEnd = 1;                    data.modeUpdate,    = unpack('<B', dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 4;                   data.modelNumber,   = unpack('<I', dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Version.getSize();   data.version        = Version.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 2;                   data.year,          = unpack('<H', dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 1;                   data.month,         = unpack('<B', dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 1;                   data.day,           = unpack('<B', dataArray[indexStart:indexEnd])
 
         data.modeUpdate     = ModeUpdate(data.modeUpdate)
         data.modelNumber    = ModelNumber(data.modelNumber)
@@ -619,6 +619,165 @@ class Command(ISerializable):
 
 
 # Common End
+
+
+
+# Monitor Start
+
+
+class MonitorHeaderType(Enum):
+    
+    Monitor0            = 0x00
+    Monitor4            = 0x01
+    Monitor8            = 0x02
+
+    EndOfType           = 0x07
+
+
+
+class MonitorDataType(Enum):
+    
+    U8          = 0x00,
+    S8          = 0x01,
+    U16         = 0x02,
+    S16         = 0x03,
+    U32         = 0x04,
+    S32         = 0x05,
+    U64         = 0x06,
+    S64         = 0x07,
+    F32         = 0x08,
+    F64         = 0x09,
+
+    EndOfType   = 0x0A
+
+
+
+class MonitorType(ISerializable):
+
+    def __init__(self):
+        self.monitorHeaderType    = MonitorHeaderType.Monitor8
+
+
+    @classmethod
+    def getSize(cls):
+        return 1
+
+
+    def toArray(self):
+        return pack('<B', self.monitorHeaderType.value)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = MonitorType()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.monitorHeaderType, = unpack('<B', dataArray)
+
+        data.monitorHeaderType  = MonitorHeaderType(data.monitorHeaderType)
+
+        return data
+
+
+
+class Monitor0(ISerializable):
+
+    def __init__(self):
+        self.monitorDataType        = MonitorDataType.F32
+        self.index                  = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 2
+
+
+    def toArray(self):
+        return pack('<BB', self.monitorDataType.value, self.index)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = Monitor0()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.monitorDataType, data.index = unpack('<BB', dataArray)
+
+        data.monitorDataType  = MonitorDataType(data.monitorDataType)
+
+        return data
+
+
+
+class Monitor4(ISerializable):
+
+    def __init__(self):
+        self.systemTime             = 0
+        self.monitorDataType        = MonitorDataType.F32
+        self.index                  = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 6
+
+
+    def toArray(self):
+        return pack('<IBB', self.systemTime, self.monitorDataType.value, self.index)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = Monitor4()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.systemTime, data.monitorDataType, data.index = unpack('<IBB', dataArray)
+
+        data.monitorDataType  = MonitorDataType(data.monitorDataType)
+
+        return data
+
+
+
+class Monitor8(ISerializable):
+    
+    def __init__(self):
+        self.systemTime             = 0
+        self.monitorDataType        = MonitorDataType.F32
+        self.index                  = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 10
+
+
+    def toArray(self):
+        return pack('<QBB', self.systemTime, self.monitorDataType.value, self.index)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = Monitor8()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.systemTime, data.monitorDataType, data.index = unpack('<QBB', dataArray)
+
+        data.monitorDataType  = MonitorDataType(data.monitorDataType)
+
+        return data
+
+
+
+# Monitor End
 
 
 

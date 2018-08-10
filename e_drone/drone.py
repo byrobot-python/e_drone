@@ -65,7 +65,13 @@ class Drone:
         self._storageCount              = StorageCount()
         self._parser                    = Parser()
 
-        self.timeStartProgram           = time.time()   # 프로그램 시작 시각 기록
+        self.timeStartProgram           = time.time()           # 프로그램 시작 시각 기록
+
+        self.systemTimeMonitorData      = 0
+        self.monitorData                = []
+
+        for i in range(0, 36):
+            self.monitorData.append(i)
 
         colorama.init()
 
@@ -269,6 +275,9 @@ class Drone:
         # 콜백 이벤트 실행
         self._runEventHandler(header.dataType)
 
+        # Monitor 데이터 처리
+        self._runHandlerForMonitor(header, dataArray)
+
         # 데이터 처리 완료 확인
         self._receiver.checked()
 
@@ -277,6 +286,8 @@ class Drone:
 
 
     def _runHandler(self, header, dataArray):
+        
+        # 일반 데이터 처리
         if self._parser.d[header.dataType] != None:
             self._storageHeader.d[header.dataType]   = header
             self._storage.d[header.dataType]         = self._parser.d[header.dataType](dataArray)
@@ -289,6 +300,65 @@ class Drone:
             return self._eventHandler.d[dataType](self._storage.d[dataType])
         else:
             return None
+
+
+
+    def _runHandlerForMonitor(self, header, dataArray):
+        
+        # Monitor 데이터 처리
+        # 수신 받은 데이터를 파싱하여 self.monitorData[] 배열에 데이터를 넣음
+        if header.dataType == DataType.Monitor:
+            
+            monitorHeaderType = MonitorHeaderType(dataArray[0])
+
+            if monitorHeaderType == MonitorHeaderType.Monitor0:
+                
+                monitor0 = Monitor0.parse(dataArray[1:1 + Monitor0.getSize()])
+
+                if monitor0.monitorDataType == MonitorDataType.F32:
+                    
+                    dataCount = (dataArray.len() - 1 - Monitor0.getSize()) / 4
+
+                    for i in range(0, dataCount):
+                        
+                        if monitor0.index + i < self.monitorData.len():
+                            
+                            index = 1 + Monitor0.getSize() + (i * 4)
+                            self.monitorData[monitor0.index + i], = unpack('<f', dataArray[index:index + 4])
+
+            elif monitorHeaderType == MonitorHeaderType.Monitor4:
+                
+                monitor4 = Monitor4.parse(dataArray[1:1 + Monitor4.getSize()])
+
+                if monitor4.monitorDataType == MonitorDataType.F32:
+                    
+                    self.systemTimeMonitorData = monitor4.systemTime
+                    
+                    dataCount = (dataArray.len() - 1 - Monitor4.getSize()) / 4
+
+                    for i in range(0, dataCount):
+                        
+                        if monitor4.index + i < self.monitorData.len():
+                            
+                            index = 1 + Monitor4.getSize() + (i * 4)
+                            self.monitorData[monitor4.index + i], = unpack('<f', dataArray[index:index + 4])
+
+            elif monitorHeaderType == MonitorHeaderType.Monitor8:
+                
+                monitor8 = Monitor8.parse(dataArray[1:1 + Monitor8.getSize()])
+
+                if monitor8.monitorDataType == MonitorDataType.F32:
+                    
+                    self.systemTimeMonitorData = monitor8.systemTime
+                    
+                    dataCount = (dataArray.len() - 1 - Monitor8.getSize()) / 4
+
+                    for i in range(0, dataCount):
+                        
+                        if monitor8.index + i < self.monitorData.len():
+                            
+                            index = 1 + Monitor8.getSize() + (i * 4)
+                            self.monitorData[monitor8.index + i], = unpack('<f', dataArray[index:index + 4])
 
 
 
