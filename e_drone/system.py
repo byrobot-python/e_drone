@@ -121,16 +121,18 @@ class ErrorFlagsForSensor(Enum):
     Flow_NoAnswer               = 0x00001000    # Flow 센서 응답 없음
     Flow_WrongValue             = 0x00002000
 
-    Battery_NoAnswer            = 0x00010000    # 배터리 응답 없음
-    Battery_WrongValue          = 0x00020000
 
 
 
 class ErrorFlagsForState(Enum):
 
-    None_                       = 0x00000000
+    None_                           = 0x00000000
 
-    NotTested                   = 0x00000001    # 테스트하지 않음
+    NotRegistered                   = 0x00000001    # 장치 등록이 안됨
+    NotTested                       = 0x00000002    # 테스트하지 않음
+    FlashReadLock_UnLocked          = 0x00000003    # 플래시 메모리 읽기 Lock이 안 걸림
+    BootloaderWriteLock_UnLocked    = 0x00000004    # 부트로더 영역 쓰기 Lock이 안 걸림
+
 
 
 
@@ -148,6 +150,8 @@ class FlightEvent(Enum):
     FlipRear            = 0x15
     FlipLeft            = 0x16
     FlipRight           = 0x17
+
+    Return              = 0x18
 
     ResetHeading        = 0xA0
 

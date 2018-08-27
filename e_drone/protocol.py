@@ -36,20 +36,20 @@ class DataType(Enum):
     
     Ping                        = 0x01      # 통신 확인
     Ack                         = 0x02      # 데이터 수신에 대한 응답
-    Error                       = 0x03      # 오류(reserve 비트 플래그는 추후에 지정)
+    Error                       = 0x03      # 오류(reserve, 비트 플래그는 추후에 지정)
     Request                     = 0x04      # 지정한 타입의 데이터 요청
     Message                     = 0x05      # 문자열 데이터
-    Reserved_1                  = 0x06      # 예약
-    SystemInformation           = 0x07      # 시스템 정보
-    Monitor                     = 0x08      # 디버깅용 값 배열 전송. 첫번째 바이트에 타입 두 번째 바이트에 페이지 지정(수신 받는 데이터의 저장 경로 구분)
-    SystemCount                 = 0x09      # 시스템 카운트
-    Information                 = 0x0A      # 장치 정보
-    UpdateLocation              = 0x0B      # 펌웨어 업데이트 위치 정정
-    Update                      = 0x0C      # 펌웨어 업데이트
-    Encrypt                     = 0x0D      # 펌웨어 암호화
-    Address                     = 0x0E      # 장치 주소
-    Administrator               = 0x0F      # 관리자 권한 획득
-    Control                     = 0x10      # 조종 명령
+    Address                     = 0x06      # 장치 주소(MAC이 있는 경우 MAC) 혹은 고유번호(MAC이 없는 경우 UUID)
+    Information                 = 0x07      # 펌웨어 및 장치 정보
+    Update                      = 0x08      # 펌웨어 업데이트
+    UpdateLocation              = 0x09      # 펌웨어 업데이트 위치 정정
+    Encrypt                     = 0x0A      # 펌웨어 암호화
+    SystemCount                 = 0x0B      # 시스템 카운트
+    SystemInformation           = 0x0C      # 시스템 정보
+    Registration                = 0x0D      # 제품 등록
+    Administrator               = 0x0E      # 관리자 권한 획득
+    Monitor                     = 0x0F      # 디버깅용 값 배열 전송. 첫번째 바이트에 타입, 두 번째 바이트에 페이지 지정(수신 받는 데이터의 저장 경로 구분)
+    Control                     = 0x10      # 조종
 
     Command                     = 0x11      # 명령
     Pairing                     = 0x12      # 페어링
@@ -57,22 +57,9 @@ class DataType(Enum):
 
     # Light
     LightManual                 = 0x20      # LED 수동 제어
-
-    LightMode                   = 0x21      # LED 모드 지정
-    LightModeCommand            = 0x22      # LED 모드 커맨드
-    LightModeColor              = 0x23      # LED 모드 3색 직접 지정
-    LightModeColorCommand       = 0x24      # LED 모드 3색 직접 지정 커맨드
-    LightModeColors             = 0x25      # LED 모드 팔레트의 색상으로 지정
-    LightModeColorsCommand      = 0x26      # LED 모드 팔레트의 색상으로 지정 커맨드
-
-    LightEvent                  = 0x27      # LED 이벤트
-    LightEventCommand           = 0x28      # LED 이벤트 커맨드
-    LightEventColor             = 0x29      # LED 이벤트 3색 직접 지정
-    LightEventColorCommand      = 0x2A      # LED 이벤트 3색 직접 지정 커맨드
-    LightEventColors            = 0x2B      # LED 이벤트 팔레트의 색상으로 지정
-    LightEventColorsCommand     = 0x2C      # LED 이벤트 팔레트의 색상으로 지정 커맨드
-
-    LightModeDefaultColor       = 0x2D      # LED 초기 모드 3색 직접 지정
+    LightMode                   = 0x21      # LED 모드
+    LightEvent                  = 0x22      # LED 이벤트
+    LightDefault                = 0x23      # LED 초기 모드
 
     # 상태, 센서
     State                       = 0x40      # 드론의 상태(비행 모드 방위기준 배터리량)
@@ -151,7 +138,6 @@ class CommandType(Enum):
 
     # 관리자
     ClearCounter            = 0xA0      # 카운터 클리어(관리자 권한을 획득했을 경우에만 동작)
-    SetTestComplete         = 0xA1      # 테스트 완료 처리
 
     # Navigation
     NavigationTargetClear   = 0xE0      # 네비게이션 목표점 초기화
@@ -618,6 +604,113 @@ class Command(ISerializable):
         return data
 
 
+
+class CommandLightEvent(ISerializable):
+
+    def __init__(self):
+        self.command    = Command()
+        self.event      = LightEvent()
+
+
+    @classmethod
+    def getSize(cls):
+        return Command.getSize() + LightEvent.getSize()
+
+
+    def toArray(self):
+        dataArray = bytearray()
+        dataArray.extend(self.command.toArray())
+        dataArray.extend(self.event.toArray())
+        return dataArray
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = CommandLightEvent()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        indexStart = 0;        indexEnd = Command.getSize();         data.command    = Command.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
+        
+        return data
+        
+
+
+class CommandLightEventColor(ISerializable):
+
+    def __init__(self):
+        self.command    = Command()
+        self.event      = LightEvent()
+        self.color      = Color()
+
+
+    @classmethod
+    def getSize(cls):
+        return Command.getSize() + LightEvent.getSize() + Color.getSize()
+
+
+    def toArray(self):
+        dataArray = bytearray()
+        dataArray.extend(self.command.toArray())
+        dataArray.extend(self.event.toArray())
+        dataArray.extend(self.color.toArray())
+        return dataArray
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = CommandLightEventColor()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+
+        indexStart = 0;        indexEnd = Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += LightEvent.getSize();   data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += Color.getSize();        data.color      = Color.parse(dataArray[indexStart:indexEnd])
+        
+        return data
+        
+
+
+class CommandLightEventColors(ISerializable):
+
+    def __init__(self):
+        self.event      = LightEvent()
+        self.colors     = Colors.Black
+        self.command    = Command()
+
+
+    @classmethod
+    def getSize(cls):
+        return Command.getSize() + LightEvent.getSize() + 1
+
+
+    def toArray(self):
+        dataArray = bytearray()
+        dataArray.extend(self.command.toArray())
+        dataArray.extend(self.event.toArray())
+        dataArray.extend(pack('<B', self.colors.value))
+        return dataArray
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = Command()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        indexStart = 0;        indexEnd = Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += LightEvent.getSize();   data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += 1;                      data.colors,    = unpack('<B', dataArray[indexStart:indexEnd])
+
+        data.colors     = Colors(data.colors)
+
+        return data
+
+
 # Common End
 
 
@@ -814,7 +907,7 @@ class ControlQuad8(ISerializable):
 
 
 
-class Quad8AndRequestData(ISerializable):
+class ControlQuad8AndRequestData(ISerializable):
 
     def __init__(self):
         self.roll       = 0
@@ -835,7 +928,7 @@ class Quad8AndRequestData(ISerializable):
 
     @classmethod
     def parse(cls, dataArray):
-        data = Quad8AndRequestData()
+        data = ControlQuad8AndRequestData()
         
         if len(dataArray) != cls.getSize():
             return None
@@ -843,37 +936,6 @@ class Quad8AndRequestData(ISerializable):
         data.roll, data.pitch, data.yaw, data.throttle, data.dataType = unpack('<bbbbb', dataArray)
         
         data.dataType = DataType(data.dataType)
-        
-        return data
-
-
-
-class ControlQuad16(ISerializable):
-
-    def __init__(self):
-        self.roll       = 0
-        self.pitch      = 0
-        self.yaw        = 0
-        self.throttle   = 0
-
-
-    @classmethod
-    def getSize(cls):
-        return 8
-
-
-    def toArray(self):
-        return pack('<hhhh', self.roll, self.pitch, self.yaw, self.throttle)
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = ControlQuad16()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-        
-        data.roll, data.pitch, data.yaw, data.throttle = unpack('<hhhh', dataArray)
         
         return data
 
@@ -1242,38 +1304,6 @@ class LightEvent(ISerializable):
 
 
 
-class LightModeCommand(ISerializable):
-
-    def __init__(self):
-        self.mode       = LightMode()
-        self.command    = Command()
-
-
-    @classmethod
-    def getSize(cls):
-        return LightMode.getSize() + Command.getSize()
-
-
-    def toArray(self):
-        dataArray = bytearray()
-        dataArray.extend(self.mode.toArray())
-        dataArray.extend(self.command.toArray())
-        return dataArray
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = LightModeCommand()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-
-        indexStart = 0;        indexEnd = LightMode.getSize();    data.mode       = LightMode.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Command.getSize();     data.command    = Command.parse(dataArray[indexStart:indexEnd])
-        return data
-
-
-
 class LightModeColor(ISerializable):
     
     def __init__(self):
@@ -1302,41 +1332,6 @@ class LightModeColor(ISerializable):
 
         indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(dataArray[indexStart:indexEnd])
-        return data
-
-
-
-class LightModeColorCommand(ISerializable):
-    
-    def __init__(self):
-        self.mode       = LightMode()
-        self.color      = Color()
-        self.command    = Command()
-
-
-    @classmethod
-    def getSize(cls):
-        return LightMode.getSize() + Color.getSize() + Command.getSize()
-
-
-    def toArray(self):
-        dataArray = bytearray()
-        dataArray.extend(self.mode.toArray())
-        dataArray.extend(self.color.toArray())
-        dataArray.extend(self.command.toArray())
-        return dataArray
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = LightModeColorCommand()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-
-        indexStart = 0;        indexEnd = LightMode.getSize();    data.mode       = LightMode.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Color.getSize();       data.color      = Color.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Command.getSize();     data.command    = Command.parse(dataArray[indexStart:indexEnd])
         return data
 
 
@@ -1376,77 +1371,6 @@ class LightModeColors(ISerializable):
 
 
 
-class LightModeColorsCommand(ISerializable):
-    
-    def __init__(self):
-        self.mode       = LightMode()
-        self.colors     = Colors.Black
-        self.command    = Command()
-
-
-    @classmethod
-    def getSize(cls):
-        return LightMode.getSize() + 1 + Command.getSize()
-
-
-    def toArray(self):
-        dataArray = bytearray()
-        dataArray.extend(self.mode.toArray())
-        dataArray.extend(pack('<B', self.colors.value))
-        dataArray.extend(self.command.toArray())
-        return dataArray
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = LightModeColorsCommand()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-
-        indexStart = 0;        indexEnd = LightMode.getSize();      data.mode       = LightMode.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 1;                       data.colors,    = unpack('<B', dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
-
-        data.colors     = Colors(data.colors)
-
-        return data
-
-
-
-class LightEventCommand(ISerializable):
-    
-    def __init__(self):
-        self.event      = LightEvent()
-        self.command    = Command()
-
-
-    @classmethod
-    def getSize(cls):
-        return LightEvent.getSize() + Command.getSize()
-
-
-    def toArray(self):
-        dataArray = bytearray()
-        dataArray.extend(self.event.toArray())
-        dataArray.extend(self.command.toArray())
-        return dataArray
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = LightEventCommand()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
-        
-        return data
-
-
-
 class LightEventColor(ISerializable):
     
     def __init__(self):
@@ -1480,42 +1404,6 @@ class LightEventColor(ISerializable):
 
 
 
-class LightEventColorCommand(ISerializable):
-    
-    def __init__(self):
-        self.event      = LightEvent()
-        self.color      = Color()
-        self.command    = Command()
-
-
-    @classmethod
-    def getSize(cls):
-        return LightEvent.getSize() + Color.getSize() + Command.getSize()
-
-
-    def toArray(self):
-        dataArray = bytearray()
-        dataArray.extend(self.event.toArray())
-        dataArray.extend(self.color.toArray())
-        dataArray.extend(self.command.toArray())
-        return dataArray
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = LightEventColorCommand()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Color.getSize();         data.color      = Color.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
-        
-        return data
-
-
-
 class LightEventColors(ISerializable):
     
     def __init__(self):
@@ -1544,44 +1432,6 @@ class LightEventColors(ISerializable):
 
         indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
         indexStart = indexEnd; indexEnd += 1;                       data.colors,    = unpack('<B', dataArray[indexStart:indexEnd])
-
-        data.colors     = Colors(data.colors)
-
-        return data
-
-
-
-class LightEventColorsCommand(ISerializable):
-    
-    def __init__(self):
-        self.event      = LightEvent()
-        self.colors     = Colors.Black
-        self.command    = Command()
-
-
-    @classmethod
-    def getSize(cls):
-        return LightEvent.getSize() + 1 + Command.getSize()
-
-
-    def toArray(self):
-        dataArray = bytearray()
-        dataArray.extend(self.event.toArray())
-        dataArray.extend(pack('<B', self.colors.value))
-        dataArray.extend(self.command.toArray())
-        return dataArray
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = LightEventColorsCommand()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-
-        indexStart = 0;        indexEnd = LightEvent.getSize();     data.event      = LightEvent.parse(dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += 1;                       data.colors,    = unpack('<B', dataArray[indexStart:indexEnd])
-        indexStart = indexEnd; indexEnd += Command.getSize();       data.command    = Command.parse(dataArray[indexStart:indexEnd])
 
         data.colors     = Colors(data.colors)
 
@@ -2562,8 +2412,34 @@ class Bias(ISerializable):
 
 
 
-class Trim(ControlQuad16):
-    pass
+class Trim(ISerializable):
+
+    def __init__(self):
+        self.roll       = 0
+        self.pitch      = 0
+        self.yaw        = 0
+        self.throttle   = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 8
+
+
+    def toArray(self):
+        return pack('<hhhh', self.roll, self.pitch, self.yaw, self.throttle)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = Trim()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.roll, data.pitch, data.yaw, data.throttle = unpack('<hhhh', dataArray)
+        
+        return data
 
 
 
@@ -2628,7 +2504,6 @@ class MotorBlock(ISerializable):
         data.rotation = Rotation(data.rotation)
         
         return data
-
 
 
 
