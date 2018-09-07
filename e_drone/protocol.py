@@ -951,49 +951,42 @@ class LightModeDrone(Enum):
     
     None_                   = 0x00
 
-    FrontNone               = 0x10
-    FrontManual             = 0x11      # 수동 제어
-    FrontHold               = 0x12      # 지정한 색상을 계속 켬
-    FrontFlicker            = 0x13      # 깜빡임
-    FrontFlickerDouble      = 0x14      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
-    FrontDimming            = 0x15      # 밝기 제어하여 천천히 깜빡임
+    RearNone                = 0x10
+    RearManual              = 0x11      # 수동 제어
+    RearHold                = 0x12      # 지정한 색상을 계속 켬
+    RearFlicker             = 0x13      # 깜빡임
+    RearFlickerDouble       = 0x14      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
+    RearDimming             = 0x15      # 밝기 제어하여 천천히 깜빡임
 
-    RearNone                = 0x20
-    RearManual              = 0x21      # 수동 제어
-    RearHold                = 0x22      # 지정한 색상을 계속 켬
-    RearFlicker             = 0x23      # 깜빡임
-    RearFlickerDouble       = 0x24      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
-    RearDimming             = 0x25      # 밝기 제어하여 천천히 깜빡임
+    BodyNone                = 0x20
+    BodyManual              = 0x21      # 수동 제어
+    BodyHold                = 0x22      # 지정한 색상을 계속 켬
+    BodyFlicker             = 0x23      # 깜빡임
+    BodyFlickerDouble       = 0x24      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
+    BodyDimming             = 0x25      # 밝기 제어하여 천천히 깜빡임
 
-    BodyNone                = 0x30
-    BodyManual              = 0x31      # 수동 제어
-    BodyHold                = 0x32      # 지정한 색상을 계속 켬
-    BodyFlicker             = 0x33      # 깜빡임
-    BodyFlickerDouble       = 0x34      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
-    BodyDimming             = 0x35      # 밝기 제어하여 천천히 깜빡임
+    ANone                   = 0x30
+    AManual                 = 0x31      # 수동 제어
+    AHold                   = 0x32      # 지정한 색상을 계속 켬
+    AFlicker                = 0x33      # 깜빡임
+    AFlickerDouble          = 0x34      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
+    ADimming                = 0x35      # 밝기 제어하여 천천히 깜빡임
 
-    ANone                   = 0x40
-    AManual                 = 0x41      # 수동 제어
-    AHold                   = 0x42      # 지정한 색상을 계속 켬
-    AFlicker                = 0x43      # 깜빡임
-    AFlickerDouble          = 0x44      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
-    ADimming                = 0x45      # 밝기 제어하여 천천히 깜빡임
+    BNone                   = 0x40
+    BManual                 = 0x41      # 수동 제어
+    BHold                   = 0x42      # 지정한 색상을 계속 켬
+    BFlicker                = 0x43      # 깜빡임
+    BFlickerDouble          = 0x44      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
+    BDimming                = 0x45      # 밝기 제어하여 천천히 깜빡임
 
-    BNone                   = 0x50
-    BManual                 = 0x51      # 수동 제어
-    BHold                   = 0x52      # 지정한 색상을 계속 켬
-    BFlicker                = 0x53      # 깜빡임
-    BFlickerDouble          = 0x54      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
-    BDimming                = 0x55      # 밝기 제어하여 천천히 깜빡임
+    CNone                   = 0x50
+    CManual                 = 0x51      # 수동 제어
+    CHold                   = 0x52      # 지정한 색상을 계속 켬
+    CFlicker                = 0x53      # 깜빡임
+    CFlickerDouble          = 0x54      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
+    CDimming                = 0x55      # 밝기 제어하여 천천히 깜빡임
 
-    CNone                   = 0x60
-    CManual                 = 0x61      # 수동 제어
-    CHold                   = 0x62      # 지정한 색상을 계속 켬
-    CFlicker                = 0x63      # 깜빡임
-    CFlickerDouble          = 0x64      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
-    CDimming                = 0x65      # 밝기 제어하여 천천히 깜빡임
-
-    EndOfType               = 0x66
+    EndOfType               = 0x56
 
 
 
@@ -1001,17 +994,16 @@ class LightFlagsDrone(Enum):
     
     None_               = 0x0000
 
-    Front               = 0x0001
-    Rear                = 0x0002
-    BodyRed             = 0x0004
-    BodyGreen           = 0x0008
-    BodyBlue            = 0x0010
+    Rear                = 0x0001
+    BodyRed             = 0x0002
+    BodyGreen           = 0x0004
+    BodyBlue            = 0x0008
 
-    A                   = 0x0020
-    B                   = 0x0040
-    CRed                = 0x0080
-    CGreen              = 0x0100
-    CBlue               = 0x0200
+    A                   = 0x0010
+    B                   = 0x0020
+    CRed                = 0x0040
+    CGreen              = 0x0080
+    CBlue               = 0x0100
 
 
 

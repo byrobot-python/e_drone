@@ -5,8 +5,11 @@ class ModelNumber(Enum):
 
     None_                   = 0x00000000
 
-    Drone_4_Drone_P3        = 0x00041003    # Drone_4_Drone_P3
+    Drone_4_Drone_P4        = 0x00041004    # Drone_4_Drone_P4
+
     Drone_4_Controlle_P1    = 0x00042001    # Drone_4_Controlle_P1
+    Drone_4_Controlle_P2    = 0x00042002    # Drone_4_Controlle_P2
+
     Drone_4_Link_P0         = 0x00043000    # Drone_4_Link_P0
 
 
@@ -56,7 +59,7 @@ class ModeControlFlight(Enum):
     Attitude            = 0x10      # 자세 - X,Y는 각도(deg)로 입력받음, Z,Yaw는 속도(m/s)로 입력 받음
     Position            = 0x11      # 위치 - X,Y,Z,Yaw는 속도(m/s)로 입력 받음
     Function            = 0x12      # 기능 - X,Y,Z,Yaw는 속도(m/s)로 입력 받음
-    Rate                = 0x13      # Rate - X,Y는 각속도(deg/s)로 입력받음, Z,Yaw는 속도(m/s)로 입력 받음e
+    Rate                = 0x13      # Rate - X,Y는 각속도(deg/s)로 입력받음, Z,Yaw는 속도(m/s)로 입력 받음
     
     EndOfType           = 0x14
 
@@ -98,8 +101,9 @@ class ModeUpdate(Enum):
 
     NotAvailable        = 0x05      # 업데이트 불가능 상태(Debug 모드 등)
     RunApplication      = 0x06      # 어플리케이션 동작 중
+    NotRegistered       = 0x07      # 등록되지 않음
 
-    EndOfType           = 0x07
+    EndOfType           = 0x08
 
 
 
@@ -115,8 +119,8 @@ class ErrorFlagsForSensor(Enum):
     Pressure_NoAnswer           = 0x00000010    # 압력센서 응답 없음
     Pressure_WrongValue         = 0x00000020
 
-    Range_NoAnswer              = 0x00000100    # 바닥 거리센서 응답 없음
-    Range_WrongValue            = 0x00000200
+    RangeGround_NoAnswer        = 0x00000100    # 바닥 거리센서 응답 없음
+    RangeGround_WrongValue      = 0x00000200
 
     Flow_NoAnswer               = 0x00001000    # Flow 센서 응답 없음
     Flow_WrongValue             = 0x00002000
@@ -129,9 +133,8 @@ class ErrorFlagsForState(Enum):
     None_                           = 0x00000000
 
     NotRegistered                   = 0x00000001    # 장치 등록이 안됨
-    NotTested                       = 0x00000002    # 테스트하지 않음
-    FlashReadLock_UnLocked          = 0x00000003    # 플래시 메모리 읽기 Lock이 안 걸림
-    BootloaderWriteLock_UnLocked    = 0x00000004    # 부트로더 영역 쓰기 Lock이 안 걸림
+    FlashReadLock_UnLocked          = 0x00000002    # 플래시 메모리 읽기 Lock이 안 걸림
+    BootloaderWriteLock_UnLocked    = 0x00000003    # 부트로더 영역 쓰기 Lock이 안 걸림
 
 
 
