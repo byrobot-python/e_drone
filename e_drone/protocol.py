@@ -61,13 +61,16 @@ class DataType(Enum):
     LightEvent                  = 0x22      # LED 이벤트
     LightDefault                = 0x23      # LED 초기 모드
 
+    # 센서 RAW 데이터
+    RawMotion                   = 0x30      # Motion 센서 데이터 RAW 값
+    RawFlow                     = 0x31      # Flow 센서 데이터 RAW 값
+
     # 상태, 센서
     State                       = 0x40      # 드론의 상태(비행 모드 방위기준 배터리량)
     Attitude                    = 0x41      # 드론의 자세(Angle)
     Position                    = 0x42      # 위치
     Altitude                    = 0x43      # 높이, 고도
-    Motion                      = 0x44      # Motion 센서 데이터(IMU)
-    Flow                        = 0x45      # Flow 센서 RAW 데이터
+    Motion                      = 0x44      # Motion 센서 데이터 처리한 값(IMU)
 
     # 설정
     Count                       = 0x50      # 카운트
@@ -191,7 +194,7 @@ class Header(ISerializable):
         header.dataType = DataType(header.dataType)
         header.from_ = DeviceType(header.from_)
         header.to_ = DeviceType(header.to_)
-        
+
         return header
 
 
@@ -937,6 +940,78 @@ class ControlQuad8AndRequestData(ISerializable):
         
         data.dataType = DataType(data.dataType)
         
+        return data
+
+
+
+class ControlPosition16(ISerializable):
+
+    def __init__(self):
+        self.positionX          = 0
+        self.positionY          = 0
+        self.positionZ          = 0
+
+        self.velocityX          = 0
+        self.velocityY          = 0
+        self.velocityZ          = 0
+        
+        self.heading            = 0
+        self.rotationalVelocity = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 16
+
+
+    def toArray(self):
+        return pack('<bbbbbbbb', self.positionX, self.positionY, self.positionZ, self.velocityX, self.velocityY, self.velocityZ, self.heading, self.rotationalVelocity)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = ControlPosition16()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.positionX, data.positionY, data.positionZ, data.velocityX, data.velocityY, data.velocityZ, data.heading, data.rotationalVelocity = unpack('<bbbbbbbb', dataArray)
+        return data
+
+
+
+class ControlPosition(ISerializable):
+
+    def __init__(self):
+        self.positionX          = 0
+        self.positionY          = 0
+        self.positionZ          = 0
+
+        self.velocityX          = 0
+        self.velocityY          = 0
+        self.velocityZ          = 0
+
+        self.heading            = 0
+        self.rotationalVelocity = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 32
+
+
+    def toArray(self):
+        return pack('<ffffffff', self.positionX, self.positionY, self.positionZ, self.velocityX, self.velocityY, self.velocityZ, self.heading, self.rotationalVelocity)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = ControlPosition()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.positionX, data.positionY, data.positionZ, data.velocityX, data.velocityY, data.velocityZ, data.heading, data.rotationalVelocity = unpack('<ffffffff', dataArray)
         return data
 
 
@@ -2101,6 +2176,74 @@ class Joystick(ISerializable):
 
 
 
+# Sensor Raw Start
+
+
+class RawMotion(ISerializable):
+
+    def __init__(self):
+        self.accelX     = 0
+        self.accelY     = 0
+        self.accelZ     = 0
+        self.gyroRoll   = 0
+        self.gyroPitch  = 0
+        self.gyroYaw    = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 12
+
+
+    def toArray(self):
+        return pack('<hhhhhh', self.accelX, self.accelY, self.accelZ, self.gyroRoll, self.gyroPitch, self.gyroYaw)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = Motion()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.accelX, data.accelY, data.accelZ, data.gyroRoll, data.gyroPitch, data.gyroYaw = unpack('<hhhhhh', dataArray)
+        
+        return data
+
+
+
+class RawFlow(ISerializable):
+
+    def __init__(self):
+        self.x     = 0
+        self.y     = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 8
+
+
+    def toArray(self):
+        return pack('<ff', self.x, self.y)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = RawFlow()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.x, data.y = unpack('<ff', dataArray)
+        
+        return data
+
+
+# Sensor Raw End
+
+
+
 # Information Start
 
 
@@ -2274,11 +2417,13 @@ class Motion(ISerializable):
 
 
 
-class Flow(ISerializable):
+class Trim(ISerializable):
 
     def __init__(self):
-        self.x     = 0
-        self.y     = 0
+        self.roll       = 0
+        self.pitch      = 0
+        self.yaw        = 0
+        self.throttle   = 0
 
 
     @classmethod
@@ -2287,17 +2432,17 @@ class Flow(ISerializable):
 
 
     def toArray(self):
-        return pack('<ff', self.x, self.y)
+        return pack('<hhhh', self.roll, self.pitch, self.yaw, self.throttle)
 
 
     @classmethod
     def parse(cls, dataArray):
-        data = Flow()
+        data = Trim()
         
         if len(dataArray) != cls.getSize():
             return None
         
-        data.x, data.y = unpack('<ff', dataArray)
+        data.roll, data.pitch, data.yaw, data.throttle = unpack('<hhhh', dataArray)
         
         return data
 
@@ -2399,37 +2544,6 @@ class Bias(ISerializable):
             return None
         
         data.accelX, data.accelY, data.accelZ, data.gyroRoll, data.gyroPitch, data.gyroYaw = unpack('<hhhhhh', dataArray)
-        
-        return data
-
-
-
-class Trim(ISerializable):
-
-    def __init__(self):
-        self.roll       = 0
-        self.pitch      = 0
-        self.yaw        = 0
-        self.throttle   = 0
-
-
-    @classmethod
-    def getSize(cls):
-        return 8
-
-
-    def toArray(self):
-        return pack('<hhhh', self.roll, self.pitch, self.yaw, self.throttle)
-
-
-    @classmethod
-    def parse(cls, dataArray):
-        data = Trim()
-        
-        if len(dataArray) != cls.getSize():
-            return None
-        
-        data.roll, data.pitch, data.yaw, data.throttle = unpack('<hhhh', dataArray)
         
         return data
 

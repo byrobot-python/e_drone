@@ -57,12 +57,14 @@ class Parser:
         self.d[DataType.Pairing]            = Pairing.parse
         self.d[DataType.Rssi]               = Rssi.parse
 
+        self.d[DataType.RawMotion]          = RawMotion.parse
+        self.d[DataType.RawFlow]            = RawFlow.parse
+
         self.d[DataType.State]              = State.parse
         self.d[DataType.Attitude]           = Attitude.parse
         self.d[DataType.Position]           = Position.parse
         self.d[DataType.Altitude]           = Altitude.parse
         self.d[DataType.Motion]             = Motion.parse
-        self.d[DataType.Flow]               = Flow.parse
 
         self.d[DataType.Count]              = Count.parse
         self.d[DataType.Bias]               = Bias.parse

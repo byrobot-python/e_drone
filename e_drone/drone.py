@@ -613,6 +613,60 @@ class Drone:
         return self.sendControl(roll, pitch, yaw, throttle)
 
 
+
+    def sendControlPosition16(self, positionX, positionY, positionZ, velocityX, velocityY, velocityZ, heading, rotationalVelocity):
+        
+        if  ( (not isinstance(positionX, int)) or (not isinstance(positionY, int)) or (not isinstance(positionZ, int)) or (not isinstance(velocityX, int)) or (not isinstance(velocityY, int)) or (not isinstance(velocityZ, int)) or (not isinstance(heading, int)) or (not isinstance(rotationalVelocity, int)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Control
+        header.length   = ControlPosition16.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = ControlPosition16()
+
+        data.positionX          = positionX
+        data.positionY          = positionY
+        data.positionZ          = positionZ
+        data.velocityX          = velocityX
+        data.velocityY          = velocityY
+        data.velocityZ          = velocityZ
+        data.heading            = heading
+        data.rotationalVelocity = rotationalVelocity
+
+        return self.transfer(header, data)
+
+
+
+    def sendControlPosition(self, positionX, positionY, positionZ, velocityX, velocityY, velocityZ, heading, rotationalVelocity):
+        
+        if  ( (not isinstance(positionX, float)) or (not isinstance(positionY, float)) or (not isinstance(positionZ, float)) or (not isinstance(velocityX, float)) or (not isinstance(velocityY, float)) or (not isinstance(velocityZ, float)) or (not isinstance(heading, float)) or (not isinstance(rotationalVelocity, float)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Control
+        header.length   = ControlPosition.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = ControlPosition()
+
+        data.positionX          = positionX
+        data.positionY          = positionY
+        data.positionZ          = positionZ
+        data.velocityX          = velocityX
+        data.velocityY          = velocityY
+        data.velocityZ          = velocityZ
+        data.heading            = heading
+        data.rotationalVelocity = rotationalVelocity
+
+        return self.transfer(header, data)
+
+
 # Control End
 
 
@@ -706,13 +760,13 @@ class Drone:
         data.command.commandType    = commandType
         data.command.option         = option
 
-        data.event.event    = lightEvent.value
-        data.event.interval = interval
-        data.event.repeat   = repeat
+        data.event.event            = lightEvent.value
+        data.event.interval         = interval
+        data.event.repeat           = repeat
 
-        data.color.r        = r
-        data.color.g        = g
-        data.color.b        = b
+        data.color.r                = r
+        data.color.g                = g
+        data.color.b                = b
 
         return self.transfer(header, data)
 
