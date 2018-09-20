@@ -237,8 +237,10 @@ class ModeMovement(Enum):
     
     None_               = 0x00
 
-    Hovering            = 0x01      # Hovering
-    Moving              = 0x02      # Moving
+    Ready               = 0x01      # Ready
+    Hovering            = 0x02      # Hovering
+    Moving              = 0x03      # Moving
+    ReturnHome          = 0x04      # Return Home
 
     EndOfType           = 0x04
 
