@@ -912,6 +912,25 @@ class Drone:
 
 
 
+    def sendLostConnection(self, timeNeutral, timeLanding, timeStop):
+        
+        header = Header()
+        
+        header.dataType = DataType.LostConnection
+        header.length   = LostConnection.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = LostConnection()
+
+        data.timeNeutral    = timeNeutral
+        data.timeLanding    = timeLanding
+        data.timeStop       = timeStop
+
+        return self.transfer(header, data)
+
+
+
     def sendFlightEvent(self, flightEvent):
         
         if  ( (not isinstance(flightEvent, FlightEvent)) ):
@@ -963,6 +982,27 @@ class Drone:
         data = Command()
 
         data.commandType    = CommandType.ClearTrim
+        data.option         = 0
+
+        return self.transfer(header, data)
+
+
+
+    def sendSetDefault(self, deviceType):
+        
+        if  ( (not isinstance(deviceType, DeviceType)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = deviceType
+
+        data = Command()
+
+        data.commandType    = CommandType.SetDefault
         data.option         = 0
 
         return self.transfer(header, data)

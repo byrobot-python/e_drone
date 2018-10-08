@@ -77,6 +77,7 @@ class DataType(Enum):
     Bias                        = 0x51      # 엑셀, 자이로 바이어스 값
     Trim                        = 0x52      # 트림
     Weight                      = 0x53      # 무게
+    LostConnection              = 0x54      # 연결이 끊긴 후 반응 시간 설정
 
     # Devices
     Motor                       = 0x60      # 모터 제어 및 현재 제어값 확인
@@ -2574,6 +2575,36 @@ class Weight(ISerializable):
             return None
         
         data.weight, = unpack('<f', dataArray)
+        
+        return data
+
+
+
+class LostConnection(ISerializable):
+
+    def __init__(self):
+        self.timeNeutral    = 0
+        self.timeLanding    = 0
+        self.timeStop       = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 8
+
+
+    def toArray(self):
+        return pack('<HHI', self.timeNeutral, self.timeLanding, self.timeStop)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = LostConnection()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.timeNeutral, data.timeLanding, data.timeStop = unpack('<HHI', dataArray)
         
         return data
 

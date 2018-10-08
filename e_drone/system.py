@@ -97,7 +97,7 @@ class ModeUpdate(Enum):
     Update              = 0x02      # 업데이트 중
     Complete            = 0x03      # 업데이트 완료
 
-    Faild               = 0x04      # 업데이트 실패(업데이트 완료까지 갔으나 body의 CRC16이 일치하지 않는 경우 등)
+    Failed              = 0x04      # 업데이트 실패(업데이트 완료까지 갔으나 body의 CRC16이 일치하지 않는 경우 등)
 
     NotAvailable        = 0x05      # 업데이트 불가능 상태(Debug 모드 등)
     RunApplication      = 0x06      # 어플리케이션 동작 중
@@ -109,33 +109,35 @@ class ModeUpdate(Enum):
 
 class ErrorFlagsForSensor(Enum):
 
-    None_                       = 0x00000000
+    None_                                   = 0x00000000
 
-    Motion_NoAnswer             = 0x00000001    # Motion 센서 응답 없음
-    Motion_WrongValue           = 0x00000002
-    Motion_NotCalibrated        = 0x00000004    # Bias 보정이 완료되지 않음
-    Motion_Calibrating          = 0x00000008    # Bias 보정 중
+    Motion_NoAnswer                         = 0x00000001    # Motion 센서 응답 없음
+    Motion_WrongValue                       = 0x00000002    # Motion 센서 잘못된 값
+    Motion_NotCalibrated                    = 0x00000004    # Gyro Bias 보정이 완료되지 않음
+    Motion_Calibrating                      = 0x00000008    # Gyro Bias 보정 중
 
-    Pressure_NoAnswer           = 0x00000010    # 압력센서 응답 없음
-    Pressure_WrongValue         = 0x00000020
+    Pressure_NoAnswer                       = 0x00000010    # 압력 센서 응답 없음
+    Pressure_WrongValue                     = 0x00000020    # 압력 센서 잘못된 값
 
-    RangeGround_NoAnswer        = 0x00000100    # 바닥 거리센서 응답 없음
-    RangeGround_WrongValue      = 0x00000200
+    RangeGround_NoAnswer                    = 0x00000100    # 바닥 거리 센서 응답 없음
+    RangeGround_WrongValue                  = 0x00000200    # 바닥 거리 센서 잘못된 값
 
-    Flow_NoAnswer               = 0x00001000    # Flow 센서 응답 없음
-    Flow_WrongValue             = 0x00002000
+    Flow_NoAnswer                           = 0x00001000    # Flow 센서 응답 없음
+    Flow_WrongValue                         = 0x00002000    # Flow 잘못된 값
+    Flow_CannotRecognizeGroundImage         = 0x00004000    # 바닥 이미지를 인식할 수 없음
 
 
 
 
 class ErrorFlagsForState(Enum):
 
-    None_                           = 0x00000000
+    None_                                   = 0x00000000
 
-    NotRegistered                   = 0x00000001    # 장치 등록이 안됨
-    FlashReadLock_UnLocked          = 0x00000002    # 플래시 메모리 읽기 Lock이 안 걸림
-    BootloaderWriteLock_UnLocked    = 0x00000003    # 부트로더 영역 쓰기 Lock이 안 걸림
+    NotRegistered                           = 0x00000001    # 장치 등록이 안됨
+    FlashReadLock_UnLocked                  = 0x00000002    # 플래시 메모리 읽기 Lock이 안 걸림
+    BootloaderWriteLock_UnLocked            = 0x00000004    # 부트로더 영역 쓰기 Lock이 안 걸림
 
+    TakeoffFailure_CheckPropellerAndMotor   = 0x00000010    # 이륙 실패
 
 
 
