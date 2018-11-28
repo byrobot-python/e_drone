@@ -115,7 +115,7 @@ class Drone:
 
         self._serialport = serial.Serial(
             port        = portname,
-            baudrate    = 115200)
+            baudrate    = 57600)
 
         if( self.isOpen() ):
             self._flagThreadRun = True
@@ -1004,6 +1004,27 @@ class Drone:
 
         data.commandType    = CommandType.SetDefault
         data.option         = 0
+
+        return self.transfer(header, data)
+
+
+
+    def sendBacklight(self, flagPower):
+        
+        if  ( (not isinstance(flagPower, bool)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Controller
+
+        data = Command()
+
+        data.commandType    = CommandType.Backlight
+        data.option         = int(flagPower)
 
         return self.transfer(header, data)
 

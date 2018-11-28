@@ -71,6 +71,7 @@ class DataType(Enum):
     Position                    = 0x42      # 위치
     Altitude                    = 0x43      # 높이, 고도
     Motion                      = 0x44      # Motion 센서 데이터 처리한 값(IMU)
+    Range                       = 0x45      # 거리센서 데이터
 
     # 설정
     Count                       = 0x50      # 카운트
@@ -141,6 +142,7 @@ class CommandType(Enum):
     FlightEvent             = 0x07      # 비행 이벤트 실행
 
     SetDefault              = 0x08      # 기본 설정으로 초기화
+    Backlight               = 0x09      # 조종기 백라이트 설정
 
     # 관리자
     ClearCounter            = 0xA0      # 카운터 클리어(관리자 권한을 획득했을 경우에만 동작)
@@ -954,9 +956,7 @@ class ControlPosition16(ISerializable):
         self.positionY          = 0
         self.positionZ          = 0
 
-        self.velocityX          = 0
-        self.velocityY          = 0
-        self.velocityZ          = 0
+        self.velocity           = 0
         
         self.heading            = 0
         self.rotationalVelocity = 0
@@ -964,11 +964,11 @@ class ControlPosition16(ISerializable):
 
     @classmethod
     def getSize(cls):
-        return 16
+        return 12
 
 
     def toArray(self):
-        return pack('<bbbbbbbb', self.positionX, self.positionY, self.positionZ, self.velocityX, self.velocityY, self.velocityZ, self.heading, self.rotationalVelocity)
+        return pack('<hhhhhh', self.positionX, self.positionY, self.positionZ, self.velocity, self.heading, self.rotationalVelocity)
 
 
     @classmethod
@@ -978,7 +978,7 @@ class ControlPosition16(ISerializable):
         if len(dataArray) != cls.getSize():
             return None
         
-        data.positionX, data.positionY, data.positionZ, data.velocityX, data.velocityY, data.velocityZ, data.heading, data.rotationalVelocity = unpack('<bbbbbbbb', dataArray)
+        data.positionX, data.positionY, data.positionZ, data.velocity, data.heading, data.rotationalVelocity = unpack('<hhhhhh', dataArray)
         return data
 
 
@@ -990,9 +990,7 @@ class ControlPosition(ISerializable):
         self.positionY          = 0
         self.positionZ          = 0
 
-        self.velocityX          = 0
-        self.velocityY          = 0
-        self.velocityZ          = 0
+        self.velocity           = 0
 
         self.heading            = 0
         self.rotationalVelocity = 0
@@ -1000,11 +998,11 @@ class ControlPosition(ISerializable):
 
     @classmethod
     def getSize(cls):
-        return 32
+        return 20
 
 
     def toArray(self):
-        return pack('<ffffffff', self.positionX, self.positionY, self.positionZ, self.velocityX, self.velocityY, self.velocityZ, self.heading, self.rotationalVelocity)
+        return pack('<ffffhh', self.positionX, self.positionY, self.positionZ, self.velocity, self.heading, self.rotationalVelocity)
 
 
     @classmethod
@@ -1014,7 +1012,7 @@ class ControlPosition(ISerializable):
         if len(dataArray) != cls.getSize():
             return None
         
-        data.positionX, data.positionY, data.positionZ, data.velocityX, data.velocityY, data.velocityZ, data.heading, data.rotationalVelocity = unpack('<ffffffff', dataArray)
+        data.positionX, data.positionY, data.positionZ, data.velocity, data.heading, data.rotationalVelocity = unpack('<ffffhh', dataArray)
         return data
 
 
@@ -2204,7 +2202,7 @@ class RawMotion(ISerializable):
 
     @classmethod
     def parse(cls, dataArray):
-        data = Motion()
+        data = RawMotion()
         
         if len(dataArray) != cls.getSize():
             return None
@@ -2415,6 +2413,39 @@ class Motion(ISerializable):
             return None
         
         data.accelX, data.accelY, data.accelZ, data.gyroRoll, data.gyroPitch, data.gyroYaw, data.angleRoll, data.anglePitch, data.angleYaw = unpack('<hhhhhhhhh', dataArray)
+        
+        return data
+
+
+
+class Range(ISerializable):
+
+    def __init__(self):
+        self.left       = 0
+        self.front      = 0
+        self.right      = 0
+        self.rear       = 0
+        self.top        = 0
+        self.bottom     = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 12
+
+
+    def toArray(self):
+        return pack('<hhhhhh', self.left, self.front, self.right, self.rear, self.top, self.bottom)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = Range()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.left, data.front, data.right, data.rear, data.top, data.bottom = unpack('<hhhhhh', dataArray)
         
         return data
 
