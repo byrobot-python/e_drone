@@ -524,6 +524,41 @@ class Address(ISerializable):
 
 
 
+class RegistrationInformation(ISerializable):
+
+    def __init__(self):
+        self.address        = bytearray()
+        self.year           = 0
+        self.month          = 0
+        self.key            = 0
+        self.flagValid      = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 21
+
+
+    def toArray(self):
+        dataArray = bytearray()
+        dataArray.extend(self.address)
+        dataArray.extend(pack('<HBB?', self.year, self.month, self.key, self.flagValid))
+        return dataArray
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = RegistrationInformation()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.address = dataArray[0:16]
+        data.year, data.month, data.key, data.flagValid = unpack('<HBB?', dataArray[16:21])
+        return data
+
+
+
 class Pairing(ISerializable):
 
     def __init__(self):
@@ -685,9 +720,9 @@ class CommandLightEventColor(ISerializable):
 class CommandLightEventColors(ISerializable):
 
     def __init__(self):
+        self.command    = Command()
         self.event      = LightEvent()
         self.colors     = Colors.Black
-        self.command    = Command()
 
 
     @classmethod
@@ -732,7 +767,7 @@ class MonitorHeaderType(Enum):
     Monitor4            = 0x01
     Monitor8            = 0x02
 
-    EndOfType           = 0x07
+    EndOfType           = 0x03
 
 
 
@@ -1518,6 +1553,7 @@ class DisplayPixel(Enum):
     Black               = 0x00
     White               = 0x01
     Inverse             = 0x02
+    Outline             = 0x03
 
 
 
@@ -1715,7 +1751,7 @@ class DisplayDrawRect(ISerializable):
         self.height     = 0
         self.pixel      = DisplayPixel.White
         self.flagFill   = True
-        self.line        = DisplayLine.Solid
+        self.line       = DisplayLine.Solid
 
 
     @classmethod
@@ -1863,6 +1899,42 @@ class DisplayDrawStringAlign(ISerializable):
         data.font = DisplayFont(data.font)
         data.pixel = DisplayPixel(data.pixel)
         data.message = dataArray[cls.getSize():len(dataArray)].decode()
+        
+        return data
+
+
+
+class DisplayImage(ISerializable):
+
+    def __init__(self):
+        self.x          = 0
+        self.y          = 0
+        self.width      = 0
+        self.height     = 0
+        self.image      = bytearray()
+
+
+    @classmethod
+    def getSize(cls):
+        return 8
+
+
+    def toArray(self):
+        dataArray = bytearray()
+        dataArray.extend(pack('<hhhh', self.x, self.y, self.width, self.height))
+        dataArray.extend(self.image)
+        return dataArray
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = DisplayImage()
+        
+        if len(dataArray) <= cls.getSize():
+            return None
+
+        data.x, data.y, data.width, data.height = unpack('<hhhh', dataArray)
+        data.image = dataArray[cls.getSize():(len(dataArray) - cls.getSize())]
         
         return data
 
@@ -2736,7 +2808,7 @@ class MotorSingle(ISerializable):
 
     @classmethod
     def parse(cls, dataArray):
-        data = MotorBlock()
+        data = MotorSingle()
         
         if len(dataArray) != cls.getSize():
             return None
@@ -2771,11 +2843,11 @@ class InformationAssembledForController(ISerializable):
 
     @classmethod
     def getSize(cls):
-        return 16
+        return 18
 
 
     def toArray(self):
-        return pack('<bbhHhhhbbBb', self.angleRoll, self.anglePitch, self.angleYaw, 
+        return pack('<hhhHhhhbbBb', self.angleRoll, self.anglePitch, self.angleYaw, 
                                     self.rpm,
                                     self.positionX, self.positionY, self.positionZ, 
                                     self.speedX, self.speedY, 
@@ -2795,7 +2867,7 @@ class InformationAssembledForController(ISerializable):
         data.positionX, data.positionY, data.positionZ, 
         data.speedX, data.speedY, 
         data.rangeHeight,
-        data.rssi) = unpack('<bbhHhhhbbBb', dataArray)
+        data.rssi) = unpack('<hhhHhhhbbBb', dataArray)
         
         return data
 
@@ -2808,25 +2880,23 @@ class InformationAssembledForEntry(ISerializable):
         self.anglePitch     = 0
         self.angleYaw       = 0
         
-        self.pressureTemperature    = 0
-        self.pressureAltitude       = 0
+        self.positionX      = 0
+        self.positionY      = 0
+        self.positionZ      = 0
 
-        self.flowX          = 0
-        self.flowY          = 0
-
-        self.rangeGround    = 0
+        self.rangeHeight    = 0
+        self.altitude       = 0
 
 
     @classmethod
     def getSize(cls):
-        return 26
+        return 18
 
 
     def toArray(self):
-        return pack('<hhhfffff',    self.angleRoll, self.anglePitch, self.angleYaw, 
-                                    self.pressureTemperature, self.pressureAltitude, 
-                                    self.flowX, self.flowY,
-                                    self.rangeGround)
+        return pack('<hhhhhhhf',    self.angleRoll, self.anglePitch, self.angleYaw,
+                                    self.positionX, self.positionY, self.positionZ,
+                                    self.rangeHeight, self.altitude)
 
 
     @classmethod
@@ -2837,9 +2907,8 @@ class InformationAssembledForEntry(ISerializable):
             return None
         
         (data.angleRoll, data.anglePitch, data.angleYaw, 
-        data.pressureTemperature, data.pressureAltitude, 
-        data.imageFlowPositionX, data.imageFlowPositionY,
-        data.rangeGround) = unpack('<hhhfffff', dataArray)
+        data.positionX, data.positionY, data.positionZ, 
+        data.rangeHeight, data.altitude) = unpack('<hhhhhhhf', dataArray)
         
         return data
 

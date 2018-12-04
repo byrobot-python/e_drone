@@ -6,11 +6,15 @@ class ModelNumber(Enum):
     None_                   = 0x00000000
 
     Drone_4_Drone_P4        = 0x00041004    # Drone_4_Drone_P4
+    Drone_4_Drone_P5        = 0x00041005    # Drone_4_Drone_P5
 
     Drone_4_Controlle_P1    = 0x00042001    # Drone_4_Controlle_P1
     Drone_4_Controlle_P2    = 0x00042002    # Drone_4_Controlle_P2
 
     Drone_4_Link_P0         = 0x00043000    # Drone_4_Link_P0
+
+    Drone_4_Tester_P2       = 0x0004A002    # Drone_4_Tester_P2
+    Drone_4_Monitor_P2      = 0x0004A102    # Drone_4_Monitor_P2
 
 
 
@@ -24,6 +28,8 @@ class DeviceType(Enum):
 
     Link        = 0x30      # 링크 모듈(Client)
     LinkServer  = 0x31      # 링크 모듈(Server, 링크 모듈이 서버로 동작하는 경우에만 통신 타입을 잠시 바꿈)
+
+    Range       = 0x40      # 거리 센서 모듈
 
     ByScratch   = 0x80      # 바이스크래치
     Scratch     = 0x81      # 스크래치
@@ -48,7 +54,7 @@ class ModeSystem(Enum):
     ReadyToReset        = 0x04
     Error               = 0x05
 
-    EndOfType           = 0x07
+    EndOfType           = 0x06
 
 
 
@@ -128,7 +134,6 @@ class ErrorFlagsForSensor(Enum):
 
 
 
-
 class ErrorFlagsForState(Enum):
 
     None_                                   = 0x00000000
@@ -136,8 +141,13 @@ class ErrorFlagsForState(Enum):
     NotRegistered                           = 0x00000001    # 장치 등록이 안됨
     FlashReadLock_UnLocked                  = 0x00000002    # 플래시 메모리 읽기 Lock이 안 걸림
     BootloaderWriteLock_UnLocked            = 0x00000004    # 부트로더 영역 쓰기 Lock이 안 걸림
-
+    
     TakeoffFailure_CheckPropellerAndMotor   = 0x00000010    # 이륙 실패
+    CheckPropellerVibration                 = 0x00000020    # 프로펠러 진동발생
+    Attitude_NotStable                      = 0x00000040    # 자세가 많이 기울어져 있거나 뒤집어져 있을때
+    
+    CanNotFlip_LowBattery                   = 0x00000100    # 배터리가 30이하
+    CanNotFlip_TooHeavy                     = 0x00000200    # 기체가 무거움
 
 
 
@@ -212,7 +222,7 @@ class Headless(Enum):
     Headless            = 0x01      # Headless
     Normal              = 0x02      # Normal
 
-    EndOfType           = 0x04
+    EndOfType           = 0x03
 
 
 
@@ -244,7 +254,7 @@ class ModeMovement(Enum):
     Moving              = 0x03      # Moving
     ReturnHome          = 0x04      # Return Home
 
-    EndOfType           = 0x04
+    EndOfType           = 0x05
 
 
 

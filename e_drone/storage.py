@@ -53,6 +53,7 @@ class Parser:
         self.d[DataType.Information]        = Information.parse
         self.d[DataType.UpdateLocation]     = UpdateLocation.parse
         self.d[DataType.SystemInformation]  = SystemInformation.parse
+        self.d[DataType.Registration]       = RegistrationInformation.parse
 
         self.d[DataType.Pairing]            = Pairing.parse
         self.d[DataType.Rssi]               = Rssi.parse
