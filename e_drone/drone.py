@@ -614,7 +614,10 @@ class Drone:
 
     def sendControlPosition16(self, positionX, positionY, positionZ, velocity, heading, rotationalVelocity):
         
-        if  ( (not isinstance(positionX, int)) or (not isinstance(positionY, int)) or (not isinstance(positionZ, int)) or (not isinstance(velocity, int)) or (not isinstance(heading, int)) or (not isinstance(rotationalVelocity, int)) ):
+        if  ( (not isinstance(positionX, int)) or (not isinstance(positionY, int)) or (not isinstance(positionZ, int)) or (not isinstance(velocity, int)) ):
+            return None
+
+        if  ( (not isinstance(heading, int)) or (not isinstance(rotationalVelocity, int)) ):
             return None
 
         header = Header()
@@ -639,7 +642,19 @@ class Drone:
 
     def sendControlPosition(self, positionX, positionY, positionZ, velocity, heading, rotationalVelocity):
         
-        if  ( (not isinstance(positionX, float)) or (not isinstance(positionY, float)) or (not isinstance(positionZ, float)) or (not isinstance(velocity, float)) or (not isinstance(heading, float)) or (not isinstance(rotationalVelocity, float)) ):
+        if  (not (isinstance(positionX, float) or isinstance(positionX, int))):
+            return None
+
+        if  (not (isinstance(positionY, float) or isinstance(positionY, int))):
+            return None
+
+        if  (not (isinstance(positionZ, float) or isinstance(positionZ, int))):
+            return None
+
+        if  (not (isinstance(velocity, float) or isinstance(velocity, int))):
+            return None
+
+        if  ( (not isinstance(heading, int)) or (not isinstance(rotationalVelocity, int)) ):
             return None
 
         header = Header()
@@ -651,10 +666,10 @@ class Drone:
 
         data = ControlPosition()
 
-        data.positionX          = positionX
-        data.positionY          = positionY
-        data.positionZ          = positionZ
-        data.velocity           = velocity
+        data.positionX          = float(positionX)
+        data.positionY          = float(positionY)
+        data.positionZ          = float(positionZ)
+        data.velocity           = float(velocity)
         data.heading            = heading
         data.rotationalVelocity = rotationalVelocity
 
