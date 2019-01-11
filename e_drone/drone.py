@@ -119,7 +119,8 @@ class Drone:
 
         if( self.isOpen() ):
             self._flagThreadRun = True
-            self._thread = Thread(target=self._receiving, args=(), daemon=True).start()
+            self._thread = Thread(target=self._receiving, args=(), daemon=True)
+            self._thread.start()
 
             # 로그 출력
             self._printLog("Connected.({0})".format(portname))
@@ -267,10 +268,7 @@ class Drone:
     def _handler(self, header, dataArray):
 
         # 들어오는 데이터를 저장
-        message = self._runHandler(header, dataArray)
-
-        # 오류 출력
-        self._printError(message)
+        self._runHandler(header, dataArray)
 
         # 콜백 이벤트 실행
         self._runEventHandler(header.dataType)
@@ -321,7 +319,7 @@ class Drone:
 
                     for i in range(0, dataCount):
                         
-                        if monitor0.index + i < self.monitorData.len():
+                        if monitor0.index + i < len(self.monitorData):
                             
                             index = 1 + Monitor0.getSize() + (i * 4)
                             self.monitorData[monitor0.index + i], = unpack('<f', dataArray[index:index + 4])
@@ -338,7 +336,7 @@ class Drone:
 
                     for i in range(0, dataCount):
                         
-                        if monitor4.index + i < self.monitorData.len():
+                        if monitor4.index + i < len(self.monitorData):
                             
                             index = 1 + Monitor4.getSize() + (i * 4)
                             self.monitorData[monitor4.index + i], = unpack('<f', dataArray[index:index + 4])
@@ -355,7 +353,7 @@ class Drone:
 
                     for i in range(0, dataCount):
                         
-                        if monitor8.index + i < self.monitorData.len():
+                        if monitor8.index + i < len(self.monitorData):
                             
                             index = 1 + Monitor8.getSize() + (i * 4)
                             self.monitorData[monitor8.index + i], = unpack('<f', dataArray[index:index + 4])
@@ -455,7 +453,7 @@ class Drone:
         
         header.dataType = DataType.Ping
         header.length   = Ping.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = deviceType
 
         data = Ping()
@@ -475,7 +473,7 @@ class Drone:
         
         header.dataType = DataType.Request
         header.length   = Request.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = deviceType
 
         data = Request()
@@ -500,7 +498,7 @@ class Drone:
         
         header.dataType = DataType.Pairing
         header.length   = Pairing.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = deviceType
 
         data = Pairing()
@@ -527,7 +525,7 @@ class Drone:
         
         header.dataType = DataType.Command
         header.length   = Command.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Drone
 
         data = Command()
@@ -545,7 +543,7 @@ class Drone:
         
         header.dataType = DataType.Command
         header.length   = Command.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Drone
 
         data = Command()
@@ -563,7 +561,7 @@ class Drone:
         
         header.dataType = DataType.Command
         header.length   = Command.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Drone
 
         data = Command()
@@ -584,7 +582,7 @@ class Drone:
         
         header.dataType = DataType.Control
         header.length   = ControlQuad8.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Drone
 
         data = ControlQuad8()
@@ -614,16 +612,16 @@ class Drone:
 
 
 
-    def sendControlPosition16(self, positionX, positionY, positionZ, velocityX, velocityY, velocityZ, heading, rotationalVelocity):
+    def sendControlPosition16(self, positionX, positionY, positionZ, velocity, heading, rotationalVelocity):
         
-        if  ( (not isinstance(positionX, int)) or (not isinstance(positionY, int)) or (not isinstance(positionZ, int)) or (not isinstance(velocityX, int)) or (not isinstance(velocityY, int)) or (not isinstance(velocityZ, int)) or (not isinstance(heading, int)) or (not isinstance(rotationalVelocity, int)) ):
+        if  ( (not isinstance(positionX, int)) or (not isinstance(positionY, int)) or (not isinstance(positionZ, int)) or (not isinstance(velocity, int)) or (not isinstance(heading, int)) or (not isinstance(rotationalVelocity, int)) ):
             return None
 
         header = Header()
         
         header.dataType = DataType.Control
         header.length   = ControlPosition16.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Drone
 
         data = ControlPosition16()
@@ -631,9 +629,7 @@ class Drone:
         data.positionX          = positionX
         data.positionY          = positionY
         data.positionZ          = positionZ
-        data.velocityX          = velocityX
-        data.velocityY          = velocityY
-        data.velocityZ          = velocityZ
+        data.velocity           = velocity
         data.heading            = heading
         data.rotationalVelocity = rotationalVelocity
 
@@ -641,16 +637,16 @@ class Drone:
 
 
 
-    def sendControlPosition(self, positionX, positionY, positionZ, velocityX, velocityY, velocityZ, heading, rotationalVelocity):
+    def sendControlPosition(self, positionX, positionY, positionZ, velocity, heading, rotationalVelocity):
         
-        if  ( (not isinstance(positionX, float)) or (not isinstance(positionY, float)) or (not isinstance(positionZ, float)) or (not isinstance(velocityX, float)) or (not isinstance(velocityY, float)) or (not isinstance(velocityZ, float)) or (not isinstance(heading, float)) or (not isinstance(rotationalVelocity, float)) ):
+        if  ( (not isinstance(positionX, float)) or (not isinstance(positionY, float)) or (not isinstance(positionZ, float)) or (not isinstance(velocity, float)) or (not isinstance(heading, float)) or (not isinstance(rotationalVelocity, float)) ):
             return None
 
         header = Header()
         
         header.dataType = DataType.Control
         header.length   = ControlPosition.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Drone
 
         data = ControlPosition()
@@ -658,9 +654,7 @@ class Drone:
         data.positionX          = positionX
         data.positionY          = positionY
         data.positionZ          = positionZ
-        data.velocityX          = velocityX
-        data.velocityY          = velocityY
-        data.velocityZ          = velocityZ
+        data.velocity           = velocity
         data.heading            = heading
         data.rotationalVelocity = rotationalVelocity
 
@@ -683,7 +677,7 @@ class Drone:
         
         header.dataType = DataType.Command
         header.length   = Command.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Drone
 
         data = Command()
@@ -708,7 +702,7 @@ class Drone:
         
         header.dataType = DataType.Command
         header.length   = CommandLightEvent.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
 
         if      isinstance(lightEvent, LightModeDrone):
             header.to_  = DeviceType.Drone
@@ -746,7 +740,7 @@ class Drone:
         
         header.dataType = DataType.Command
         header.length   = CommandLightEventColor.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
 
         if      isinstance(lightEvent, LightModeDrone):
             header.to_  = DeviceType.Drone
@@ -786,7 +780,7 @@ class Drone:
         
         header.dataType = DataType.Command
         header.length   = CommandLightEventColors.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
 
         if      isinstance(lightEvent, LightModeDrone):
             header.to_  = DeviceType.Drone
@@ -818,7 +812,7 @@ class Drone:
         
         header.dataType = DataType.Command
         header.length   = Command.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Drone
 
         data = Command()
@@ -839,7 +833,7 @@ class Drone:
         
         header.dataType = DataType.Command
         header.length   = Command.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Drone
 
         data = Command()
@@ -860,7 +854,7 @@ class Drone:
         
         header.dataType = DataType.Command
         header.length   = Command.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Drone
 
         data = Command()
@@ -881,7 +875,7 @@ class Drone:
         
         header.dataType = DataType.Trim
         header.length   = Trim.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Drone
 
         data = Trim()
@@ -901,7 +895,7 @@ class Drone:
         
         header.dataType = DataType.Weight
         header.length   = Weight.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Drone
 
         data = Weight()
@@ -918,7 +912,7 @@ class Drone:
         
         header.dataType = DataType.LostConnection
         header.length   = LostConnection.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Drone
 
         data = LostConnection()
@@ -940,7 +934,7 @@ class Drone:
         
         header.dataType = DataType.Command
         header.length   = Command.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Drone
 
         data = Command()
@@ -958,7 +952,7 @@ class Drone:
         
         header.dataType = DataType.Command
         header.length   = Command.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Drone
 
         data = Command()
@@ -976,7 +970,7 @@ class Drone:
         
         header.dataType = DataType.Command
         header.length   = Command.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Drone
 
         data = Command()
@@ -997,7 +991,7 @@ class Drone:
         
         header.dataType = DataType.Command
         header.length   = Command.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = deviceType
 
         data = Command()
@@ -1018,7 +1012,7 @@ class Drone:
         
         header.dataType = DataType.Command
         header.length   = Command.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Controller
 
         data = Command()
@@ -1047,7 +1041,7 @@ class Drone:
         
         header.dataType = DataType.Motor
         header.length   = Motor.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Drone
 
         data = Motor()
@@ -1078,7 +1072,7 @@ class Drone:
         
         header.dataType = DataType.MotorSingle
         header.length   = MotorSingle.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Drone
 
         data = MotorSingle()
@@ -1108,7 +1102,7 @@ class Drone:
         
         header.dataType = DataType.LightManual
         header.length   = LightManual.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = deviceType
 
         data = LightManual()
@@ -1133,7 +1127,7 @@ class Drone:
         
         header.dataType = DataType.LightMode
         header.length   = LightModeColor.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
 
         if      isinstance(lightMode, LightModeDrone):
             header.to_  = DeviceType.Drone
@@ -1166,7 +1160,7 @@ class Drone:
         
         header.dataType = DataType.LightMode
         header.length   = LightModeColors.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
 
         if      isinstance(lightMode, LightModeDrone):
             header.to_  = DeviceType.Drone
@@ -1200,7 +1194,7 @@ class Drone:
         
         header.dataType = DataType.LightEvent
         header.length   = LightEventColor.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
 
         if      isinstance(lightEvent, LightModeDrone):
             header.to_  = DeviceType.Drone
@@ -1235,7 +1229,7 @@ class Drone:
         
         header.dataType = DataType.LightEvent
         header.length   = LightEventColors.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
 
         if      isinstance(lightEvent, LightModeDrone):
             header.to_  = DeviceType.Drone
@@ -1272,7 +1266,7 @@ class Drone:
         
         header.dataType = DataType.DisplayClear
         header.length   = DisplayClearAll.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Controller
         
         data = DisplayClearAll()
@@ -1292,7 +1286,7 @@ class Drone:
         
         header.dataType = DataType.DisplayClear
         header.length   = DisplayClear.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Controller
         
         data = DisplayClear()
@@ -1313,7 +1307,7 @@ class Drone:
         
         header.dataType = DataType.DisplayInvert
         header.length   = DisplayInvert.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Controller
         
         data = DisplayInvert()
@@ -1336,7 +1330,7 @@ class Drone:
         
         header.dataType = DataType.DisplayDrawPoint
         header.length   = DisplayDrawPoint.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Controller
         
         data = DisplayDrawPoint()
@@ -1358,7 +1352,7 @@ class Drone:
         
         header.dataType = DataType.DisplayDrawLine
         header.length   = DisplayDrawLine.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Controller
         
         data = DisplayDrawLine()
@@ -1383,7 +1377,7 @@ class Drone:
         
         header.dataType = DataType.DisplayDrawRect
         header.length   = DisplayDrawRect.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Controller
         
         data = DisplayDrawRect()
@@ -1409,7 +1403,7 @@ class Drone:
         
         header.dataType = DataType.DisplayDrawCircle
         header.length   = DisplayDrawCircle.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Controller
         
         data = DisplayDrawCircle()
@@ -1433,7 +1427,7 @@ class Drone:
         
         header.dataType = DataType.DisplayDrawString
         header.length   = DisplayDrawString.getSize() + len(message)
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Controller
         
         data = DisplayDrawString()
@@ -1457,7 +1451,7 @@ class Drone:
         
         header.dataType = DataType.DisplayDrawStringAlign
         header.length   = DisplayDrawStringAlign.getSize() + len(message)
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Controller
         
         data = DisplayDrawStringAlign()
@@ -1489,7 +1483,7 @@ class Drone:
         
         header.dataType = DataType.Buzzer
         header.length   = Buzzer.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Controller
         
         data = Buzzer()
@@ -1511,7 +1505,7 @@ class Drone:
         
         header.dataType = DataType.Buzzer
         header.length   = Buzzer.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Controller
         
         data = Buzzer()
@@ -1533,7 +1527,7 @@ class Drone:
         
         header.dataType = DataType.Buzzer
         header.length   = Buzzer.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Controller
         
         data = Buzzer()
@@ -1555,7 +1549,7 @@ class Drone:
         
         header.dataType = DataType.Buzzer
         header.length   = Buzzer.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Controller
         
         data = Buzzer()
@@ -1577,7 +1571,7 @@ class Drone:
         
         header.dataType = DataType.Buzzer
         header.length   = Buzzer.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Controller
         
         data = Buzzer()
@@ -1599,7 +1593,7 @@ class Drone:
         
         header.dataType = DataType.Buzzer
         header.length   = Buzzer.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Controller
         
         data = Buzzer()
@@ -1621,7 +1615,7 @@ class Drone:
         
         header.dataType = DataType.Buzzer
         header.length   = Buzzer.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Controller
         
         data = Buzzer()
@@ -1649,7 +1643,7 @@ class Drone:
         
         header.dataType = DataType.Vibrator
         header.length   = Vibrator.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Controller
         
         data = Vibrator()
@@ -1672,7 +1666,7 @@ class Drone:
         
         header.dataType = DataType.Vibrator
         header.length   = Vibrator.getSize()
-        header.from_    = DeviceType.Tester
+        header.from_    = DeviceType.Base
         header.to_      = DeviceType.Controller
         
         data = Vibrator()
