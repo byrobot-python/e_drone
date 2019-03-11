@@ -134,7 +134,7 @@ class CommandType(Enum):
     # 설정
     ModeControlFlight       = 0x02      # 비행 제어 모드 설정
     Headless                = 0x03      # 헤드리스 모드 선택
-    Trim                    = 0x04      # 트림 변경
+    ControlSpeed            = 0x04      # 제어 속도 설정
 
     ClearBias               = 0x05      # 자이로 바이어스 리셋(트림도 같이 초기화 됨)
     ClearTrim               = 0x06      # 트림 초기화
@@ -566,16 +566,19 @@ class Pairing(ISerializable):
         self.address1       = 0
         self.address2       = 0
         self.scramble       = 0
-        self.channel        = 0
+        self.channel0       = 0
+        self.channel1       = 0
+        self.channel2       = 0
+        self.channel3       = 0
 
 
     @classmethod
     def getSize(cls):
-        return 8
+        return 11
 
 
     def toArray(self):
-        return pack('<HHHBB', self.address0, self.address1, self.address2, self.scramble, self.channel)
+        return pack('<HHHBBBBB', self.address0, self.address1, self.address2, self.scramble, self.channel0, self.channel1, self.channel2, self.channel3)
 
 
     @classmethod
@@ -585,7 +588,7 @@ class Pairing(ISerializable):
         if len(dataArray) != cls.getSize():
             return None
         
-        data.address0, data.address1, data.address2, data.scramble, data.channel = unpack('<HHHBB', dataArray)
+        data.address0, data.address1, data.address2, data.scramble, data.channel0, data.channel1, data.channel2, data.channel3 = unpack('<HHHBBBBB', dataArray)
         return data
 
 
@@ -2325,21 +2328,21 @@ class State(ISerializable):
     def __init__(self):
         self.modeSystem         = ModeSystem.None_
         self.modeFlight         = ModeFlight.None_
-
         self.modeControlFlight  = ModeControlFlight.None_
         self.modeMovement       = ModeMovement.None_
         self.headless           = Headless.None_
+        self.controlSpeed       = 0
         self.sensorOrientation  = SensorOrientation.None_
         self.battery            = 0
 
 
     @classmethod
     def getSize(cls):
-        return 7
+        return 8
 
 
     def toArray(self):
-        return pack('<BBBBBBB', self.modeSystem.value, self.modeFlight.value, self.modeControlFlight.value, self.modeMovement.value, self.headless.value, self.sensorOrientation.value, self.battery)
+        return pack('<BBBBBBBB', self.modeSystem.value, self.modeFlight.value, self.modeControlFlight.value, self.modeMovement.value, self.headless.value, self.controlSpeed, self.sensorOrientation.value, self.battery)
 
 
     @classmethod
@@ -2349,11 +2352,10 @@ class State(ISerializable):
         if len(dataArray) != cls.getSize():
             return None
         
-        data.modeSystem, data.modeFlight, data.modeControlFlight, data.modeMovement, data.headless, data.sensorOrientation, data.battery = unpack('<BBBBBBB', dataArray)
+        data.modeSystem, data.modeFlight, data.modeControlFlight, data.modeMovement, data.headless, data.controlSpeed, data.sensorOrientation, data.battery = unpack('<BBBBBBBB', dataArray)
 
         data.modeSystem         = ModeSystem(data.modeSystem)
         data.modeFlight         = ModeFlight(data.modeFlight)
-
         data.modeControlFlight  = ModeControlFlight(data.modeControlFlight)
         data.modeMovement       = ModeMovement(data.modeMovement)
         data.headless           = Headless(data.headless)

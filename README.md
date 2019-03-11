@@ -5,6 +5,8 @@ e-drone
 > pip install e_drone
 > pip --no-cache-dir install e_drone
 
+* Upgrade
+> pip install --upgrade e_drone
 
 * Uninstall
 > pip uninstall e_drone

@@ -139,16 +139,22 @@ class Drone:
         if self.isOpen():
             self._printLog("Closing serial port.")
 
+        self._printLog("Thread Flag False.")
+
         if self._flagThreadRun == True:
             self._flagThreadRun = False
-            sleep(0.01)
+            sleep(0.1)
+        
+        self._printLog("Thread Join.")
 
         if self._thread != None:
-            self._thread.join()
+            self._thread.join(timeout=1)
 
-        while (self.isOpen() == True):
+        self._printLog("Port Close.")
+
+        if self.isOpen() == True:
             self._serialport.close()
-            sleep(0.01)
+            sleep(0.2)
 
 
 
@@ -156,16 +162,19 @@ class Drone:
         if (header == None) or (data == None):
             return None
 
-        if (not isinstance(header, Header)) or (not isinstance(data, ISerializable)):
+        if (not isinstance(header, Header)):
             return None
 
+        if (isinstance(data, ISerializable)):
+            data = data.toArray()
+
         crc16 = CRC16.calc(header.toArray(), 0)
-        crc16 = CRC16.calc(data.toArray(), crc16)
+        crc16 = CRC16.calc(data, crc16)
 
         dataArray = bytearray()
         dataArray.extend((0x0A, 0x55))
         dataArray.extend(header.toArray())
-        dataArray.extend(data.toArray())
+        dataArray.extend(data)
         dataArray.extend(pack('H', crc16))
 
         return dataArray
@@ -484,14 +493,17 @@ class Drone:
 
 
 
-    def sendPairing(self, deviceType, address0, address1, address2, scramble, channel):
+    def sendPairing(self, deviceType, address0, address1, address2, scramble, channel0, channel1, channel2, channel3):
     
         if  ( (not isinstance(deviceType, DeviceType)) or
             (not isinstance(address0, int)) or
             (not isinstance(address1, int)) or
             (not isinstance(address2, int)) or
             (not isinstance(scramble, int)) or
-            (not isinstance(channel, int)) ):
+            (not isinstance(channel0, int)) or
+            (not isinstance(channel1, int)) or
+            (not isinstance(channel2, int)) or
+            (not isinstance(channel3, int)) ):
             return None
 
         header = Header()
@@ -507,7 +519,10 @@ class Drone:
         data.address1   = address1
         data.address2   = address2
         data.scramble   = scramble
-        data.channel    = channel
+        data.channel0   = channel0
+        data.channel1   = channel1
+        data.channel2   = channel2
+        data.channel3   = channel3
 
         return self.transfer(header, data)
 
@@ -860,27 +875,6 @@ class Drone:
 
 
 
-    def sendTrimIncDec(self, trimIncDec):
-        
-        if  ( (not isinstance(trimIncDec, TrimIncDec)) ):
-            return None
-
-        header = Header()
-        
-        header.dataType = DataType.Command
-        header.length   = Command.getSize()
-        header.from_    = DeviceType.Base
-        header.to_      = DeviceType.Drone
-
-        data = Command()
-
-        data.commandType    = CommandType.Trim
-        data.option         = trimIncDec.value
-
-        return self.transfer(header, data)
-
-
-
     def sendTrim(self, roll, pitch, yaw, throttle):
         
         if  ( (not isinstance(roll, int)) or (not isinstance(pitch, int)) or (not isinstance(yaw, int)) or (not isinstance(throttle, int)) ):
@@ -973,24 +967,6 @@ class Drone:
         data = Command()
 
         data.commandType    = CommandType.ClearBias
-        data.option         = 0
-
-        return self.transfer(header, data)
-
-
-
-    def sendClearTrim(self):
-        
-        header = Header()
-        
-        header.dataType = DataType.Command
-        header.length   = Command.getSize()
-        header.from_    = DeviceType.Base
-        header.to_      = DeviceType.Drone
-
-        data = Command()
-
-        data.commandType    = CommandType.ClearTrim
         data.option         = 0
 
         return self.transfer(header, data)
@@ -1696,3 +1672,11 @@ class Drone:
 
 # Vibrator End
 
+
+
+# Update Start
+
+
+
+
+# Update End

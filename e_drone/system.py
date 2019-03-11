@@ -10,14 +10,16 @@ class ModelNumber(Enum):
     Drone_3_Drone_P3        = 0x00031003    # Drone_3_Drone_P3 (GD240 / HW2181 / Keil / power button / u30 flow / 3.7v / geared motor / barometer)
     Drone_3_Drone_P4        = 0x00031004    # Drone_3_Drone_P4 (GD50N / HW2181 / Keil / power button / 3.7v / barometer)
     Drone_3_Drone_P5        = 0x00031005    # Drone_3_Drone_P5 (GD30 / HW2181 / Keil / 3.7v / nomal binding)
+    Drone_3_Drone_P6        = 0x00031006    # Drone_3_Drone_P6 (Soccer Drone 2 / HW2181 / Keil / 7.4v / barometer / RGB LED / Shaking binding)
 
     Drone_3_Controller_P1   = 0x00032001    # Drone_3_Controller_P1
+    Drone_3_Controller_P2   = 0x00032002    # Drone_3_Controller_P2
 
     Drone_4_Drone_P4        = 0x00041004    # Drone_4_Drone_P4
     Drone_4_Drone_P5        = 0x00041005    # Drone_4_Drone_P5
 
-    Drone_4_Controlle_P1    = 0x00042001    # Drone_4_Controlle_P1
-    Drone_4_Controlle_P2    = 0x00042002    # Drone_4_Controlle_P2
+    Drone_4_Controller_P1   = 0x00042001    # Drone_4_Controller_P1
+    Drone_4_Controller_P2   = 0x00042002    # Drone_4_Controller_P2
 
     Drone_4_Link_P0         = 0x00043000    # Drone_4_Link_P0
 
@@ -28,29 +30,29 @@ class ModelNumber(Enum):
 
 class DeviceType(Enum):
 
-    None_       = 0x00
+    None_           = 0x00
 
-    Drone       = 0x10      # 드론(Server)
+    Drone           = 0x10      # 드론(Server)
 
-    Controller  = 0x20      # 조종기(Client)
+    Controller      = 0x20      # 조종기(Client)
 
-    Link        = 0x30      # 링크 모듈(Client)
-    LinkServer  = 0x31      # 링크 모듈(Server, 링크 모듈이 서버로 동작하는 경우에만 통신 타입을 잠시 바꿈)
+    Link            = 0x30      # 링크 모듈(Client)
+    LinkServer      = 0x31      # 링크 모듈(Server, 링크 모듈이 서버로 동작하는 경우에만 통신 타입을 잠시 바꿈)
 
-    Range       = 0x40      # 거리 센서 모듈
+    Range           = 0x40      # 거리 센서 모듈
 
-    Base        = 0x70      # 베이스
+    Base            = 0x70      # 베이스
 
-    ByScratch   = 0x80      # 바이스크래치
-    Scratch     = 0x81      # 스크래치
-    Entry       = 0x82      # 네이버 엔트리
+    ByScratch       = 0x80      # 바이스크래치
+    Scratch         = 0x81      # 스크래치
+    Entry           = 0x82      # 네이버 엔트리
 
-    Tester      = 0xA0      # 테스터
-    Monitor     = 0xA1      # 모니터
-    Updater     = 0xA2      # 펌웨어 업데이트 도구
-    Encrypter   = 0xA3      # 암호화 도구
+    Tester          = 0xA0      # 테스터
+    Monitor         = 0xA1      # 모니터
+    Updater         = 0xA2      # 펌웨어 업데이트 도구
+    Encrypter       = 0xA3      # 암호화 도구
 
-    Broadcasting = 0xFF
+    Broadcasting    = 0xFF
 
 
 
@@ -236,7 +238,7 @@ class Headless(Enum):
 
 
 
-class TrimIncDec(Enum):
+class TrimDirection(Enum):
     
     None_               = 0x00  # 없음
 
@@ -265,6 +267,5 @@ class ModeMovement(Enum):
     ReturnHome          = 0x04      # Return Home
 
     EndOfType           = 0x05
-
 
 
