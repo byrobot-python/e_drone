@@ -491,7 +491,7 @@ class UpdateLocation(ISerializable):
         if len(dataArray) != cls.getSize():
             return None
         
-        data.indexBlockNext = unpack('<H', dataArray)
+        data.indexBlockNext, = unpack('<H', dataArray)
 
         return data
 
