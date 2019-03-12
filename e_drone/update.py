@@ -162,6 +162,7 @@ class Updater:
         flagRun             = True
         countError          = 0
         timeTransferNext    = 0
+        timeDrawNext        = 0     # 업데이트 상태 다음 갱신 시각
 
 
         # 헤더 만들기
@@ -250,8 +251,11 @@ class Updater:
                             self.flagUpdated = False
 
                             # 진행률 표시
-                            percentage = index * 100 / fw.length
-                            print(Fore.CYAN + "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b{0:8.1f}%".format(percentage) + Style.RESET_ALL, end='')
+                            if (timeDrawNext < now) or (fw.length - index < 32):
+
+                                timeDrawNext    = now + 73
+                                percentage      = index * 100 / fw.length
+                                print(Fore.CYAN + "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b{0:8.1f}%".format(percentage) + Style.RESET_ALL, end='')
                 else:
                     print(Fore.RED + "Firmware update is not available." + Style.RESET_ALL)
 
