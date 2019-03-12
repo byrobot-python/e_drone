@@ -1,5 +1,6 @@
 import os
-import abc 
+import abc
+import sys
 import numpy as np
 from struct import *
 from enum import Enum
@@ -150,7 +151,8 @@ class Updater:
         firmware.append(Firmware("https://s3.ap-northeast-2.amazonaws.com/byrobot/fw_drone_4_controller_p2_latest.eb"))
 
         drone = Drone()
-        drone.open()
+        if drone.open() == False:
+            sys.exit(1)
 
 
         # 이벤트 핸들링 함수 등록

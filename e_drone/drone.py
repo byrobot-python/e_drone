@@ -113,24 +113,34 @@ class Drone:
             else:
                 return False
 
-        self._serialport = serial.Serial(
-            port        = portname,
-            baudrate    = 57600)
+        try:
 
-        if( self.isOpen() ):
-            self._flagThreadRun = True
-            self._thread = Thread(target=self._receiving, args=(), daemon=True)
-            self._thread.start()
+            self._serialport = serial.Serial(
+                port        = portname,
+                baudrate    = 57600)
 
-            # 로그 출력
-            self._printLog("Connected.({0})".format(portname))
+            if( self.isOpen() ):
+                self._flagThreadRun = True
+                self._thread = Thread(target=self._receiving, args=(), daemon=True)
+                self._thread.start()
 
-            return True
-        else:
-            # 오류 메세지 출력
-            self._printError("Could not connect to E-DRONE.")
+                # 로그 출력
+                self._printLog("Connected.({0})".format(portname))
 
-            return False
+                return True
+            else:
+                # 오류 메세지 출력
+                self._printError("Could not connect to E-DRONE.")
+
+                return False
+
+        except:
+                # 오류 메세지 출력
+                self._printError("Could not connect to E-DRONE.")
+
+                return False
+
+
 
 
 
