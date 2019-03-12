@@ -83,12 +83,12 @@ class Firmware():
             for data in self.rawHeader:
                 self.stringHeader += "{0:02X} ".format(data)
 
-            print(Fore.YELLOW + "  {0}".format(self.header.modelNumber) + Style.RESET_ALL)
-            print("  Header Hex : {0}".format(self.stringHeader))
-            print("   File Size : {0} bytes".format(self.length))
-            print("     Version : {0}.{1}.{2}".format(self.header.versionMajor, self.header.versionMinor, self.header.versionBuild))
-            print("        Date : {0}.{1}.{2}".format(self.header.year, self.header.month, self.header.day))
-            print("      Length : {0}\n".format(self.header.length))
+            print(Fore.CYAN + "  - {0}".format(self.header.modelNumber) + Style.RESET_ALL)
+            print("    Header Hex : {0}".format(self.stringHeader))
+            print("     File Size : {0} bytes".format(self.length))
+            print("       Version : {0}.{1}.{2}".format(self.header.versionMajor, self.header.versionMinor, self.header.versionBuild))
+            print("          Date : {0}.{1}.{2}".format(self.header.year, self.header.month, self.header.day))
+            print("        Length : {0}\n".format(self.header.length))
 
 
 # Firmware End
@@ -103,7 +103,8 @@ class Updater:
 
     def __init__(self):
 
-        self.targetModelNumber  = None
+        self.modelNumber        = None
+        self.deviceType         = None
         self.modeUpdate         = ModeUpdate.None_
         self.indexBlockNext     = 0
         self.flagUpdated        = False
@@ -115,12 +116,13 @@ class Updater:
 
         self.modeUpdate         = information.modeUpdate
         self.flagUpdated        = True
-        self.targetModelNumber  = information.modelNumber
+        self.modelNumber        = information.modelNumber
+        self.deviceType         = DeviceType(((self.modelNumber.value >> 8) & 0xFF))
         
         if information.modeUpdate == ModeUpdate.Complete:
             self.flagUpdateComplete = True
         else:
-            print(Fore.YELLOW + "* Device Information" + Style.RESET_ALL)
+            print(Fore.YELLOW + "* Connected Device : {0}".format(self.deviceType) + Style.RESET_ALL)
             print("  Model Number : {0}".format(information.modelNumber))
             print("       Version : {0}.{1}.{2} ({3} / 0x{3:08X})".format(information.version.major, information.version.minor, information.version.build, information.version.v))
             print("  Release Date : {0}.{1}.{2}".format(information.year, information.month, information.day))
@@ -140,10 +142,10 @@ class Updater:
 
         colorama.init()
 
-        print(Back.YELLOW + Fore.BLACK + "E-DRONE FIRMWARE UPDATER" + Style.RESET_ALL)
+        print(Back.WHITE + Fore.BLUE + " FIRMWARE UPGRADE " + Style.RESET_ALL)
         print("")
 
-        print(Fore.MAGENTA + "* Firmware loading." + Style.RESET_ALL)
+        print(Fore.YELLOW + "* Firmware loading." + Style.RESET_ALL)
         print("")
         
         firmware = []
@@ -152,6 +154,7 @@ class Updater:
 
         drone = Drone()
         if drone.open() == False:
+            print(Fore.RED + "* Error : Unable to open serial port." + Style.RESET_ALL)
             sys.exit(1)
 
 
@@ -167,14 +170,6 @@ class Updater:
         timeDrawNext        = 0     # 업데이트 상태 다음 갱신 시각
 
 
-        # 헤더 만들기
-        header = Header()
-        header.dataType = DataType.Update
-        header.length   = 18
-        header.from_    = DeviceType.Updater
-        header.to_      = DeviceType.Drone
-
-
         # 연결된 장치 확인
         drone.sendRequest(DeviceType.Drone, DataType.Information)
         sleep(0.2)
@@ -182,8 +177,18 @@ class Updater:
         drone.sendRequest(DeviceType.Controller, DataType.Information)
         sleep(0.2)
 
-        header.to_ = DeviceType(((self.targetModelNumber.value >> 8) & 0xFF))
-        print(Fore.GREEN + "* Connected Device : {0}\n".format(header.to_) + Style.RESET_ALL)
+
+        if self.deviceType == None:
+            print(Fore.RED + "* Error : No Answer." + Style.RESET_ALL)
+            sys.exit(1)
+
+
+        # 헤더 만들기
+        header = Header()
+        header.dataType = DataType.Update
+        header.length   = 18
+        header.from_    = DeviceType.Updater
+        header.to_      = self.deviceType
 
 
         # 업데이트 위치 요청
@@ -197,7 +202,7 @@ class Updater:
         # 펌웨어 업데이트
         for fw in firmware:
 
-            if self.targetModelNumber == fw.header.modelNumber:
+            if self.modelNumber == fw.header.modelNumber:
 
                 # 펌웨어의 모델 번호와 일치하는 드론이 있는 경우
 
@@ -222,7 +227,7 @@ class Updater:
 
                                 # 오류가 과도하게 누적된 경우 업데이트 취소
                                 if countError > 30:
-                                    print(Fore.RED + "Too much ERROR." + Style.RESET_ALL)
+                                    print(Fore.RED + "* Error : No response." + Style.RESET_ALL)
                                     flagRun = False
                             
                             else:
@@ -233,14 +238,14 @@ class Updater:
 
                             # 업데이트 할 위치를 넘어서는 경우 종료
                             if index + 16 > fw.length:
-                                print(Fore.RED + "Index over." + Style.RESET_ALL)
+                                print(Fore.RED + "* Error : Index Over." + Style.RESET_ALL)
                                 flagRun = False
                                 break
 
                             # 업데이트가 완료된 경우 종료
                             if self.flagUpdateComplete == True:
                                 sleep(1)
-                                print(Fore.GREEN + "\nUpdate Complete." + Style.RESET_ALL)
+                                print("\n\n" + Fore.GREEN + "  Update Complete." + Style.RESET_ALL)
                                 flagRun = False
                                 break
 
@@ -257,14 +262,21 @@ class Updater:
 
                                 timeDrawNext    = now + 73
                                 percentage      = index * 100 / fw.length
-                                print(Fore.CYAN + "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b{0:8.1f}%".format(percentage) + Style.RESET_ALL, end='')
+                                print(Fore.YELLOW + "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b{0:8.1f}%".format(percentage) + Style.RESET_ALL, end='')
                 else:
-                    print(Fore.RED + "Firmware update is not available." + Style.RESET_ALL)
+                    print(Fore.RED + "* Error : Firmware update is not available." + Style.RESET_ALL)
 
                 break
 
         drone.close()
 
+
+# Updater End
+
+
+
+
+# Main Start
 
 
 if __name__ == '__main__':
@@ -274,5 +286,5 @@ if __name__ == '__main__':
     updater.update()
 
 
-# Updater End
+# Main End
 
