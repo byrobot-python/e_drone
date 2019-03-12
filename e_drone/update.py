@@ -253,7 +253,7 @@ class Updater:
                             self.flagUpdated = False
 
                             # 진행률 표시
-                            if (timeDrawNext < now) or (fw.length - index < 32):
+                            if (timeDrawNext < now) or (fw.length - index < 128):
 
                                 timeDrawNext    = now + 73
                                 percentage      = index * 100 / fw.length
