@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = "e_drone",
-    version = "0.1.31",
+    version = "0.1.32",
     description = "Library for E-DRONE",
     author = "BYROBOT",
     author_email = "dev@byrobot.co.kr",
@@ -17,4 +17,5 @@ setup(
         'numpy>=1.15.4',
         'colorama>=0.4.0'],
     long_description = open('README.md').read(),
+    long_description_content_type='text/markdown',
 )

@@ -6,3 +6,4 @@ e_drone\.egg-info/
 build/
 
 dist/
+.vscode/settings.json

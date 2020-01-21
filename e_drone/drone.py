@@ -627,9 +627,9 @@ class Drone:
             return None
 
         timeSec     = timeMs / 1000
-        timeStart   = time.time()
+        timeStart   = time.perf_counter()
 
-        while ((time.time() - timeStart) < timeSec):
+        while ((time.perf_counter() - timeStart) < timeSec):
             self.sendControl(roll, pitch, yaw, throttle)
             sleep(0.02)
 

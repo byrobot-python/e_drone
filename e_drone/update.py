@@ -211,7 +211,7 @@ class Updater:
                     while flagRun:
 
                         sleep(0.001)
-                        now = time.time() * 1000
+                        now = time.perf_counter() * 1000
 
                         if (self.flagUpdated == True) or (timeTransferNext < now):
 

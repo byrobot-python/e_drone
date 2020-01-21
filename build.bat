@@ -4,16 +4,16 @@ rem 이전 배포판 삭제
 del /f /q .\dist\*.*
 
 rem 빌드
-"C:\ProgramData\Anaconda3\python.exe" setup.py sdist
+"C:\Users\Sanghyo Lee\AppData\Local\Programs\Python\Python38\python.exe" setup.py sdist
 
 rem wheel 빌드
-"C:\ProgramData\Anaconda3\python.exe" setup.py bdist_wheel
+"C:\Users\Sanghyo Lee\AppData\Local\Programs\Python\Python38\python.exe" setup.py bdist_wheel
 
 rem PYPI 등록
-"C:\ProgramData\Anaconda3\Scripts\twine.exe" upload dist/*
-rem "C:\ProgramData\Anaconda3\Scripts\twine.exe" upload --repository-url https://test.pypi.org/legacy/ dist/*
+"C:\Users\Sanghyo Lee\AppData\Local\Programs\Python\Python38\Scripts\twine.exe" upload --skip-existing dist/*
+rem "C:\Users\Sanghyo Lee\AppData\Local\Programs\Python\Python38\Scripts\twine.exe" upload --repository-url https://test.pypi.org/legacy/ dist/*
 
 rem 설치
-"C:\ProgramData\Anaconda3\Scripts\pip.exe" install --upgrade e_drone
+"C:\Users\Sanghyo Lee\AppData\Local\Programs\Python\Python38\Scripts\pip.exe" install --upgrade e_drone
 
 pause

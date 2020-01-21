@@ -51,7 +51,7 @@ class Receiver:
 
     def call(self, data):
         
-        now = time.clock() * 1000
+        now = time.perf_counter() * 1000
 
         self.message = None
 
