@@ -1251,6 +1251,41 @@ class Drone:
 
 
 
+    def sendLightDefaultColor(self, lightMode, interval, r, g, b):
+        
+        if  (((not isinstance(lightMode, LightModeDrone)) and (not isinstance(lightMode, LightModeController))) or
+            (not isinstance(interval, int)) or
+            (not isinstance(r, int)) or
+            (not isinstance(g, int)) or
+            (not isinstance(b, int))):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.LightDefault
+        header.length   = LightModeColor.getSize()
+        header.from_    = DeviceType.Base
+
+        if      isinstance(lightMode, LightModeDrone):
+            header.to_  = DeviceType.Drone
+        elif    isinstance(lightMode, LightModeController):
+            header.to_  = DeviceType.Controller
+        else:
+            return None
+
+        data = LightModeColor()
+
+        data.mode.mode      = lightMode.value
+        data.mode.interval  = interval
+
+        data.color.r        = r
+        data.color.g        = g
+        data.color.b        = b
+
+        return self.transfer(header, data)
+
+
+
 # Light End
 
 
