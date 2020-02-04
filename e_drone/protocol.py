@@ -1071,6 +1071,8 @@ class LightModeDrone(Enum):
     RearFlicker             = 0x13      # 깜빡임
     RearFlickerDouble       = 0x14      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
     RearDimming             = 0x15      # 밝기 제어하여 천천히 깜빡임
+    RearSunrise,            = 0x16
+    RearSunset,             = 0x17
 
     BodyNone                = 0x20
     BodyManual              = 0x21      # 수동 제어
@@ -1078,6 +1080,10 @@ class LightModeDrone(Enum):
     BodyFlicker             = 0x23      # 깜빡임
     BodyFlickerDouble       = 0x24      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
     BodyDimming             = 0x25      # 밝기 제어하여 천천히 깜빡임
+    BodySunrise,            = 0x26
+    BodySunset,             = 0x27
+    BodyRainbow,            = 0x28
+    BodyRainbow2,           = 0x29
 
     ANone                   = 0x30
     AManual                 = 0x31      # 수동 제어
@@ -1085,6 +1091,8 @@ class LightModeDrone(Enum):
     AFlicker                = 0x33      # 깜빡임
     AFlickerDouble          = 0x34      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
     ADimming                = 0x35      # 밝기 제어하여 천천히 깜빡임
+    ASunrise,               = 0x36
+    ASunset,                = 0x37
 
     BNone                   = 0x40
     BManual                 = 0x41      # 수동 제어
@@ -1092,6 +1100,8 @@ class LightModeDrone(Enum):
     BFlicker                = 0x43      # 깜빡임
     BFlickerDouble          = 0x44      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
     BDimming                = 0x45      # 밝기 제어하여 천천히 깜빡임
+    BSunrise,               = 0x46
+    BSunset,                = 0x47
 
     CNone                   = 0x50
     CManual                 = 0x51      # 수동 제어
@@ -1099,8 +1109,12 @@ class LightModeDrone(Enum):
     CFlicker                = 0x53      # 깜빡임
     CFlickerDouble          = 0x54      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
     CDimming                = 0x55      # 밝기 제어하여 천천히 깜빡임
+    CSunrise,               = 0x56
+    CSunset,                = 0x57
+    CRainbow,               = 0x58
+    CRainbow2,              = 0x59
 
-    EndOfType               = 0x56
+    EndOfType               = 0x60
 
 
 
@@ -1132,8 +1146,12 @@ class LightModeController(Enum):
     BodyFlicker         = 0x23
     BodyFlickerDouble   = 0x24
     BodyDimming         = 0x25
+    BodySunrise,        = 0x26
+    BodySunset,         = 0x27
+    BodyRainbow,        = 0x28
+    BodyRainbow2,       = 0x29
 
-    EndOfType           = 0x26
+    EndOfType           = 0x30
 
 
 
