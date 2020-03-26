@@ -14,7 +14,7 @@ e-drone
 
 
 PyPI
-https://pypi.python.org/pypi/e_drone
+https://pypi.org/project/e-drone/
 
 
 Documents for E-Drone python library.
