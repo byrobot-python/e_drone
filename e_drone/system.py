@@ -5,26 +5,48 @@ class ModelNumber(Enum):
     
     None_                   = 0x00000000
 
-    Drone_3_Drone_P1        = 0x00031001    # Drone_3_Drone_P1 (Lightrone / GD65 / HW2181 / Keil / 3.7v / barometer / RGB LED / Shaking binding)
-    Drone_3_Drone_P2        = 0x00031002    # Drone_3_Drone_P2 (Soccer Drone / HW2181 / Keil / 7.4v / barometer / RGB LED / Shaking binding)
-    Drone_3_Drone_P3        = 0x00031003    # Drone_3_Drone_P3 (GD240 / HW2181 / Keil / power button / u30 flow / 3.7v / geared motor / barometer)
-    Drone_3_Drone_P4        = 0x00031004    # Drone_3_Drone_P4 (GD50N / HW2181 / Keil / power button / 3.7v / barometer)
-    Drone_3_Drone_P5        = 0x00031005    # Drone_3_Drone_P5 (GD30 / HW2181 / Keil / 3.7v / nomal binding)
-    Drone_3_Drone_P6        = 0x00031006    # Drone_3_Drone_P6 (Soccer Drone 2 / HW2181 / Keil / 7.4v / barometer / RGB LED / Shaking binding)
-
-    Drone_3_Controller_P1   = 0x00032001    # Drone_3_Controller_P1
-    Drone_3_Controller_P2   = 0x00032002    # Drone_3_Controller_P2
-
-    Drone_4_Drone_P4        = 0x00041004    # Drone_4_Drone_P4
-    Drone_4_Drone_P5        = 0x00041005    # Drone_4_Drone_P5
-
-    Drone_4_Controller_P1   = 0x00042001    # Drone_4_Controller_P1
-    Drone_4_Controller_P2   = 0x00042002    # Drone_4_Controller_P2
-
-    Drone_4_Link_P0         = 0x00043000    # Drone_4_Link_P0
-
-    Drone_4_Tester_P2       = 0x0004A002    # Drone_4_Tester_P2
-    Drone_4_Monitor_P2      = 0x0004A102    # Drone_4_Monitor_P2
+    #                           AAAABBCC, AAAA(Project Number), BB(Device Type), CC(Revision)
+    Drone_3_Drone_P1        = 0x00031001     # Drone_3_Drone_P1 (Lightrone / GD65 / HW2181 / Keil / 3.7v / barometer / RGB LED / Shaking binding)
+    Drone_3_Drone_P2        = 0x00031002     # Drone_3_Drone_P2 (Soccer Drone / HW2181 / Keil / 7.4v / barometer / RGB LED / Shaking binding)
+    Drone_3_Drone_P3        = 0x00031003     # Drone_3_Drone_P3 (GD240 / HW2181 / Keil / power button / u30 flow / 3.7v / geared motor / barometer)
+    Drone_3_Drone_P4        = 0x00031004     # Drone_3_Drone_P4 (GD50N / HW2181 / Keil / power button / 3.7v / barometer)
+    Drone_3_Drone_P5        = 0x00031005     # Drone_3_Drone_P5 (GD30 / HW2181 / Keil / 3.7v / nomal binding)
+    Drone_3_Drone_P6        = 0x00031006     # Drone_3_Drone_P6 (Soccer Drone 2 / HW2181 / Keil / 7.4v / barometer / RGB LED / Shaking binding)
+    Drone_3_Drone_P7        = 0x00031007     # Drone_3_Drone_P7 (SKYKICKV2 / SPI / HW2181 / Keil / 7.4v / barometer / RGB LED / Shaking binding)
+    Drone_3_Drone_P8        = 0x00031008     # Drone_3_Drone_P8 (GD65 / SPI / HW2181 / Keil / 3.7v / barometer / RGB LED / Shaking binding)
+    
+    Drone_3_Controller_P1   = 0x00032001     # Drone_3_Controller_P1 / small size
+    Drone_3_Controller_P2   = 0x00032002     # Drone_3_Controller_P2 / large size
+    Drone_3_Controller_P3   = 0x00032003     # Drone_3_Controller_P3 / small size + USB
+    
+    Drone_3_Tester_P4       = 0x0003A004     # Drone_3_Tester_P4
+    
+    Drone_4_Drone_P4        = 0x00041004     # Drone_4_Drone_P4
+    Drone_4_Drone_P5        = 0x00041005     # Drone_4_Drone_P5
+    
+    Drone_4_Controller_P1   = 0x00042001     # Drone_4_Controller_P1
+    Drone_4_Controller_P2   = 0x00042002     # Drone_4_Controller_P2(HW2000)
+    Drone_4_Controller_P3   = 0x00042003     # Drone_4_Controller_P3(HW2000B)
+    
+    Drone_4_Link_P0         = 0x00043000     # Drone_4_Link_P0
+    
+    Drone_4_Tester_P4       = 0x0004A004     # Drone_4_Tester_P4
+    Drone_4_Monitor_P4      = 0x0004A104     # Drone_4_Monitor_P4
+    
+    Drone_7_Drone_P1        = 0x00071001     # Drone_7_Drone_P1
+    Drone_7_Drone_P2        = 0x00071002     # Drone_7_Drone_P2
+    Drone_7_BleClient_P0    = 0x00073200     # Drone_7_BleClient_P0
+    Drone_7_BleClient_P5    = 0x00073205     # Drone_7_BleClient_P5
+    Drone_7_BleServer_P2    = 0x00073302     # Drone_7_BleServer_P2
+    
+    Drone_7_Tester_P4       = 0x0003A004     # Drone_7_Tester_P4
+    Drone_7_Tester_P5       = 0x0003A005     # Drone_7_Tester_P5
+    Drone_7_Monitor_P4      = 0x0003A104     # Drone_7_Monitor_P4
+    
+    Drone_8_Drone_P0        = 0x00081000     # Drone_8_Drone_P0
+    Drone_8_Drone_P1        = 0x00081001     # Drone_8_Drone_P1
+    
+    Drone_8_Tester_P4       = 0x0008A004     # Drone_8_Tester_P4
 
 
 
@@ -38,6 +60,8 @@ class DeviceType(Enum):
 
     Link            = 0x30      # 링크 모듈(Client)
     LinkServer      = 0x31      # 링크 모듈(Server, 링크 모듈이 서버로 동작하는 경우에만 통신 타입을 잠시 바꿈)
+    BleClient       = 0x32      # BLE 클라이언트
+    BleServer       = 0x33      # BLE 서버
 
     Range           = 0x40      # 거리 센서 모듈
 
@@ -52,6 +76,7 @@ class DeviceType(Enum):
     Updater         = 0xA2      # 펌웨어 업데이트 도구
     Encrypter       = 0xA3      # 암호화 도구
 
+    Whispering      = 0xFE      # 바로 인접한 장치까지만 전달(받은 장치는 자기 자신에게 보낸 것처럼 처리하고 타 장치에 전달하지 않음)
     Broadcasting    = 0xFF
 
 

@@ -29,4 +29,17 @@ Forum
 https://groups.google.com/d/forum/byrobot
 
 
+Discord
+https://discord.gg/UVVJMye
+
+
+Youtube
+https://www.youtube.com/user/BYROBOTCO
+
+
+Facebook
+https://www.facebook.com/Byrobot.Drones
+
+
 BYROBOT
+

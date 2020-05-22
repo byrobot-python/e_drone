@@ -54,6 +54,11 @@ class DataType(Enum):
     Command                     = 0x11      # 명령
     Pairing                     = 0x12      # 페어링
     Rssi                        = 0x13      # RSSI
+    TimeSync                    = 0x14,     # 시간 동기화
+    TransmissionPower           = 0x15,     # 전송 출력
+    Configuration               = 0x16,     # 설정
+    
+    Battle                      = 0x1F,     # 전투
 
     # Light
     LightManual                 = 0x20      # LED 수동 제어
@@ -101,9 +106,18 @@ class DataType(Enum):
     DisplayDrawStringAlign      = 0x87      # 문자열 쓰기
     DisplayDrawImage            = 0x88      # 그림 그리기
 
+    # Card
+    CardClassify                = 0x90,     # 카드 색상 분류 기준 설정
+    CardRange,                  = 0x91,     # 카드 색 범위(RAW 데이터의 출력 범위)
+    CardRaw,                    = 0x92,     # 카드 데이터 RAW 값(유선으로만 전송)
+    CardColor,                  = 0x93,     # 카드 데이터
+    CardList,                   = 0x94,     # 카드 리스트 데이터
+    CardFunctionList,           = 0x95,     # 카드 함수 리스트 데이터
+    
     # Information Assembled
-    InformationAssembledForController   = 0xA0      # 자주 갱신되는 비행 데이터 모음
-    InformationAssembledForEntry        = 0xA1      # 자주 갱신되는 비행 데이터 모음
+    InformationAssembledForController   = 0xA0      # 자주 갱신되는 데이터 모음
+    InformationAssembledForEntry        = 0xA1      # 자주 갱신되는 데이터 모음
+    InformationAssembledForByBlocks     = 0xA2      # 자주 갱신되는 데이터 모음
 
     # Navigation
     NavigationTarget                    = 0xD0,     # 네비게이션 목표점
@@ -143,6 +157,8 @@ class CommandType(Enum):
 
     SetDefault              = 0x08      # 기본 설정으로 초기화
     Backlight               = 0x09      # 조종기 백라이트 설정
+    ModeController          = 0x0A,     # 조종기 동작 모드(0x10:조종, 0x80:링크)
+    Link                    = 0x0B,     # 링크 제어(0:Client Mode, 1:Server Mode, 2:Pairing Start)
 
     # 관리자
     ClearCounter            = 0xA0      # 카운터 클리어(관리자 권한을 획득했을 경우에만 동작)
@@ -321,6 +337,36 @@ class Request(ISerializable):
             return None
         
         data.dataType, = unpack('<B', dataArray)
+        data.dataType = DataType(data.dataType)
+
+        return data
+
+
+
+class RequestOption(ISerializable):
+
+    def __init__(self):
+        self.dataType   = DataType.None_
+        self.option     = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 5
+
+
+    def toArray(self):
+        return pack('<BI', self.dataType.value, self.option)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = Request()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.dataType, data.option = unpack('<BI', dataArray)
         data.dataType = DataType(data.dataType)
 
         return data
@@ -2808,6 +2854,73 @@ class Motor(ISerializable):
         return data
 
 
+class MotorBlockV(ISerializable):
+
+    def __init__(self):
+        self.value      = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 2
+
+
+    def toArray(self):
+        return pack('<h', self.value)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = MotorBlockV()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.value, = unpack('<h', dataArray)
+        
+        return data
+
+
+
+class MotorV(ISerializable):
+
+    def __init__(self):
+        self.motor      = []
+        self.motor.append(MotorBlockV())
+        self.motor.append(MotorBlockV())
+        self.motor.append(MotorBlockV())
+        self.motor.append(MotorBlockV())
+
+
+    @classmethod
+    def getSize(cls):
+        return MotorBlockV.getSize() * 4
+
+
+    def toArray(self):
+        dataArray = bytearray()
+        dataArray.extend(self.motor[0].toArray())
+        dataArray.extend(self.motor[1].toArray())
+        dataArray.extend(self.motor[2].toArray())
+        dataArray.extend(self.motor[3].toArray())
+        return dataArray
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = MotorV()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        indexStart = 0;        indexEnd  = MotorBlockV.getSize();    data.motor[0]   = MotorBlockV.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += MotorBlockV.getSize();    data.motor[1]   = MotorBlockV.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += MotorBlockV.getSize();    data.motor[2]   = MotorBlockV.parse(dataArray[indexStart:indexEnd])
+        indexStart = indexEnd; indexEnd += MotorBlockV.getSize();    data.motor[3]   = MotorBlockV.parse(dataArray[indexStart:indexEnd])
+        
+        return data
+
+
 
 class MotorSingle(ISerializable):
 
@@ -2835,6 +2948,35 @@ class MotorSingle(ISerializable):
         
         data.target, data.rotation, data.value = unpack('<BBh', dataArray)
         data.rotation = Rotation(data.rotation)
+        
+        return data
+
+
+
+class MotorSingleV(ISerializable):
+
+    def __init__(self):
+        self.target     = 0
+        self.value      = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 3
+
+
+    def toArray(self):
+        return pack('<Bh', self.target, self.value)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = MotorSingleV()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        data.target, data.value = unpack('<Bh', dataArray)
         
         return data
 
@@ -2935,4 +3077,14 @@ class InformationAssembledForEntry(ISerializable):
 
 
 # Device End
+
+
+
+
+# Card Start
+
+
+
+
+# Card End
 
