@@ -54,11 +54,11 @@ class DataType(Enum):
     Command                     = 0x11      # 명령
     Pairing                     = 0x12      # 페어링
     Rssi                        = 0x13      # RSSI
-    TimeSync                    = 0x14,     # 시간 동기화
-    TransmissionPower           = 0x15,     # 전송 출력
-    Configuration               = 0x16,     # 설정
+    TimeSync                    = 0x14      # 시간 동기화
+    TransmissionPower           = 0x15      # 전송 출력
+    Configuration               = 0x16      # 설정
     
-    Battle                      = 0x1F,     # 전투
+    Battle                      = 0x1F      # 전투
 
     # Light
     LightManual                 = 0x20      # LED 수동 제어
@@ -107,12 +107,12 @@ class DataType(Enum):
     DisplayDrawImage            = 0x88      # 그림 그리기
 
     # Card
-    CardClassify                = 0x90,     # 카드 색상 분류 기준 설정
-    CardRange,                  = 0x91,     # 카드 색 범위(RAW 데이터의 출력 범위)
-    CardRaw,                    = 0x92,     # 카드 데이터 RAW 값(유선으로만 전송)
-    CardColor,                  = 0x93,     # 카드 데이터
-    CardList,                   = 0x94,     # 카드 리스트 데이터
-    CardFunctionList,           = 0x95,     # 카드 함수 리스트 데이터
+    CardClassify                = 0x90      # 카드 색상 분류 기준 설정
+    CardRange                   = 0x91      # 카드 색 범위(RAW 데이터의 출력 범위)
+    CardRaw                     = 0x92      # 카드 데이터 RAW 값(유선으로만 전송)
+    CardColor                   = 0x93      # 카드 데이터
+    CardList                    = 0x94      # 카드 리스트 데이터
+    CardFunctionList            = 0x95      # 카드 함수 리스트 데이터
     
     # Information Assembled
     InformationAssembledForController   = 0xA0      # 자주 갱신되는 데이터 모음
@@ -120,14 +120,14 @@ class DataType(Enum):
     InformationAssembledForByBlocks     = 0xA2      # 자주 갱신되는 데이터 모음
 
     # Navigation
-    NavigationTarget                    = 0xD0,     # 네비게이션 목표점
-    NavigationLocation                  = 0xD1,     # 네비게이션 가상 위치
-    NavigationMonitor                   = 0xD2,
-    NavigationHeading                   = 0xD3,
-    NavigationCounter                   = 0xD4,
+    NavigationTarget                    = 0xD0      # 네비게이션 목표점
+    NavigationLocation                  = 0xD1      # 네비게이션 가상 위치
+    NavigationMonitor                   = 0xD2
+    NavigationHeading                   = 0xD3
+    NavigationCounter                   = 0xD4
 
-    GpsRtkNavigationState               = 0xDA,     # RTK RAW 데이터 전송
-    GpsRtkExtendedRawMeasurementData    = 0xDB,     # RTK RAW 데이터 전송
+    GpsRtkNavigationState               = 0xDA      # RTK RAW 데이터 전송
+    GpsRtkExtendedRawMeasurementData    = 0xDB      # RTK RAW 데이터 전송
 
     EndOfType                           = 0xDC
 
@@ -157,8 +157,8 @@ class CommandType(Enum):
 
     SetDefault              = 0x08      # 기본 설정으로 초기화
     Backlight               = 0x09      # 조종기 백라이트 설정
-    ModeController          = 0x0A,     # 조종기 동작 모드(0x10:조종, 0x80:링크)
-    Link                    = 0x0B,     # 링크 제어(0:Client Mode, 1:Server Mode, 2:Pairing Start)
+    ModeController          = 0x0A      # 조종기 동작 모드(0x10:조종, 0x80:링크)
+    Link                    = 0x0B      # 링크 제어(0:Client Mode, 1:Server Mode, 2:Pairing Start)
 
     # 관리자
     ClearCounter            = 0xA0      # 카운터 클리어(관리자 권한을 획득했을 경우에만 동작)
@@ -1117,8 +1117,8 @@ class LightModeDrone(Enum):
     RearFlicker             = 0x13      # 깜빡임
     RearFlickerDouble       = 0x14      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
     RearDimming             = 0x15      # 밝기 제어하여 천천히 깜빡임
-    RearSunrise,            = 0x16
-    RearSunset,             = 0x17
+    RearSunrise             = 0x16
+    RearSunset              = 0x17
 
     BodyNone                = 0x20
     BodyManual              = 0x21      # 수동 제어
@@ -1126,10 +1126,10 @@ class LightModeDrone(Enum):
     BodyFlicker             = 0x23      # 깜빡임
     BodyFlickerDouble       = 0x24      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
     BodyDimming             = 0x25      # 밝기 제어하여 천천히 깜빡임
-    BodySunrise,            = 0x26
-    BodySunset,             = 0x27
-    BodyRainbow,            = 0x28
-    BodyRainbow2,           = 0x29
+    BodySunrise             = 0x26
+    BodySunset              = 0x27
+    BodyRainbow             = 0x28
+    BodyRainbow2            = 0x29
 
     ANone                   = 0x30
     AManual                 = 0x31      # 수동 제어
@@ -1137,8 +1137,8 @@ class LightModeDrone(Enum):
     AFlicker                = 0x33      # 깜빡임
     AFlickerDouble          = 0x34      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
     ADimming                = 0x35      # 밝기 제어하여 천천히 깜빡임
-    ASunrise,               = 0x36
-    ASunset,                = 0x37
+    ASunrise                = 0x36
+    ASunset                 = 0x37
 
     BNone                   = 0x40
     BManual                 = 0x41      # 수동 제어
@@ -1146,8 +1146,8 @@ class LightModeDrone(Enum):
     BFlicker                = 0x43      # 깜빡임
     BFlickerDouble          = 0x44      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
     BDimming                = 0x45      # 밝기 제어하여 천천히 깜빡임
-    BSunrise,               = 0x46
-    BSunset,                = 0x47
+    BSunrise                = 0x46
+    BSunset                 = 0x47
 
     CNone                   = 0x50
     CManual                 = 0x51      # 수동 제어
@@ -1155,10 +1155,10 @@ class LightModeDrone(Enum):
     CFlicker                = 0x53      # 깜빡임
     CFlickerDouble          = 0x54      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
     CDimming                = 0x55      # 밝기 제어하여 천천히 깜빡임
-    CSunrise,               = 0x56
-    CSunset,                = 0x57
-    CRainbow,               = 0x58
-    CRainbow2,              = 0x59
+    CSunrise                = 0x56
+    CSunset                 = 0x57
+    CRainbow                = 0x58
+    CRainbow2               = 0x59
 
     EndOfType               = 0x60
 
@@ -1192,10 +1192,10 @@ class LightModeController(Enum):
     BodyFlicker         = 0x23
     BodyFlickerDouble   = 0x24
     BodyDimming         = 0x25
-    BodySunrise,        = 0x26
-    BodySunset,         = 0x27
-    BodyRainbow,        = 0x28
-    BodyRainbow2,       = 0x29
+    BodySunrise         = 0x26
+    BodySunset          = 0x27
+    BodyRainbow         = 0x28
+    BodyRainbow2        = 0x29
 
     EndOfType           = 0x30
 

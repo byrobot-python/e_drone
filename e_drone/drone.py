@@ -983,6 +983,24 @@ class Drone:
 
 
 
+    def sendClearTrim(self):
+        
+        header = Header()
+        
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
+
+        data = Command()
+
+        data.commandType    = CommandType.ClearTrim
+        data.option         = 0
+
+        return self.transfer(header, data)
+
+
+
     def sendSetDefault(self, deviceType):
         
         if  ( (not isinstance(deviceType, DeviceType)) ):
