@@ -3075,16 +3075,219 @@ class InformationAssembledForEntry(ISerializable):
         return data
 
 
-
 # Device End
 
 
 
-
-# Card Start
-
+# Cards Start
 
 
+class CardClassify(ISerializable):
+    
+    def __init__(self):
+        self.index      = 0
+        self.cc         = [[[0 for i in range(2)] for j in range(3)] for k in range(6)]
+        self.l          = [0 for i in range(2)]
 
-# Card End
+
+    @classmethod
+    def getSize(cls):
+        return (1 + (2 * 3 * 6) + 2)
+
+
+    def toArray(self):
+        #             123456789012345678901234567890123456789
+        return pack('<bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+                    self.index,
+                    self.cc[0][0][0], self.cc[0][0][1], self.cc[0][1][0], self.cc[0][1][1], self.cc[0][2][0], self.cc[0][2][1],
+                    self.cc[1][0][0], self.cc[1][0][1], self.cc[1][1][0], self.cc[1][1][1], self.cc[1][2][0], self.cc[1][2][1],
+                    self.cc[2][0][0], self.cc[2][0][1], self.cc[2][1][0], self.cc[2][1][1], self.cc[2][2][0], self.cc[2][2][1],
+                    self.cc[3][0][0], self.cc[3][0][1], self.cc[3][1][0], self.cc[3][1][1], self.cc[3][2][0], self.cc[3][2][1],
+                    self.cc[4][0][0], self.cc[4][0][1], self.cc[4][1][0], self.cc[4][1][1], self.cc[4][2][0], self.cc[4][2][1],
+                    self.cc[5][0][0], self.cc[5][0][1], self.cc[5][1][0], self.cc[5][1][1], self.cc[5][2][0], self.cc[5][2][1],
+                    self.l[0], self.l[1])
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = CardClassify()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        (   data.index,
+            data.cc[0][0][0], data.cc[0][0][1], data.cc[0][1][0], data.cc[0][1][1], data.cc[0][2][0], data.cc[0][2][1],
+            data.cc[1][0][0], data.cc[1][0][1], data.cc[1][1][0], data.cc[1][1][1], data.cc[1][2][0], data.cc[1][2][1],
+            data.cc[2][0][0], data.cc[2][0][1], data.cc[2][1][0], data.cc[2][1][1], data.cc[2][2][0], data.cc[2][2][1],
+            data.cc[3][0][0], data.cc[3][0][1], data.cc[3][1][0], data.cc[3][1][1], data.cc[3][2][0], data.cc[3][2][1],
+            data.cc[4][0][0], data.cc[4][0][1], data.cc[4][1][0], data.cc[4][1][1], data.cc[4][2][0], data.cc[4][2][1],
+            data.cc[5][0][0], data.cc[5][0][1], data.cc[5][1][0], data.cc[5][1][1], data.cc[5][2][0], data.cc[5][2][1],
+            data.l[0], data.l[1]) = unpack('<bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', dataArray)
+        
+        return data
+
+
+
+class CardRange(ISerializable):
+
+    def __init__(self):
+        self.range      = [[[0 for i in range(2)] for j in range(3)] for k in range(2)]
+
+
+    @classmethod
+    def getSize(cls):
+        return ((2 * 3 * 2) * 2)
+
+
+    def toArray(self):
+        #             123456789012
+        return pack('<hhhhhhhhhhhh',
+                    self.range[0][0][0], self.range[0][0][1], self.range[0][1][0], self.range[0][1][1], self.range[0][2][0], self.range[0][2][1],
+                    self.range[1][0][0], self.range[1][0][1], self.range[1][1][0], self.range[1][1][1], self.range[1][2][0], self.range[1][2][1])
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = CardRange()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        (   data.range[0][0][0], data.range[0][0][1], data.range[0][1][0], data.range[0][1][1], data.range[0][2][0], data.range[0][2][1],
+            data.range[1][0][0], data.range[1][0][1], data.range[1][1][0], data.range[1][1][1], data.range[1][2][0], data.range[1][2][1]) = unpack('<hhhhhhhhhhhh', dataArray)
+
+        return data
+
+
+
+class CardRaw(ISerializable):
+
+    def __init__(self):
+        self.rgbRaw     = [[0 for i in range(3)] for j in range(2)]
+        self.rgb        = [[0 for i in range(3)] for j in range(2)]     # 0 ~ 255
+        self.hsvl       = [[0 for i in range(4)] for j in range(2)]     # H: 0 ~ 360, S: 0 ~ 100, V: 0 ~ 100, L: 0 ~ 100
+        self.color      = [0 for i in range(2)]
+        self.card       = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return (12 + 6 + 16 + 2 + 1)
+
+
+    def toArray(self):
+        #             12345678901234567890123
+        return pack('<hhhhhhBBBBBBhhhhhhhhBBB',
+                    self.rgbRaw[0][0], self.rgbRaw[0][1] , self.rgbRaw[0][2], self.rgbRaw[1][0], self.rgbRaw[1][1] , self.rgbRaw[1][2],
+                    self.rgb[0][0], self.rgb[0][1] , self.rgb[0][2], self.rgb[1][0], self.rgb[1][1] , self.rgb[1][2],
+                    self.hsvl[0][0], self.hsvl[0][1] , self.hsvl[0][2], self.hsvl[0][3], self.hsvl[1][0], self.hsvl[1][1] , self.hsvl[1][2], self.hsvl[1][3],
+                    self.color[0].value, self.color[1].value , self.card.value)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = CardRaw()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        (   data.rgbRaw[0][0], data.rgbRaw[0][1] , data.rgbRaw[0][2], data.rgbRaw[1][0], data.rgbRaw[1][1] , data.rgbRaw[1][2],
+            data.rgb[0][0], data.rgb[0][1] , data.rgb[0][2], data.rgb[1][0], data.rgb[1][1] , data.rgb[1][2],
+            data.hsvl[0][0], data.hsvl[0][1], data.hsvl[0][2], data.hsvl[0][3], data.hsvl[1][0], data.hsvl[1][1], data.hsvl[1][2], data.hsvl[1][3],
+            data.color[0], data.color[1] , data.card) = unpack('<hhhhhhhhhhhhhhhhhhBBBBBBhhhhhhBBB', dataArray)
+
+        data.color[0]   = CardColor(data.color[0])
+        data.color[1]   = CardColor(data.color[1])
+        data.card       = Card(data.card)
+        
+        return data
+
+
+
+class CardColor(ISerializable):
+
+    def __init__(self):
+        self.hsvl       = [[0 for i in range(4)] for j in range(2)]     # H: 0 ~ 360, S: 0 ~ 100, V: 0 ~ 100, L: 0 ~ 100
+        self.color      = [0 for i in range(2)]
+        self.card       = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return (16 + 2 + 1)
+
+
+    def toArray(self):
+        #             12345678901
+        return pack('<hhhhhhhhBBB',
+                    self.rgbRaw[0][0], self.rgbRaw[0][1] , self.rgbRaw[0][2], self.rgbRaw[1][0], self.rgbRaw[1][1] , self.rgbRaw[1][2],
+                    self.rgb[0][0], self.rgb[0][1] , self.rgb[0][2], self.rgb[1][0], self.rgb[1][1] , self.rgb[1][2],
+                    self.hsvl[0][0], self.hsvl[0][1] , self.hsvl[0][2], self.hsvl[0][3], self.hsvl[1][0], self.hsvl[1][1] , self.hsvl[1][2], self.hsvl[1][3],
+                    self.color[0].value, self.color[1].value , self.card.value)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = CardColor()
+        
+        if len(dataArray) != cls.getSize():
+            return None
+        
+        (   data.hsvl[0][0], data.hsvl[0][1], data.hsvl[0][2], data.hsvl[0][3], data.hsvl[1][0], data.hsvl[1][1], data.hsvl[1][2], data.hsvl[1][3],
+            data.color[0], data.color[1] , data.card) = unpack('<hhhhhhhhBBB', dataArray)
+
+        data.color[0]   = CardColor(data.color[0])
+        data.color[1]   = CardColor(data.color[1])
+        data.card       = Card(data.card)
+        
+        return data
+
+
+
+class CardList(ISerializable):
+
+    def __init__(self):
+        self.index      = 0     # 현재 실행중인 카드 인덱스
+        self.size       = 0     # 입력된 카드의 총 갯수
+
+        self.cardIndex  = 0     # 다음 카드의 시작 번호
+        self.card       = [0 for i in range(12)]
+
+
+    @classmethod
+    def getSize(cls):
+        return 15
+
+
+    def toArray(self):
+        dataArray = bytearray()
+        dataArray.extend(pack('<BBB', self.index, self.size, self.cardIndex))
+
+        for i in range(0, 12):
+            dataArray.extend(pack('<B', self.card[i]))
+        
+        return dataArray
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        data = CardList()
+        
+        if len(dataArray) < 4:
+            return None
+        
+        data.index, data.size, data.cardIndex = unpack('<BBB', dataArray[0:3])
+
+        lengthList = len(dataArray) - 3
+
+        for i in range(0, lengthList):
+            indexArray = 3 + i;
+            data.card[i], = unpack('<B', dataArray[indexArray:(indexArray + 1)])
+        
+        return data
+
+
+# Cards End
+
+
 

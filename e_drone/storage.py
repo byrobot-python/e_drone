@@ -76,6 +76,13 @@ class Parser:
         self.d[DataType.Button]             = Button.parse
         self.d[DataType.Joystick]           = Joystick.parse
 
+        self.d[DataType.CardClassify]       = CardClassify.parse
+        self.d[DataType.CardRange]          = CardRange.parse
+        self.d[DataType.CardRaw]            = CardRaw.parse
+        self.d[DataType.CardColor]          = CardColor.parse
+        self.d[DataType.CardList]           = CardList.parse
+        self.d[DataType.CardFunctionList]   = CardList.parse
+
         self.d[DataType.InformationAssembledForController]  = InformationAssembledForController.parse
         self.d[DataType.InformationAssembledForEntry]       = InformationAssembledForEntry.parse
 

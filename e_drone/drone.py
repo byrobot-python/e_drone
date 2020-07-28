@@ -63,7 +63,11 @@ class Drone:
         self._storageHeader             = StorageHeader()
         self._storage                   = Storage()
         self._storageCount              = StorageCount()
-        self._parser                    = Parser()
+        self._parser                    = DataParser()
+
+        self._devices                   = []            # 자동 연결 시 검색된 장치 목록을 저장
+        self._flagDiscover              = False         # 자동 연결 시 장치를 검색중인지를 표시
+        self._flagConnected             = False         # 자동 연결 시 장치와 연결되었는지를 알려줌
 
         self.timeStartProgram           = time.time()           # 프로그램 시작 시각 기록
 
@@ -80,6 +84,7 @@ class Drone:
     def __del__(self):
         
         self.close()
+
 
 
     def _receiving(self):
@@ -101,6 +106,14 @@ class Drone:
             return self._serialport.isOpen()
         else:
             return False
+
+
+
+    def isConnected(self):
+        if self.isOpen() == False:
+            return False
+        else:
+            return self._flagConnected
 
 
 
@@ -130,17 +143,15 @@ class Drone:
                 return True
             else:
                 # 오류 메세지 출력
-                self._printError("Could not connect to E-DRONE.")
+                self._printError("Could not connect to device.")
 
                 return False
 
         except:
                 # 오류 메세지 출력
-                self._printError("Could not connect to E-DRONE.")
+                self._printError("Could not connect to device.")
 
                 return False
-
-
 
 
 
@@ -623,7 +634,10 @@ class Drone:
 
     def sendControlWhile(self, roll, pitch, yaw, throttle, timeMs):
         
-        if  ( (not isinstance(roll, int)) or (not isinstance(pitch, int)) or (not isinstance(yaw, int)) or (not isinstance(throttle, int)) ):
+        if ((not isinstance(roll, int))		or
+            (not isinstance(pitch, int))	or
+            (not isinstance(yaw, int))		or
+            (not isinstance(throttle, int)) ):
             return None
 
         timeSec     = timeMs / 1000
@@ -639,10 +653,14 @@ class Drone:
 
     def sendControlPosition16(self, positionX, positionY, positionZ, velocity, heading, rotationalVelocity):
         
-        if  ( (not isinstance(positionX, int)) or (not isinstance(positionY, int)) or (not isinstance(positionZ, int)) or (not isinstance(velocity, int)) ):
+        if ((not isinstance(positionX, int)) or
+            (not isinstance(positionY, int)) or
+            (not isinstance(positionZ, int)) or
+            (not isinstance(velocity, int))):
             return None
 
-        if  ( (not isinstance(heading, int)) or (not isinstance(rotationalVelocity, int)) ):
+        if ((not isinstance(heading, int)) or
+            (not isinstance(rotationalVelocity, int))):
             return None
 
         header = Header()
@@ -710,7 +728,8 @@ class Drone:
 
     def sendCommand(self, commandType, option = 0):
         
-        if  ( (not isinstance(commandType, CommandType)) or (not isinstance(option, int)) ):
+        if ((not isinstance(commandType, CommandType)) or
+			(not isinstance(option, int)) ):
             return None
 
         header = Header()
@@ -731,9 +750,8 @@ class Drone:
 
     def sendCommandLightEvent(self, commandType, option, lightEvent, interval, repeat):
         
-        if  ((not isinstance(commandType, CommandType)) or
+        if ((not isinstance(commandType, CommandType)) or
             (not isinstance(option, int)) or
-            ((not isinstance(lightEvent, LightModeDrone)) and (not isinstance(lightEvent, LightModeController))) or
             (not isinstance(interval, int)) or
             (not isinstance(repeat, int))):
             return None
@@ -744,19 +762,26 @@ class Drone:
         header.length   = CommandLightEvent.getSize()
         header.from_    = DeviceType.Base
 
-        if      isinstance(lightEvent, LightModeDrone):
-            header.to_  = DeviceType.Drone
-        elif    isinstance(lightEvent, LightModeController):
-            header.to_  = DeviceType.Controller
-        else:
-            return None
-
         data = CommandLightEvent()
+
+		if		isinstance(lightEvent, LightModeDrone):
+		    header.to_ 			= DeviceType.Drone
+	        data.event.event    = lightEvent.value
+
+		elif	isinstance(lightEvent, LightModeController):
+		    header.to_ 			= DeviceType.Controller
+	        data.event.event    = lightEvent.value
+
+		elif	isinstance(lightEvent, int):
+		    header.to_ 			= DeviceType.Drone
+	        data.event.event    = lightEvent
+
+		else:
+    		return None
 
         data.command.commandType    = commandType
         data.command.option         = option
 
-        data.event.event    = lightEvent.value
         data.event.interval = interval
         data.event.repeat   = repeat
 
@@ -766,9 +791,8 @@ class Drone:
 
     def sendCommandLightEventColor(self, commandType, option, lightEvent, interval, repeat, r, g, b):
         
-        if  ((not isinstance(commandType, CommandType)) or
+        if ((not isinstance(commandType, CommandType)) or
             (not isinstance(option, int)) or
-            ((not isinstance(lightEvent, LightModeDrone)) and (not isinstance(lightEvent, LightModeController))) or
             (not isinstance(interval, int)) or
             (not isinstance(repeat, int)) or
             (not isinstance(r, int)) or
@@ -782,19 +806,26 @@ class Drone:
         header.length   = CommandLightEventColor.getSize()
         header.from_    = DeviceType.Base
 
-        if      isinstance(lightEvent, LightModeDrone):
-            header.to_  = DeviceType.Drone
-        elif    isinstance(lightEvent, LightModeController):
-            header.to_  = DeviceType.Controller
-        else:
-            return None
-
         data = CommandLightEventColor()
+
+		if		isinstance(lightEvent, LightModeDrone):
+		    header.to_ 			= DeviceType.Drone
+	        data.event.event    = lightEvent.value
+
+		elif	isinstance(lightEvent, LightModeController):
+		    header.to_ 			= DeviceType.Controller
+	        data.event.event    = lightEvent.value
+
+		elif	isinstance(lightEvent, int):
+		    header.to_ 			= DeviceType.Drone
+	        data.event.event    = lightEvent
+
+		else:
+    		return None
 
         data.command.commandType    = commandType
         data.command.option         = option
 
-        data.event.event            = lightEvent.value
         data.event.interval         = interval
         data.event.repeat           = repeat
 
@@ -808,9 +839,8 @@ class Drone:
 
     def sendCommandLightEventColors(self, commandType, option, lightEvent, interval, repeat, colors):
         
-        if  ((not isinstance(commandType, CommandType)) or
+        if ((not isinstance(commandType, CommandType)) or
             (not isinstance(option, int)) or
-            ((not isinstance(lightEvent, LightModeDrone)) and (not isinstance(lightEvent, LightModeController))) or
             (not isinstance(interval, int))  or
             (not isinstance(repeat, int)) or
             (not isinstance(colors, Colors))):
@@ -822,25 +852,34 @@ class Drone:
         header.length   = CommandLightEventColors.getSize()
         header.from_    = DeviceType.Base
 
-        if      isinstance(lightEvent, LightModeDrone):
-            header.to_  = DeviceType.Drone
-        elif    isinstance(lightEvent, LightModeController):
-            header.to_  = DeviceType.Controller
-        else:
-            return None
-
         data = CommandLightEventColors()
+
+		if		isinstance(lightEvent, LightModeDrone):
+		    header.to_ 			= DeviceType.Drone
+	        data.event.event    = lightEvent.value
+
+		elif	isinstance(lightEvent, LightModeController):
+		    header.to_ 			= DeviceType.Controller
+	        data.event.event    = lightEvent.value
+
+		elif	isinstance(lightEvent, int):
+		    header.to_ 			= DeviceType.Drone
+	        data.event.event    = lightEvent
+
+		else:
+    		return None
+
 
         data.command.commandType    = commandType
         data.command.option         = option
 
-        data.event.event            = lightEvent.value
         data.event.interval         = interval
         data.event.repeat           = repeat
 
         data.colors                 = colors
 
         return self.transfer(header, data)
+
 
 
     def sendModeControlFlight(self, modeControlFlight):
@@ -1003,7 +1042,7 @@ class Drone:
 
     def sendSetDefault(self, deviceType):
         
-        if  ( (not isinstance(deviceType, DeviceType)) ):
+        if ((not isinstance(deviceType, DeviceType))):
             return None
 
         header = Header()
@@ -1024,7 +1063,7 @@ class Drone:
 
     def sendBacklight(self, flagPower):
         
-        if  ( (not isinstance(flagPower, bool)) ):
+        if ((not isinstance(flagPower, bool))):
             return None
 
         header = Header()
@@ -1048,9 +1087,10 @@ class Drone:
 
 # Device Start
 
+
     def sendMotor(self, motor0, motor1, motor2, motor3):
         
-        if  ((not isinstance(motor0, int)) or
+        if ((not isinstance(motor0, int)) or
             (not isinstance(motor1, int)) or
             (not isinstance(motor2, int)) or
             (not isinstance(motor3, int))):
@@ -1082,7 +1122,7 @@ class Drone:
 
     def sendMotorSingle(self, target, rotation, value):
         
-        if  ((not isinstance(target, int)) or
+        if ((not isinstance(target, int)) or
             (not isinstance(rotation, Rotation)) or
             (not isinstance(value, int))):
             return None
@@ -1112,7 +1152,7 @@ class Drone:
 
     def sendLightManual(self, deviceType, flags, brightness):
         
-        if  (((deviceType != DeviceType.Drone) and (deviceType != DeviceType.Controller)) or
+        if ((not isinstance(deviceType, DeviceType)) or
             (not isinstance(flags, int)) or
             (not isinstance(brightness, int))):
             return None
@@ -1135,7 +1175,7 @@ class Drone:
 
     def sendLightModeColor(self, lightMode, interval, r, g, b):
         
-        if  (((not isinstance(lightMode, LightModeDrone)) and (not isinstance(lightMode, LightModeController))) or
+        if ((not isinstance(lightMode, int)) or
             (not isinstance(interval, int)) or
             (not isinstance(r, int)) or
             (not isinstance(g, int)) or
@@ -1148,16 +1188,23 @@ class Drone:
         header.length   = LightModeColor.getSize()
         header.from_    = DeviceType.Base
 
-        if      isinstance(lightMode, LightModeDrone):
-            header.to_  = DeviceType.Drone
-        elif    isinstance(lightMode, LightModeController):
-            header.to_  = DeviceType.Controller
-        else:
-            return None
-
         data = LightModeColor()
 
-        data.mode.mode      = lightMode.value
+		if		isinstance(lightMode, LightModeDrone):
+		    header.to_ 		= DeviceType.Drone
+	        data.mode.mode  = lightMode.value
+
+		elif	isinstance(lightMode, LightModeController):
+		    header.to_ 		= DeviceType.Controller
+	        data.mode.mode  = lightMode.value
+
+		elif	isinstance(lightMode, int):
+		    header.to_ 		= DeviceType.Drone
+	        data.mode.mode  = lightMode
+
+		else:
+    		return None
+
         data.mode.interval  = interval
 
         data.color.r        = r
@@ -1170,8 +1217,7 @@ class Drone:
 
     def sendLightModeColors(self, lightMode, interval, colors):
         
-        if  (((not isinstance(lightMode, LightModeDrone)) and (not isinstance(lightMode, LightModeController))) or
-            (not isinstance(interval, int)) or
+        if ((not isinstance(interval, int)) or
             (not isinstance(colors, Colors))):
             return None
 
@@ -1181,18 +1227,24 @@ class Drone:
         header.length   = LightModeColors.getSize()
         header.from_    = DeviceType.Base
 
-        if      isinstance(lightMode, LightModeDrone):
-            header.to_  = DeviceType.Drone
-        elif    isinstance(lightMode, LightModeController):
-            header.to_  = DeviceType.Controller
-        else:
-            return None
-
         data = LightModeColors()
 
-        data.mode.mode      = lightMode.value
-        data.mode.interval  = interval
+		if		isinstance(lightMode, LightModeDrone):
+		    header.to_ 		= DeviceType.Drone
+	        data.mode.mode  = lightMode.value
 
+		elif	isinstance(lightMode, LightModeController):
+		    header.to_ 		= DeviceType.Controller
+	        data.mode.mode  = lightMode.value
+
+		elif	isinstance(lightMode, int):
+		    header.to_ 		= DeviceType.Drone
+	        data.mode.mode  = lightMode
+
+		else:
+    		return None
+
+        data.mode.interval  = interval
         data.colors         = colors
 
         return self.transfer(header, data)
@@ -1201,8 +1253,7 @@ class Drone:
 
     def sendLightEventColor(self, lightEvent, interval, repeat, r, g, b):
         
-        if  (((not isinstance(lightEvent, LightModeDrone)) and (not isinstance(lightEvent, LightModeController))) or
-            (not isinstance(interval, int)) or
+        if ((not isinstance(interval, int)) or
             (not isinstance(repeat, int)) or
             (not isinstance(r, int)) or
             (not isinstance(g, int)) or
@@ -1215,16 +1266,23 @@ class Drone:
         header.length   = LightEventColor.getSize()
         header.from_    = DeviceType.Base
 
-        if      isinstance(lightEvent, LightModeDrone):
-            header.to_  = DeviceType.Drone
-        elif    isinstance(lightEvent, LightModeController):
-            header.to_  = DeviceType.Controller
-        else:
-            return None
-
         data = LightEventColor()
 
-        data.event.event    = lightEvent.value
+		if		isinstance(lightEvent, LightModeDrone):
+		    header.to_ 			= DeviceType.Drone
+	        data.event.event    = lightEvent.value
+
+		elif	isinstance(lightEvent, LightModeController):
+		    header.to_ 			= DeviceType.Controller
+	        data.event.event    = lightEvent.value
+
+		elif	isinstance(lightEvent, int):
+		    header.to_ 			= DeviceType.Drone
+	        data.event.event    = lightEvent
+
+		else:
+    		return None
+
         data.event.interval = interval
         data.event.repeat   = repeat
 
@@ -1238,8 +1296,7 @@ class Drone:
 
     def sendLightEventColors(self, lightEvent, interval, repeat, colors):
         
-        if  (((not isinstance(lightEvent, LightModeDrone)) and (not isinstance(lightEvent, LightModeController))) or
-            (not isinstance(interval, int)) or
+        if ((not isinstance(interval, int)) or
             (not isinstance(repeat, int)) or
             (not isinstance(colors, Colors))):
             return None
@@ -1250,16 +1307,23 @@ class Drone:
         header.length   = LightEventColors.getSize()
         header.from_    = DeviceType.Base
 
-        if      isinstance(lightEvent, LightModeDrone):
-            header.to_  = DeviceType.Drone
-        elif    isinstance(lightEvent, LightModeController):
-            header.to_  = DeviceType.Controller
-        else:
-            return None
-
         data = LightEventColors()
 
-        data.event.event    = lightEvent.value
+		if		isinstance(lightEvent, LightModeDrone):
+		    header.to_ 			= DeviceType.Drone
+	        data.event.event    = lightEvent.value
+
+		elif	isinstance(lightEvent, LightModeController):
+		    header.to_ 			= DeviceType.Controller
+	        data.event.event    = lightEvent.value
+
+		elif	isinstance(lightEvent, int):
+		    header.to_ 			= DeviceType.Drone
+	        data.event.event    = lightEvent
+
+		else:
+    		return None
+
         data.event.interval = interval
         data.event.repeat   = repeat
 
@@ -1271,8 +1335,7 @@ class Drone:
 
     def sendLightDefaultColor(self, lightMode, interval, r, g, b):
         
-        if  (((not isinstance(lightMode, LightModeDrone)) and (not isinstance(lightMode, LightModeController))) or
-            (not isinstance(interval, int)) or
+        if ((not isinstance(interval, int)) or
             (not isinstance(r, int)) or
             (not isinstance(g, int)) or
             (not isinstance(b, int))):
@@ -1284,16 +1347,23 @@ class Drone:
         header.length   = LightModeColor.getSize()
         header.from_    = DeviceType.Base
 
-        if      isinstance(lightMode, LightModeDrone):
-            header.to_  = DeviceType.Drone
-        elif    isinstance(lightMode, LightModeController):
-            header.to_  = DeviceType.Controller
-        else:
-            return None
-
         data = LightModeColor()
 
-        data.mode.mode      = lightMode.value
+		if		isinstance(lightMode, LightModeDrone):
+		    header.to_ 		= DeviceType.Drone
+	        data.mode.mode  = lightMode.value
+
+		elif	isinstance(lightMode, LightModeController):
+		    header.to_ 		= DeviceType.Controller
+	        data.mode.mode  = lightMode.value
+
+		elif	isinstance(lightMode, int):
+		    header.to_ 		= DeviceType.Drone
+	        data.mode.mode  = lightMode
+
+		else:
+    		return None
+
         data.mode.interval  = interval
 
         data.color.r        = r
@@ -1530,7 +1600,9 @@ class Drone:
 
     def sendBuzzer(self, mode, value, time):
         
-        if ( (not isinstance(mode, BuzzerMode)) or (not isinstance(value, int)) or (not isinstance(time, int)) ):
+        if ((not isinstance(mode, BuzzerMode)) or
+            (not isinstance(value, int)) or
+            (not isinstance(time, int))):
             return None
 
         header = Header()
@@ -1552,7 +1624,7 @@ class Drone:
 
     def sendBuzzerMute(self, time):
         
-        if ( (not isinstance(time, int)) ):
+        if (not isinstance(time, int)):
             return None
 
         header = Header()
@@ -1574,7 +1646,7 @@ class Drone:
 
     def sendBuzzerMuteReserve(self, time):
         
-        if ( (not isinstance(time, int)) ):
+        if (not isinstance(time, int)):
             return None
 
         header = Header()
@@ -1596,7 +1668,8 @@ class Drone:
 
     def sendBuzzerScale(self, scale, time):
         
-        if ( (not isinstance(scale, BuzzerScale)) or (not isinstance(time, int)) ):
+        if ((not isinstance(scale, BuzzerScale)) or
+			(not isinstance(time, int))):
             return None
 
         header = Header()
@@ -1618,7 +1691,8 @@ class Drone:
 
     def sendBuzzerScaleReserve(self, scale, time):
         
-        if ( (not isinstance(scale, BuzzerScale)) or (not isinstance(time, int)) ):
+        if ((not isinstance(scale, BuzzerScale)) or
+			(not isinstance(time, int))):
             return None
 
         header = Header()
@@ -1640,7 +1714,8 @@ class Drone:
 
     def sendBuzzerHz(self, hz, time):
         
-        if ( (not isinstance(hz, int)) or (not isinstance(time, int)) ):
+        if ((not isinstance(hz, int)) or
+			(not isinstance(time, int))):
             return None
 
         header = Header()
@@ -1662,7 +1737,8 @@ class Drone:
 
     def sendBuzzerHzReserve(self, hz, time):
         
-        if ( (not isinstance(hz, int)) or (not isinstance(time, int)) ):
+        if ((not isinstance(hz, int)) or
+			(not isinstance(time, int))):
             return None
 
         header = Header()
@@ -1690,7 +1766,9 @@ class Drone:
 
     def sendVibrator(self, on, off, total):
         
-        if ( (not isinstance(on, int)) or (not isinstance(off, int)) or (not isinstance(total, int)) ):
+        if ((not isinstance(on, int)) or
+            (not isinstance(off, int)) or
+            (not isinstance(total, int))):
             return None
 
         header = Header()
@@ -1713,7 +1791,9 @@ class Drone:
 
     def sendVibratorReserve(self, on, off, total):
         
-        if ( (not isinstance(on, int)) or (not isinstance(off, int)) or (not isinstance(total, int)) ):
+        if ((not isinstance(on, int)) or
+            (not isinstance(off, int)) or
+            (not isinstance(total, int))):
             return None
 
         header = Header()

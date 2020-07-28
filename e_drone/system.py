@@ -6,47 +6,64 @@ class ModelNumber(Enum):
     None_                   = 0x00000000
 
     #                           AAAABBCC, AAAA(Project Number), BB(Device Type), CC(Revision)
-    Drone_3_Drone_P1        = 0x00031001     # Drone_3_Drone_P1 (Lightrone / GD65 / HW2181 / Keil / 3.7v / barometer / RGB LED / Shaking binding)
-    Drone_3_Drone_P2        = 0x00031002     # Drone_3_Drone_P2 (Soccer Drone / HW2181 / Keil / 7.4v / barometer / RGB LED / Shaking binding)
-    Drone_3_Drone_P3        = 0x00031003     # Drone_3_Drone_P3 (GD240 / HW2181 / Keil / power button / u30 flow / 3.7v / geared motor / barometer)
-    Drone_3_Drone_P4        = 0x00031004     # Drone_3_Drone_P4 (GD50N / HW2181 / Keil / power button / 3.7v / barometer)
-    Drone_3_Drone_P5        = 0x00031005     # Drone_3_Drone_P5 (GD30 / HW2181 / Keil / 3.7v / nomal binding)
-    Drone_3_Drone_P6        = 0x00031006     # Drone_3_Drone_P6 (Soccer Drone 2 / HW2181 / Keil / 7.4v / barometer / RGB LED / Shaking binding)
-    Drone_3_Drone_P7        = 0x00031007     # Drone_3_Drone_P7 (SKYKICKV2 / SPI / HW2181 / Keil / 7.4v / barometer / RGB LED / Shaking binding)
-    Drone_3_Drone_P8        = 0x00031008     # Drone_3_Drone_P8 (GD65 / SPI / HW2181 / Keil / 3.7v / barometer / RGB LED / Shaking binding)
+    Drone_3_Drone_P1        = 0x00031001    # Drone_3_Drone_P1 (Lightrone / GD65 / HW2181 / Keil / 3.7v / barometer / RGB LED / Shaking binding)
+    Drone_3_Drone_P2        = 0x00031002    # Drone_3_Drone_P2 (Soccer Drone / HW2181 / Keil / 7.4v / barometer / RGB LED / Shaking binding)
+    Drone_3_Drone_P3        = 0x00031003    # Drone_3_Drone_P3 (GD240 / HW2181 / Keil / power button / u30 flow / 3.7v / geared motor / barometer)
+    Drone_3_Drone_P4        = 0x00031004    # Drone_3_Drone_P4 (GD50N / HW2181 / Keil / power button / 3.7v / barometer)
+    Drone_3_Drone_P5        = 0x00031005    # Drone_3_Drone_P5 (GD30 / HW2181 / Keil / 3.7v / nomal binding)
+    Drone_3_Drone_P6        = 0x00031006    # Drone_3_Drone_P6 (Soccer Drone 2 / HW2181 / Keil / 7.4v / barometer / RGB LED / Shaking binding)
+    Drone_3_Drone_P7        = 0x00031007    # Drone_3_Drone_P7 (SKYKICKV2 / SPI / HW2181 / Keil / 7.4v / barometer / RGB LED / Shaking binding)
+    Drone_3_Drone_P8        = 0x00031008    # Drone_3_Drone_P8 (GD65 / SPI / HW2181 / Keil / 3.7v / barometer / RGB LED / Shaking binding)
+    Drone_3_Drone_P9        = 0x00031009    # Drone_3_Drone_P9 (GD65 / SPI / HW2181 / Keil / 3.7v / barometer / RGB LED / Shaking binding / BladeType Power Connector)
+    Drone_3_Drone_P10       = 0x0003100A    # Drone_3_Drone_P10 (Battle Drone / SPI / HW2181 / Keil / 3.7v / barometer / RGB LED / Shaking binding)
     
-    Drone_3_Controller_P1   = 0x00032001     # Drone_3_Controller_P1 / small size
-    Drone_3_Controller_P2   = 0x00032002     # Drone_3_Controller_P2 / large size
-    Drone_3_Controller_P3   = 0x00032003     # Drone_3_Controller_P3 / small size + USB
+    Drone_3_Controller_P1   = 0x00032001    # Drone_3_Controller_P1 / GD65 Controller /small size
+    Drone_3_Controller_P2   = 0x00032002    # Drone_3_Controller_P2 / Skykick Controller /large size
+    Drone_3_Controller_P3   = 0x00032003    # Drone_3_Controller_P3 / GD65 Controller USB /small size + USB
+    Drone_3_Controller_P4   = 0x00032004    # Drone_3_Controller_P4 / Battle Drone Controller USB / small size + usb
     
-    Drone_3_Tester_P4       = 0x0003A004     # Drone_3_Tester_P4
+    Drone_3_Link_P0         = 0x00033000    # Drone_3_Link_P0
     
-    Drone_4_Drone_P4        = 0x00041004     # Drone_4_Drone_P4
-    Drone_4_Drone_P5        = 0x00041005     # Drone_4_Drone_P5
+    Drone_3_Tester_P4       = 0x0003A004    # Drone_3_Tester_P4 (obsolete)
+    Drone_3_Tester_P6       = 0x0003A006    # Drone_3_Tester_P6 - Battle Drone Tester
     
-    Drone_4_Controller_P1   = 0x00042001     # Drone_4_Controller_P1
-    Drone_4_Controller_P2   = 0x00042002     # Drone_4_Controller_P2(HW2000)
-    Drone_4_Controller_P3   = 0x00042003     # Drone_4_Controller_P3(HW2000B)
+    Drone_4_Drone_P4        = 0x00041004    # Drone_4_Drone_P4 (obsolete)
+    Drone_4_Drone_P5        = 0x00041005    # Drone_4_Drone_P5 (HW2000, 2m range sensor)
+    Drone_4_Drone_P6        = 0x00041006    # Drone_4_Drone_P6 (HW2000B, 4m range sensor)
     
-    Drone_4_Link_P0         = 0x00043000     # Drone_4_Link_P0
+    Drone_4_Controller_P1   = 0x00042001    # Drone_4_Controller_P1 (obsolete)
+    Drone_4_Controller_P2   = 0x00042002    # Drone_4_Controller_P2 (HW2000)
+    Drone_4_Controller_P3   = 0x00042003    # Drone_4_Controller_P3 (HW2000B)
     
-    Drone_4_Tester_P4       = 0x0004A004     # Drone_4_Tester_P4
-    Drone_4_Monitor_P4      = 0x0004A104     # Drone_4_Monitor_P4
+    Drone_4_Link_P0         = 0x00043000    # Drone_4_Link_P0
     
-    Drone_7_Drone_P1        = 0x00071001     # Drone_7_Drone_P1
-    Drone_7_Drone_P2        = 0x00071002     # Drone_7_Drone_P2
-    Drone_7_BleClient_P0    = 0x00073200     # Drone_7_BleClient_P0
-    Drone_7_BleClient_P5    = 0x00073205     # Drone_7_BleClient_P5
-    Drone_7_BleServer_P2    = 0x00073302     # Drone_7_BleServer_P2
+    Drone_4_Tester_P4       = 0x0004A004    # Drone_4_Tester_P4 (obsolete)
+    Drone_4_Tester_P6       = 0x0004A006    # Drone_4_Tester_P6
+    Drone_4_Monitor_P4      = 0x0004A104    # Drone_4_Monitor_P4 (obsolete)
     
-    Drone_7_Tester_P4       = 0x0003A004     # Drone_7_Tester_P4
-    Drone_7_Tester_P5       = 0x0003A005     # Drone_7_Tester_P5
-    Drone_7_Monitor_P4      = 0x0003A104     # Drone_7_Monitor_P4
+    Drone_7_Drone_P1        = 0x00071001    # Drone_7_Drone_P1
+    Drone_7_Drone_P2        = 0x00071002    # Drone_7_Drone_P2 / Coding Car
+
+    Drone_7_BleClient_P0    = 0x00073200    # Drone_7_BleClient_P0 / Coding Car Link
+    Drone_7_BleClient_P5    = 0x00073205    # Drone_7_BleClient_P5 / Coding Car Tester BLE
+    Drone_7_BleServer_P2    = 0x00073302    # Drone_7_BleServer_P2 / Coding Car Ble Module
     
-    Drone_8_Drone_P0        = 0x00081000     # Drone_8_Drone_P0
-    Drone_8_Drone_P1        = 0x00081001     # Drone_8_Drone_P1
+    Drone_7_Tester_P4       = 0x0003A004    # Drone_7_Tester_P4 (obsolete)
+    Drone_7_Tester_P5       = 0x0003A005    # Drone_7_Tester_P5 (obsolete)
+    Drone_7_Tester_P6       = 0x0003A006    # Drone_7_Tester_P6
     
-    Drone_8_Tester_P4       = 0x0008A004     # Drone_8_Tester_P4
+    Drone_7_Monitor_P4      = 0x0003A104    # Drone_7_Monitor_P4 (obsolete)
+    Drone_7_Monitor_P5      = 0x0003A105    # Drone_7_Monitor_P5
+    
+    Drone_8_Drone_P0        = 0x00081000    # Drone_8_Drone_P0 (obsolete)
+    Drone_8_Drone_P1        = 0x00081001    # Drone_8_Drone_P1 / Coding Drone
+    
+    Drone_8_Tester_P4       = 0x0008A004    # Drone_8_Tester_P4 (obsolete)
+    Drone_8_Tester_P6       = 0x0008A006    # Drone_8_Tester_P6
+    
+    Drone_8_Monitor_P6      = 0x0008A106    # Drone_8_Monitor_P6
+
+    Drone_9_Drone_P0        = 0x00091000    # Drone_9_Drone_P0
 
 
 
@@ -178,6 +195,7 @@ class ErrorFlagsForState(Enum):
     NotRegistered                           = 0x00000001    # 장치 등록이 안됨
     FlashReadLock_UnLocked                  = 0x00000002    # 플래시 메모리 읽기 Lock이 안 걸림
     BootloaderWriteLock_UnLocked            = 0x00000004    # 부트로더 영역 쓰기 Lock이 안 걸림
+    LowBattery                              = 0x00000008    # Low Battery
     
     TakeoffFailure_CheckPropellerAndMotor   = 0x00000010    # 이륙 실패
     CheckPropellerVibration                 = 0x00000020    # 프로펠러 진동발생
@@ -292,5 +310,100 @@ class ModeMovement(Enum):
     ReturnHome          = 0x04      # Return Home
 
     EndOfType           = 0x05
+
+
+
+class CardColor(Enum):
+    
+    Unknown         = 0x00
+    
+    White           = 0x01
+    Red             = 0x02
+    Yellow          = 0x03
+    Green           = 0x04
+    Cyan            = 0x05
+    Blue            = 0x06
+    Magenta         = 0x07
+    Black           = 0x08
+
+    EndOfType       = 0x09
+
+
+
+class Card(Enum):
+    
+    None_           = 0x00
+
+    WhiteWhite      = 0x11
+    WhiteRed        = 0x12
+    WhiteYellow     = 0x13
+    WhiteGreen      = 0x14
+    WhiteCyan       = 0x15
+    WhiteBlue       = 0x16
+    WhiteMagenta    = 0x17
+    WhiteBlack      = 0x18
+
+    RedWhite        = 0x21
+    RedRed          = 0x22
+    RedYellow       = 0x23
+    RedGreen        = 0x24
+    RedCyan         = 0x25
+    RedBlue         = 0x26
+    RedMagenta      = 0x27
+    RedBlack        = 0x28
+
+    YellowWhite     = 0x31
+    YellowRed       = 0x32
+    YellowYellow    = 0x33
+    YellowGreen     = 0x34
+    YellowCyan      = 0x35
+    YellowBlue      = 0x36
+    YellowMagenta   = 0x37
+    YellowBlack     = 0x38
+
+    GreenWhite      = 0x41
+    GreenRed        = 0x42
+    GreenYellow     = 0x43
+    GreenGreen      = 0x44
+    GreenCyan       = 0x45
+    GreenBlue       = 0x46
+    GreenMagenta    = 0x47
+    GreenBlack      = 0x48
+
+    CyanWhite       = 0x51
+    CyanRed         = 0x52
+    CyanYellow      = 0x53
+    CyanGreen       = 0x54
+    CyanCyan        = 0x55
+    CyanBlue        = 0x56
+    CyanMagenta     = 0x57
+    CyanBlack       = 0x58
+
+    BlueWhite       = 0x61
+    BlueRed         = 0x62
+    BlueYellow      = 0x63
+    BlueGreen       = 0x64
+    BlueCyan        = 0x65
+    BlueBlue        = 0x66
+    BlueMagenta     = 0x67
+    BlueBlack       = 0x68
+
+    MagentaWhite    = 0x71
+    MagentaRed      = 0x72
+    MagentaYellow   = 0x73
+    MagentaGreen    = 0x74
+    MagentaCyan     = 0x75
+    MagentaBlue     = 0x76
+    MagentaMagenta  = 0x77
+    MagentaBlack    = 0x78
+
+    BlackWhite      = 0x81
+    BlackRed        = 0x82
+    BlackYellow     = 0x83
+    BlackGreen      = 0x84
+    BlackCyan       = 0x85
+    BlackBlue       = 0x86
+    BlackMagenta    = 0x87
+    BlackBlack      = 0x88
 
 
