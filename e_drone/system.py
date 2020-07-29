@@ -313,7 +313,7 @@ class ModeMovement(Enum):
 
 
 
-class CardColor(Enum):
+class CardColorIndex(Enum):
     
     Unknown         = 0x00
     

@@ -3196,8 +3196,8 @@ class CardRaw(ISerializable):
             data.hsvl[0][0], data.hsvl[0][1], data.hsvl[0][2], data.hsvl[0][3], data.hsvl[1][0], data.hsvl[1][1], data.hsvl[1][2], data.hsvl[1][3],
             data.color[0], data.color[1] , data.card) = unpack('<hhhhhhhhhhhhhhhhhhBBBBBBhhhhhhBBB', dataArray)
 
-        data.color[0]   = CardColor(data.color[0])
-        data.color[1]   = CardColor(data.color[1])
+        data.color[0]   = CardColorIndex(data.color[0])
+        data.color[1]   = CardColorIndex(data.color[1])
         data.card       = Card(data.card)
         
         return data
@@ -3236,8 +3236,8 @@ class CardColor(ISerializable):
         (   data.hsvl[0][0], data.hsvl[0][1], data.hsvl[0][2], data.hsvl[0][3], data.hsvl[1][0], data.hsvl[1][1], data.hsvl[1][2], data.hsvl[1][3],
             data.color[0], data.color[1] , data.card) = unpack('<hhhhhhhhBBB', dataArray)
 
-        data.color[0]   = CardColor(data.color[0])
-        data.color[1]   = CardColor(data.color[1])
+        data.color[0]   = CardColorIndex(data.color[0])
+        data.color[1]   = CardColorIndex(data.color[1])
         data.card       = Card(data.card)
         
         return data

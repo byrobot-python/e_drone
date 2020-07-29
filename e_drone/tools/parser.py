@@ -83,7 +83,7 @@ class Parser():
 
             # 조종
             #                           1        2      3       4     5          6
-            # python -m e_drone_nightly control [roll] [pitch] [yaw] [throttle] [time(msec)]
+            # python -m e_drone_nightly control [roll] [pitch] [yaw] [throttle] [time(ms)]
             # 지정한 시간이 종료되면 입력값을 모두 0으로 변경하고 멈춤
             # >python -m e_drone_nightly control 40 0 3
             elif    ((self.count == 6) and 
@@ -103,13 +103,24 @@ class Parser():
 
             # 버저
             #                   1       2    3
-            # python -m e_drone buzzer [hz] [time(msec)]
+            # python -m e_drone buzzer [hz] [time(ms)]
             # >python -m e_drone buzzer 400 2000
             elif    ((self.count == 3) and 
                     (self.arguments[0] == "buzzer")):
                 print (Fore.WHITE + "Buzz Sound: " + Fore.YELLOW + "{0}".format(int(self.arguments[1])) + Fore.WHITE + "Hz, " + Fore.CYAN + "{0}".format(int(self.arguments[2])) + Fore.WHITE + "ms" + Style.RESET_ALL)
-                self.buzzer(int(self.arguments[1]), int(self.arguments[2]))
+                self.buzzer(DeviceType.Controller, int(self.arguments[1]), int(self.arguments[2]))
                 return
+
+            # 진동
+            #                   1         2          3           4
+            # python -m e_drone vibrator [on(ms)] [off(ms)] [total(ms)]
+            # >python -m e_drone vibrator 500 500 2000
+            elif    ((self.count == 4) and 
+                    (self.arguments[0] == "vibrator")):
+                print (Fore.WHITE + "Vibrator: on " + Fore.YELLOW + "{0}".format(int(self.arguments[1])) + Fore.WHITE + "ms, off " + Fore.CYAN + "{0}".format(int(self.arguments[2])) + Fore.WHITE + "ms, total " + Fore.CYAN + "{0}".format(int(self.arguments[3])) + Fore.WHITE + "ms" + Style.RESET_ALL)
+                self.vibrator(DeviceType.Controller, int(self.arguments[1]), int(self.arguments[2]), int(self.arguments[3]))
+                return
+
 
             # >python -m e_drone light body flicker 100 50 50 10
             # >python -m e_drone light body flickerdouble 100 50 50 10
@@ -290,7 +301,7 @@ class Parser():
             drone.sendLightMode(lightMode, interval)
 
 
-    def buzzer(self, hz, time):
+    def buzzer(self, target, hz, time):
 
         drone = Drone(True, True, True, True, True)
         #drone = Drone()
@@ -306,7 +317,7 @@ class Parser():
         header.dataType = DataType.Buzzer
         header.length   = Buzzer.getSize()
         header.from_    = DeviceType.Base
-        header.to_      = DeviceType.Controller
+        header.to_      = target
         
         data = Buzzer()
 
@@ -316,6 +327,35 @@ class Parser():
 
         drone.transfer(header, data)
         sleep(time / 1000)
+
+
+    def vibrator(self, target, on, off, total):
+
+        drone = Drone(True, True, True, True, True)
+        #drone = Drone()
+        if drone.open() == False:
+            print(Fore.RED + "* Error : Unable to open serial port." + Style.RESET_ALL)
+            sys.exit(1)
+        
+        if ( (not isinstance(on, int)) or (not isinstance(off, int)) or (not isinstance(total, int)) ):
+            return None
+
+        header = Header()
+        
+        header.dataType = DataType.Vibrator
+        header.length   = Vibrator.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = target
+        
+        data = Vibrator()
+
+        data.mode       = VibratorMode.Instantally
+        data.on         = on
+        data.off        = off
+        data.total      = total
+
+        drone.transfer(header, data)
+        sleep(total / 1000)
 
 
     def help(self):
@@ -337,7 +377,7 @@ class Parser():
 
         print("")
         print(Fore.CYAN + "  - Control - Accel Wheel" + Style.RESET_ALL)
-        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "control " + Fore.WHITE + "[" + Fore.YELLOW + "accel" + Fore.WHITE + "] [" + Fore.GREEN + "wheel" + Fore.WHITE + "] [" + Fore.YELLOW + "time(msec)" + Fore.WHITE + "]" + Style.RESET_ALL)
+        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "control " + Fore.WHITE + "[" + Fore.YELLOW + "accel" + Fore.WHITE + "] [" + Fore.GREEN + "wheel" + Fore.WHITE + "] [" + Fore.YELLOW + "time(ms)" + Fore.WHITE + "]" + Style.RESET_ALL)
         print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "control " + Fore.YELLOW + "40 0 3000" + Style.RESET_ALL)
 
         print("")
@@ -352,8 +392,13 @@ class Parser():
 
         print("")
         print(Fore.CYAN + "  - Buzzer" + Style.RESET_ALL)
-        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "buzzer " + Fore.WHITE + "[" + Fore.YELLOW + "hz" + Fore.WHITE + "] [" + Fore.GREEN + "time(msec)" + Fore.WHITE + "]" + Style.RESET_ALL)
+        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "buzzer " + Fore.WHITE + "[" + Fore.YELLOW + "hz" + Fore.WHITE + "] [" + Fore.GREEN + "time(ms)" + Fore.WHITE + "]" + Style.RESET_ALL)
         print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "buzzer " + Fore.YELLOW + "400 2000" + Style.RESET_ALL)
+
+        print("")
+        print(Fore.CYAN + "  - Vibrator" + Style.RESET_ALL)
+        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "vibrator " + Fore.WHITE + "[" + Fore.YELLOW + "on(ms)" + Fore.WHITE + "] [" + Fore.GREEN + "off(ms)" + Fore.WHITE + "] [" + Fore.GREEN + "total(ms)" + Fore.WHITE + "]" + Style.RESET_ALL)
+        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "vibrator " + Fore.YELLOW + "500 500 2000" + Style.RESET_ALL)
 
         print("")
         print(Fore.CYAN + "  - Light single" + Style.RESET_ALL)
@@ -384,7 +429,7 @@ class Parser():
 
     def eventState(self, state):
 
-        print("* State   " +
+        print(  "* State   " +
                 Fore.YELLOW + "{0:10}".format(state.modeSystem.name) +
                 Fore.YELLOW + "{0:10}".format(state.modeFlight.name) +
                 Fore.WHITE + "{0:8}".format(state.modeControlFlight.name) +
@@ -397,7 +442,7 @@ class Parser():
 
     def eventMotion(self, motion):
 
-        print("* Motion " +
+        print(  "* Motion " +
                 Fore.YELLOW + "{0:8}".format(motion.accelX) +
                 Fore.YELLOW + "{0:8}".format(motion.accelY) +
                 Fore.YELLOW + "{0:8}".format(motion.accelZ) +
@@ -409,90 +454,49 @@ class Parser():
                 Fore.CYAN + "{0:8}".format(motion.angleYaw) + Style.RESET_ALL)
 
 
-    def eventCardRange(self, rawCard):
-
-        if self.flagRawCardShowRange:
-    
-            print("* RawCardRange " +
-                    Fore.RED    + "{0:6}".format(rawCard.range[0][0][0]) +
-                    Fore.RED    + "{0:6}".format(rawCard.range[0][0][1]) +
-                    Fore.GREEN  + "{0:6}".format(rawCard.range[0][1][0]) +
-                    Fore.GREEN  + "{0:6}".format(rawCard.range[0][1][1]) +
-                    Fore.BLUE   + "{0:6}".format(rawCard.range[0][2][0]) +
-                    Fore.BLUE   + "{0:6}".format(rawCard.range[0][2][1]) +
-                    Fore.RED    + "{0:6}".format(rawCard.range[1][0][0]) +
-                    Fore.RED    + "{0:6}".format(rawCard.range[1][0][1]) +
-                    Fore.GREEN  + "{0:6}".format(rawCard.range[1][1][0]) +
-                    Fore.GREEN  + "{0:6}".format(rawCard.range[1][1][1]) +
-                    Fore.BLUE   + "{0:6}".format(rawCard.range[1][2][0]) +
-                    Fore.BLUE   + "{0:6}".format(rawCard.range[1][2][1]) + Style.RESET_ALL)
-
-        else:
-    
-            print("* RawCard " +
-                    Fore.RED    + "{0:5}".format(rawCard.rgbRaw[0][0]) +
-                    Fore.GREEN  + "{0:5}".format(rawCard.rgbRaw[0][1]) +
-                    Fore.BLUE   + "{0:5}".format(rawCard.rgbRaw[0][2]) +
-                    Fore.RED    + "{0:5}".format(rawCard.rgbRaw[1][0]) +
-                    Fore.GREEN  + "{0:5}".format(rawCard.rgbRaw[1][1]) +
-                    Fore.BLUE   + "{0:5}".format(rawCard.rgbRaw[1][2]) +
-                    Fore.RED    + "{0:4}".format(rawCard.rgb[0][0]) +
-                    Fore.GREEN  + "{0:4}".format(rawCard.rgb[0][1]) +
-                    Fore.BLUE   + "{0:4}".format(rawCard.rgb[0][2]) +
-                    Fore.RED    + "{0:4}".format(rawCard.rgb[1][0]) +
-                    Fore.GREEN  + "{0:4}".format(rawCard.rgb[1][1]) +
-                    Fore.BLUE   + "{0:4}".format(rawCard.rgb[1][2]) +
-                    Fore.RED    + "{0:4}".format(rawCard.hsv[0][0]) +
-                    Fore.GREEN  + "{0:4}".format(rawCard.hsv[0][1]) +
-                    Fore.BLUE   + "{0:4}".format(rawCard.hsv[0][2]) +
-                    Fore.RED    + "{0:4}".format(rawCard.hsv[1][0]) +
-                    Fore.GREEN  + "{0:4}".format(rawCard.hsv[1][1]) +
-                    Fore.BLUE   + "{0:4} ".format(rawCard.hsv[1][2]) +
-                    Fore.CYAN   + "{0:14}".format(rawCard.color[0].name) +
-                    Fore.CYAN   + "{0:14}".format(rawCard.color[1].name) + Style.RESET_ALL)
+    def eventCardRange(self, cardRange):
+        
+        print(  "* RawCardRange " +
+                Fore.RED    + "{0:6}".format(cardRange.range[0][0][0]) +
+                Fore.RED    + "{0:6}".format(cardRange.range[0][0][1]) +
+                Fore.GREEN  + "{0:6}".format(cardRange.range[0][1][0]) +
+                Fore.GREEN  + "{0:6}".format(cardRange.range[0][1][1]) +
+                Fore.BLUE   + "{0:6}".format(cardRange.range[0][2][0]) +
+                Fore.BLUE   + "{0:6}".format(cardRange.range[0][2][1]) +
+                Fore.RED    + "{0:6}".format(cardRange.range[1][0][0]) +
+                Fore.RED    + "{0:6}".format(cardRange.range[1][0][1]) +
+                Fore.GREEN  + "{0:6}".format(cardRange.range[1][1][0]) +
+                Fore.GREEN  + "{0:6}".format(cardRange.range[1][1][1]) +
+                Fore.BLUE   + "{0:6}".format(cardRange.range[1][2][0]) +
+                Fore.BLUE   + "{0:6}".format(cardRange.range[1][2][1]) + Style.RESET_ALL)
 
 
-    def eventCardRaw(self, rawCard):
+    def eventCardRaw(self, cardRaw):
 
-        if self.flagRawCardShowRange:
-    
-            print("* RawCardRange " +
-                    Fore.RED    + "{0:6}".format(rawCard.range[0][0][0]) +
-                    Fore.RED    + "{0:6}".format(rawCard.range[0][0][1]) +
-                    Fore.GREEN  + "{0:6}".format(rawCard.range[0][1][0]) +
-                    Fore.GREEN  + "{0:6}".format(rawCard.range[0][1][1]) +
-                    Fore.BLUE   + "{0:6}".format(rawCard.range[0][2][0]) +
-                    Fore.BLUE   + "{0:6}".format(rawCard.range[0][2][1]) +
-                    Fore.RED    + "{0:6}".format(rawCard.range[1][0][0]) +
-                    Fore.RED    + "{0:6}".format(rawCard.range[1][0][1]) +
-                    Fore.GREEN  + "{0:6}".format(rawCard.range[1][1][0]) +
-                    Fore.GREEN  + "{0:6}".format(rawCard.range[1][1][1]) +
-                    Fore.BLUE   + "{0:6}".format(rawCard.range[1][2][0]) +
-                    Fore.BLUE   + "{0:6}".format(rawCard.range[1][2][1]) + Style.RESET_ALL)
-
-        else:
-    
-            print("* RawCard " +
-                    Fore.RED    + "{0:5}".format(rawCard.rgbRaw[0][0]) +
-                    Fore.GREEN  + "{0:5}".format(rawCard.rgbRaw[0][1]) +
-                    Fore.BLUE   + "{0:5}".format(rawCard.rgbRaw[0][2]) +
-                    Fore.RED    + "{0:5}".format(rawCard.rgbRaw[1][0]) +
-                    Fore.GREEN  + "{0:5}".format(rawCard.rgbRaw[1][1]) +
-                    Fore.BLUE   + "{0:5}".format(rawCard.rgbRaw[1][2]) +
-                    Fore.RED    + "{0:4}".format(rawCard.rgb[0][0]) +
-                    Fore.GREEN  + "{0:4}".format(rawCard.rgb[0][1]) +
-                    Fore.BLUE   + "{0:4}".format(rawCard.rgb[0][2]) +
-                    Fore.RED    + "{0:4}".format(rawCard.rgb[1][0]) +
-                    Fore.GREEN  + "{0:4}".format(rawCard.rgb[1][1]) +
-                    Fore.BLUE   + "{0:4}".format(rawCard.rgb[1][2]) +
-                    Fore.RED    + "{0:4}".format(rawCard.hsv[0][0]) +
-                    Fore.GREEN  + "{0:4}".format(rawCard.hsv[0][1]) +
-                    Fore.BLUE   + "{0:4}".format(rawCard.hsv[0][2]) +
-                    Fore.RED    + "{0:4}".format(rawCard.hsv[1][0]) +
-                    Fore.GREEN  + "{0:4}".format(rawCard.hsv[1][1]) +
-                    Fore.BLUE   + "{0:4} ".format(rawCard.hsv[1][2]) +
-                    Fore.CYAN   + "{0:14}".format(rawCard.color[0].name) +
-                    Fore.CYAN   + "{0:14}".format(rawCard.color[1].name) + Style.RESET_ALL)
+        print(  "* RawCard " +
+                Fore.RED    + "{0:5}".format(cardRaw.rgbRaw[0][0]) +
+                Fore.GREEN  + "{0:5}".format(cardRaw.rgbRaw[0][1]) +
+                Fore.BLUE   + "{0:5}".format(cardRaw.rgbRaw[0][2]) +
+                Fore.RED    + "{0:5}".format(cardRaw.rgbRaw[1][0]) +
+                Fore.GREEN  + "{0:5}".format(cardRaw.rgbRaw[1][1]) +
+                Fore.BLUE   + "{0:5}".format(cardRaw.rgbRaw[1][2]) +
+                Fore.RED    + "{0:4}".format(cardRaw.rgb[0][0]) +
+                Fore.GREEN  + "{0:4}".format(cardRaw.rgb[0][1]) +
+                Fore.BLUE   + "{0:4}".format(cardRaw.rgb[0][2]) +
+                Fore.RED    + "{0:4}".format(cardRaw.rgb[1][0]) +
+                Fore.GREEN  + "{0:4}".format(cardRaw.rgb[1][1]) +
+                Fore.BLUE   + "{0:4}".format(cardRaw.rgb[1][2]) +
+                Fore.RED    + "{0:4}".format(cardRaw.hsvl[0][0]) +
+                Fore.GREEN  + "{0:4}".format(cardRaw.hsvl[0][1]) +
+                Fore.BLUE   + "{0:4}".format(cardRaw.hsvl[0][2]) +
+                Fore.BLUE   + "{0:4}".format(cardRaw.hsvl[0][3]) +
+                Fore.RED    + "{0:4}".format(cardRaw.hsvl[1][0]) +
+                Fore.GREEN  + "{0:4}".format(cardRaw.hsvl[1][1]) +
+                Fore.BLUE   + "{0:4}".format(cardRaw.hsvl[1][2]) +
+                Fore.BLUE   + "{0:4}".format(cardRaw.hsvl[1][3]) +
+                Fore.CYAN   + "{0:14}".format(cardRaw.color[0].name) +
+                Fore.CYAN   + "{0:14}".format(cardRaw.color[1].name) +
+                Fore.CYAN   + "{0:14}".format(cardRaw.card.name) + Style.RESET_ALL)
 
 
 # Parser End
