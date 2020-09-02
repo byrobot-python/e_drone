@@ -212,18 +212,16 @@ class Parser():
 
         lightModeHigh = LightModeDrone.None_
 
-        if      strLightPart == "front":
-            lightModeHigh = LightModeDrone.FrontNone
+        if      strLightPart == "rear":
+            lightModeHigh = LightModeDrone.RearNone
         elif    strLightPart == "body":
             lightModeHigh = LightModeDrone.BodyNone
-        elif    strLightPart == "head":
-            lightModeHigh = LightModeDrone.HeadNone
-        elif    strLightPart == "tail":
-            lightModeHigh = LightModeDrone.TailNone
-        elif    strLightPart == "left":
-            lightModeHigh = LightModeDrone.LeftNone
-        elif    strLightPart == "right":
-            lightModeHigh = LightModeDrone.RightNone
+        elif    strLightPart == "a":
+            lightModeHigh = LightModeDrone.ANone
+        elif    strLightPart == "b":
+            lightModeHigh = LightModeDrone.BNone
+        elif    strLightPart == "c":
+            lightModeHigh = LightModeDrone.CNone
 
         lightModeLow = LightModeDrone.None_
 
@@ -263,18 +261,16 @@ class Parser():
 
         lightModeHigh = LightModeDrone.None_
 
-        if      strLightPart == "front":
-            lightModeHigh = LightModeDrone.FrontNone
+        if      strLightPart == "rear":
+            lightModeHigh = LightModeDrone.RearNone
         elif    strLightPart == "body":
             lightModeHigh = LightModeDrone.BodyNone
-        elif    strLightPart == "head":
-            lightModeHigh = LightModeDrone.HeadNone
-        elif    strLightPart == "tail":
-            lightModeHigh = LightModeDrone.TailNone
-        elif    strLightPart == "left":
-            lightModeHigh = LightModeDrone.LeftNone
-        elif    strLightPart == "right":
-            lightModeHigh = LightModeDrone.RightNone
+        elif    strLightPart == "a":
+            lightModeHigh = LightModeDrone.ANone
+        elif    strLightPart == "b":
+            lightModeHigh = LightModeDrone.BNone
+        elif    strLightPart == "c":
+            lightModeHigh = LightModeDrone.CNone
 
         lightModeLow = LightModeDrone.None_
 
@@ -371,14 +367,8 @@ class Parser():
         print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "request " + Fore.WHITE + "[" + Fore.YELLOW + "data type" + Fore.WHITE + "] [" + Fore.GREEN + "number of times" + Fore.WHITE + "] [" + Fore.YELLOW + "time interval(sec)" + Fore.WHITE + "]" + Style.RESET_ALL)
         print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "request " + Fore.YELLOW + "State 10 0.2" + Style.RESET_ALL)
         print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "request " + Fore.YELLOW + "Motion 10 0.2" + Style.RESET_ALL)
-        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "request " + Fore.YELLOW + "RawLineTracer 10 0.2" + Style.RESET_ALL)
         print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "request " + Fore.YELLOW + "RawCard 10 0.2" + Style.RESET_ALL)
         print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "request " + Fore.YELLOW + "RawCardRange 10 0.2" + Style.RESET_ALL)
-
-        print("")
-        print(Fore.CYAN + "  - Control - Accel Wheel" + Style.RESET_ALL)
-        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "control " + Fore.WHITE + "[" + Fore.YELLOW + "accel" + Fore.WHITE + "] [" + Fore.GREEN + "wheel" + Fore.WHITE + "] [" + Fore.YELLOW + "time(ms)" + Fore.WHITE + "]" + Style.RESET_ALL)
-        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "control " + Fore.YELLOW + "40 0 3000" + Style.RESET_ALL)
 
         print("")
         print(Fore.CYAN + "  - Control - Position" + Style.RESET_ALL)
@@ -403,11 +393,9 @@ class Parser():
         print("")
         print(Fore.CYAN + "  - Light single" + Style.RESET_ALL)
         print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "light " + Fore.WHITE + "[" + Fore.YELLOW + "part" + Fore.WHITE + "] [" + Fore.GREEN + "mode" + Fore.WHITE + "] [" + Fore.YELLOW + "interval" + Fore.WHITE + "]" + Style.RESET_ALL)
-        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "light " + Fore.YELLOW + "front hold 100" + Style.RESET_ALL)
-        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "light " + Fore.YELLOW + "head hold 100" + Style.RESET_ALL)
-        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "light " + Fore.YELLOW + "tail hold 100" + Style.RESET_ALL)
-        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "light " + Fore.YELLOW + "left hold 100" + Style.RESET_ALL)
-        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "light " + Fore.YELLOW + "right hold 100" + Style.RESET_ALL)
+        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "light " + Fore.YELLOW + "rear hold 100" + Style.RESET_ALL)
+        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "light " + Fore.YELLOW + "a hold 100" + Style.RESET_ALL)
+        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "light " + Fore.YELLOW + "b hold 100" + Style.RESET_ALL)
 
         print("")
         print(Fore.CYAN + "  - Light RGB" + Style.RESET_ALL)
@@ -420,12 +408,14 @@ class Parser():
         print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "light " + Fore.YELLOW + "body sunset 5 50 50 10" + Style.RESET_ALL)
         print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "light " + Fore.YELLOW + "body rainbow 8 50 50 10" + Style.RESET_ALL)
         print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "light " + Fore.YELLOW + "body rainbow2 8 50 50 10" + Style.RESET_ALL)
-
-        print("")
-        print(Fore.CYAN + "  - Bluetooth" + Style.RESET_ALL)
-        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "connect" + Style.RESET_ALL)
-        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "disconnect" + Style.RESET_ALL)
-
+        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "light " + Fore.YELLOW + "c hold 100 50 50 10" + Style.RESET_ALL)
+        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "light " + Fore.YELLOW + "c flicker 100 50 50 10" + Style.RESET_ALL)
+        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "light " + Fore.YELLOW + "c flickerdouble 100 50 50 10" + Style.RESET_ALL)
+        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "light " + Fore.YELLOW + "c dimming 3 50 50 10" + Style.RESET_ALL)
+        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "light " + Fore.YELLOW + "c sunrise 5 50 50 10" + Style.RESET_ALL)
+        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "light " + Fore.YELLOW + "c sunset 5 50 50 10" + Style.RESET_ALL)
+        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "light " + Fore.YELLOW + "c rainbow 8 50 50 10" + Style.RESET_ALL)
+        print(Fore.GREEN + "   > " + Fore.WHITE + "python -m e_drone " + Fore.CYAN + "light " + Fore.YELLOW + "c rainbow2 8 50 50 10" + Style.RESET_ALL)
 
     def eventState(self, state):
 
