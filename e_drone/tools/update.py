@@ -1,7 +1,6 @@
 import os
 import abc
 import sys
-import numpy as np
 from struct import *
 from enum import Enum
 from urllib.request import urlopen

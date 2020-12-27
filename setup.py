@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = "e_drone",
-    version = "20.9.1",     # year. month. release number
+    version = "20.12.4",     # year. month. release number
     description = "Library for BYROBOT Drones.",
     author = "BYROBOT",
     author_email = "dev@byrobot.co.kr",
@@ -14,7 +14,6 @@ setup(
     packages = find_packages(exclude=['tests']),
     install_requires = [
         'pyserial>=3.4',
-        'numpy>=1.15.4',
         'colorama>=0.4.0'],
     long_description = open('README.md').read(),
     long_description_content_type='text/markdown',

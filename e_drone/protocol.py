@@ -1,6 +1,5 @@
 import os
 import abc 
-import numpy as np
 from struct import *
 from enum import Enum
 
@@ -57,7 +56,8 @@ class DataType(Enum):
     TimeSync                    = 0x14      # 시간 동기화
     TransmissionPower           = 0x15      # 전송 출력
     Configuration               = 0x16      # 설정
-    
+    Echo                        = 0x17      # 반향(정상적으로 송수신 되는 데이터 길이 확인용, 받은 데이터를 그대로 반환, RF로 송수신 가능한 데이터 길이를 확인할 목적으로 추가)
+
     Battle                      = 0x1F      # 전투
 
     # Light
@@ -120,11 +120,16 @@ class DataType(Enum):
     InformationAssembledForByBlocks     = 0xA2      # 자주 갱신되는 데이터 모음
 
     # Navigation
-    NavigationTarget                    = 0xD0      # 네비게이션 목표점
-    NavigationLocation                  = 0xD1      # 네비게이션 가상 위치
-    NavigationMonitor                   = 0xD2
-    NavigationHeading                   = 0xD3
-    NavigationCounter                   = 0xD4
+    NavigationTarget            = 0xD0      # 네비게이션 목표점
+    NavigationLocation          = 0xD1      # 네비게이션 드론 위치
+    NavigationMonitor           = 0xD2
+    NavigationHeading           = 0xD3
+    NavigationCounter           = 0xD4
+    NavigationSatellite         = 0xD5      # 위성 정보
+    NavigationLocationAdjust    = 0xD6      # 드론 위치 조정
+
+    NavigationTargetEcef        = 0xD8      # 드론 타겟 위치(ECEF)
+    NavigationLocationEcef      = 0xD9      # 드론 현재 위치(ECEF)
 
     GpsRtkNavigationState               = 0xDA      # RTK RAW 데이터 전송
     GpsRtkExtendedRawMeasurementData    = 0xDB      # RTK RAW 데이터 전송
@@ -1149,17 +1154,6 @@ class LightModeDrone(Enum):
     BSunrise                = 0x46
     BSunset                 = 0x47
 
-    CNone                   = 0x50
-    CManual                 = 0x51      # 수동 제어
-    CHold                   = 0x52      # 지정한 색상을 계속 켬
-    CFlicker                = 0x53      # 깜빡임
-    CFlickerDouble          = 0x54      # 깜빡임(두 번 깜빡이고 깜빡인 시간만큼 꺼짐)
-    CDimming                = 0x55      # 밝기 제어하여 천천히 깜빡임
-    CSunrise                = 0x56
-    CSunset                 = 0x57
-    CRainbow                = 0x58
-    CRainbow2               = 0x59
-
     EndOfType               = 0x60
 
 
@@ -1175,9 +1169,6 @@ class LightFlagsDrone(Enum):
 
     A                   = 0x0010
     B                   = 0x0020
-    CRed                = 0x0040
-    CGreen              = 0x0080
-    CBlue               = 0x0100
 
 
 
