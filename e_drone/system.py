@@ -21,6 +21,7 @@ class ModelNumber(Enum):
     Drone_3_Controller_P2   = 0x00032002    # Drone_3_Controller_P2 / Skykick Controller /large size
     Drone_3_Controller_P3   = 0x00032003    # Drone_3_Controller_P3 / GD65 Controller USB /small size + USB
     Drone_3_Controller_P4   = 0x00032004    # Drone_3_Controller_P4 / Battle Drone Controller USB / small size + usb
+    Drone_3_Controller_P5   = 0x00032005    # Drone_3_Controller_P5 / E-Drone 4m Controller / USB / HW2181B / Keil
     
     Drone_3_Link_P0         = 0x00033000    # Drone_3_Link_P0
     
@@ -30,15 +31,19 @@ class ModelNumber(Enum):
     Drone_4_Drone_P4        = 0x00041004    # Drone_4_Drone_P4 (obsolete)
     Drone_4_Drone_P5        = 0x00041005    # Drone_4_Drone_P5 (HW2000, 2m range sensor)
     Drone_4_Drone_P6        = 0x00041006    # Drone_4_Drone_P6 (HW2000B, 4m range sensor)
+    Drone_4_Drone_P7        = 0x00041007    # Drone_4_Drone_P7 (HW2000B, 4m range sensor, BLDC Motor)
     
     Drone_4_Controller_P1   = 0x00042001    # Drone_4_Controller_P1 (obsolete)
     Drone_4_Controller_P2   = 0x00042002    # Drone_4_Controller_P2 (HW2000)
     Drone_4_Controller_P3   = 0x00042003    # Drone_4_Controller_P3 (HW2000B)
+    Drone_4_Controller_P4   = 0x00042004    # Drone_4_Controller_P4 (HW2000B, Encrypt)
     
     Drone_4_Link_P0         = 0x00043000    # Drone_4_Link_P0
     
     Drone_4_Tester_P4       = 0x0004A004    # Drone_4_Tester_P4 (obsolete)
     Drone_4_Tester_P6       = 0x0004A006    # Drone_4_Tester_P6
+    Drone_4_Tester_P7       = 0x0004A007    # Drone_4_Tester_P7
+
     Drone_4_Monitor_P4      = 0x0004A104    # Drone_4_Monitor_P4 (obsolete)
     
     Drone_7_Drone_P1        = 0x00071001    # Drone_7_Drone_P1
@@ -46,6 +51,7 @@ class ModelNumber(Enum):
 
     Drone_7_BleClient_P0    = 0x00073200    # Drone_7_BleClient_P0 / Coding Car Link
     Drone_7_BleClient_P5    = 0x00073205    # Drone_7_BleClient_P5 / Coding Car Tester BLE
+
     Drone_7_BleServer_P2    = 0x00073302    # Drone_7_BleServer_P2 / Coding Car Ble Module
     
     Drone_7_Tester_P4       = 0x0003A004    # Drone_7_Tester_P4 (obsolete)
@@ -64,6 +70,10 @@ class ModelNumber(Enum):
     Drone_8_Monitor_P6      = 0x0008A106    # Drone_8_Monitor_P6
 
     Drone_9_Drone_P0        = 0x00091000    # Drone_9_Drone_P0
+    Drone_9_Drone_P1        = 0x00091001    # Drone_9_Drone_P1
+    Drone_9_Drone_P2        = 0x00091002    # Drone_9_Drone_P2
+    
+    Drone_9_Tester_P6       = 0x0009A006    # Drone_9_Tester_P6
 
 
 
@@ -102,11 +112,12 @@ class ModeSystem(Enum):
     
     None_               = 0x00
 
-    Boot                = 0x01
-    Start               = 0x02
-    Running             = 0x03
-    ReadyToReset        = 0x04
-    Error               = 0x05
+    Boot                = 0x10
+    Start               = 0x11
+    Running             = 0x12
+    ReadyToReset        = 0x13
+
+    Error               = 0xA0
 
     EndOfType           = 0x06
 
@@ -118,10 +129,11 @@ class ModeControlFlight(Enum):
 
     Attitude            = 0x10      # 자세 - X,Y는 각도(deg)로 입력받음, Z,Yaw는 속도(m/s)로 입력 받음
     Position            = 0x11      # 위치 - X,Y,Z,Yaw는 속도(m/s)로 입력 받음
-    Function            = 0x12      # 기능 - X,Y,Z,Yaw는 속도(m/s)로 입력 받음
+    Manual              = 0x12      # 고도를 수동으로 조종함
     Rate                = 0x13      # Rate - X,Y는 각속도(deg/s)로 입력받음, Z,Yaw는 속도(m/s)로 입력 받음
+    Function            = 0x14      # 기능
     
-    EndOfType           = 0x14
+    EndOfType           = 0x15
 
 
 
@@ -222,6 +234,9 @@ class FlightEvent(Enum):
     FlipRight           = 0x17
 
     Return              = 0x18
+
+    Shot                = 0x90
+    UnderAttack         = 0x91
 
     ResetHeading        = 0xA0
 

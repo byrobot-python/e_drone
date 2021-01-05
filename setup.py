@@ -2,11 +2,12 @@
 # http://swdeveloper.tistory.com/34
 # https://code.tutsplus.com/ko/tutorials/how-to-share-your-python-packages--cms-26114
 # https://code.tutsplus.com/ko/tutorials/how-to-write-your-own-python-packages--cms-26076
+
 from setuptools import setup, find_packages
 
 setup(
     name = "e_drone",
-    version = "21.1.3",     # year. month. release number
+    version = "21.1.6",     # year. month. release number
     description = "Library for BYROBOT Drones.",
     author = "BYROBOT",
     author_email = "dev@byrobot.co.kr",
