@@ -119,7 +119,7 @@ class ModeSystem(Enum):
 
     Error               = 0xA0
 
-    EndOfType           = 0x06
+    EndOfType           = 0xA1
 
 
 

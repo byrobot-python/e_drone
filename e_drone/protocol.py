@@ -3211,8 +3211,6 @@ class CardColor(ISerializable):
     def toArray(self):
         #             12345678901
         return pack('<hhhhhhhhBBB',
-                    self.rgbRaw[0][0], self.rgbRaw[0][1] , self.rgbRaw[0][2], self.rgbRaw[1][0], self.rgbRaw[1][1] , self.rgbRaw[1][2],
-                    self.rgb[0][0], self.rgb[0][1] , self.rgb[0][2], self.rgb[1][0], self.rgb[1][1] , self.rgb[1][2],
                     self.hsvl[0][0], self.hsvl[0][1] , self.hsvl[0][2], self.hsvl[0][3], self.hsvl[1][0], self.hsvl[1][1] , self.hsvl[1][2], self.hsvl[1][3],
                     self.color[0].value, self.color[1].value , self.card.value)
 
