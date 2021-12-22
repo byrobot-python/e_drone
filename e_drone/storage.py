@@ -45,45 +45,45 @@ class Parser:
     def __init__(self):
         self.d = dict.fromkeys(list(DataType))
 
-        self.d[DataType.Ping]               = Ping.parse
-        self.d[DataType.Ack]                = Ack.parse
-        self.d[DataType.Error]              = Error.parse
-        self.d[DataType.Message]            = Message.parse
-        self.d[DataType.Address]            = Address.parse
-        self.d[DataType.Information]        = Information.parse
-        self.d[DataType.UpdateLocation]     = UpdateLocation.parse
-        self.d[DataType.SystemInformation]  = SystemInformation.parse
-        self.d[DataType.Registration]       = RegistrationInformation.parse
+        self.d[DataType.PING]               = Ping.parse
+        self.d[DataType.ACK]                = Ack.parse
+        self.d[DataType.ERROR]              = Error.parse
+        self.d[DataType.MESSAGE]            = Message.parse
+        self.d[DataType.ADDRESS]            = Address.parse
+        self.d[DataType.INFORMATION]        = Information.parse
+        self.d[DataType.UPDATE_LOCATION]    = UpdateLocation.parse
+        self.d[DataType.SYSTEM_INFORMATION] = SystemInformation.parse
+        self.d[DataType.REGISTRATION]       = RegistrationInformation.parse
 
-        self.d[DataType.Pairing]            = Pairing.parse
-        self.d[DataType.Rssi]               = Rssi.parse
+        self.d[DataType.PAIRING]            = Pairing.parse
+        self.d[DataType.RSSI]               = Rssi.parse
 
-        self.d[DataType.RawMotion]          = RawMotion.parse
-        self.d[DataType.RawFlow]            = RawFlow.parse
+        self.d[DataType.RAW_MOTION]         = RawMotion.parse
+        self.d[DataType.RAW_FLOW]           = RawFlow.parse
 
-        self.d[DataType.State]              = State.parse
-        self.d[DataType.Attitude]           = Attitude.parse
-        self.d[DataType.Position]           = Position.parse
-        self.d[DataType.Altitude]           = Altitude.parse
-        self.d[DataType.Motion]             = Motion.parse
-        self.d[DataType.Range]              = Range.parse
+        self.d[DataType.STATE]              = State.parse
+        self.d[DataType.ATTITUDE]           = Attitude.parse
+        self.d[DataType.POSITION]           = Position.parse
+        self.d[DataType.ALTITUDE]           = Altitude.parse
+        self.d[DataType.MOTION]             = Motion.parse
+        self.d[DataType.RANGE]              = Range.parse
 
-        self.d[DataType.Count]              = Count.parse
-        self.d[DataType.Bias]               = Bias.parse
-        self.d[DataType.Trim]               = Trim.parse
-        self.d[DataType.Weight]             = Weight.parse
+        self.d[DataType.COUNT]              = Count.parse
+        self.d[DataType.BIAS]               = Bias.parse
+        self.d[DataType.TRIM]               = Trim.parse
+        self.d[DataType.WEIGHT]             = Weight.parse
 
-        self.d[DataType.Button]             = Button.parse
-        self.d[DataType.Joystick]           = Joystick.parse
+        self.d[DataType.BUTTON]             = Button.parse
+        self.d[DataType.JOYSTICK]           = Joystick.parse
 
-        self.d[DataType.CardClassify]       = CardClassify.parse
-        self.d[DataType.CardRange]          = CardRange.parse
-        self.d[DataType.CardRaw]            = CardRaw.parse
-        self.d[DataType.CardColor]          = CardColor.parse
-        self.d[DataType.CardList]           = CardList.parse
-        self.d[DataType.CardFunctionList]   = CardList.parse
+        self.d[DataType.CARD_CLASSIFY]       = CardClassify.parse
+        self.d[DataType.CARD_RANGE]          = CardRange.parse
+        self.d[DataType.CARD_RAW]            = CardRaw.parse
+        self.d[DataType.CARD_COLOR]          = CardColor.parse
+        self.d[DataType.CARD_LIST]           = CardList.parse
+        self.d[DataType.CARD_FUNCTION_LIST]  = CardList.parse
 
-        self.d[DataType.InformationAssembledForController]  = InformationAssembledForController.parse
-        self.d[DataType.InformationAssembledForEntry]       = InformationAssembledForEntry.parse
+        self.d[DataType.INFORMATION_ASSEMBLED_FOR_CONTROLLER]  = InformationAssembledForController.parse
+        self.d[DataType.INFORMATION_ASSEMBLED_FOR_ENTRY]       = InformationAssembledForEntry.parse
 
 

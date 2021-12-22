@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = "e_drone",
-    version = "21.1.6",     # year. month. release number
+    version = "22.1.3",     # year. month. release number
     description = "Library for BYROBOT Drones.",
     author = "BYROBOT",
     author_email = "dev@byrobot.co.kr",
