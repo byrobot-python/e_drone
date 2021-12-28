@@ -25,7 +25,7 @@ class Parser():
 
         colorama.init()
 
-        if (self.count > 0) and (self.arguments != None):
+        if (self.count > 0) and (self.arguments is not None):
 
             print("Count:{0} ".format(self.count) , end = '')
 
@@ -36,24 +36,24 @@ class Parser():
 
             # > python -m e_drone upgrade
             # > python -m e_drone update
-            if      (self.arguments[0] == "upgrade") or (self.arguments[0] == "update"):
+            if      (self.arguments[0] is "upgrade") or (self.arguments[0] is "update"):
                 updater = Updater()
                 updater.update()
                 return
 
             # > python -m e_drone request State 10 0.2
-            elif    ((self.count == 4) and 
-                    (self.arguments[0] == "request") and
-                    (self.arguments[1] == "state")):         # time interval
+            elif    ((self.count is 4) and 
+                    (self.arguments[0] is "request") and
+                    (self.arguments[1] is "state")):         # time interval
                 #print("* State - Ready     Blue    Red     Black   Black   NONE             1830   1631   2230      76      ")    
                 print ("         |ModeSystem   |ModeFlight |ModeControlFlight |ModeMovement |Headless |ControlSpeed |SensorOrientation |Battery |")
                 self.request(DeviceType.DRONE, DataType.STATE, int(self.arguments[2]), float(self.arguments[3]))
                 return
 
             # > python -m e_drone request Motion 10 0.2
-            elif    ((self.count == 4) and 
-                    (self.arguments[0] == "request") and
-                    (self.arguments[1] == "motion")):         # time interval
+            elif    ((self.count is 4) and 
+                    (self.arguments[0] is "request") and
+                    (self.arguments[1] is "motion")):         # time interval
                 #print("* Motion      -38      64     -32     457     -40    -400      16       0   20500")    
                 print ("         |Accel                  |Gyro                   |Angle                  |")
                 print ("         |      X|      Y|      Z|   Roll|  Pitch|    Yaw|   Roll|  Pitch|    Yaw|")
@@ -61,9 +61,9 @@ class Parser():
                 return
 
             # > python -m e_drone request CardRaw 10 0.2
-            elif    ((self.count == 4) and 
-                    (self.arguments[0] == "request") and
-                    (self.arguments[1] == "cardraw")):         # time interval
+            elif    ((self.count is 4) and 
+                    (self.arguments[0] is "request") and
+                    (self.arguments[1] is "cardraw")):         # time interval
                 #print("* CardRaw   335  503  766  692  309  395 100  39  96  40   9  17 303  61  39 344  77  15   Magenta         Red")
                 print ("          |Front Raw     |Rear Raw      |Front RGB  |Rear RGB   |Front HSVL      |Rear HSVL       |Front Color  |Rear Color   |")
                 print ("          |   R    G    B|   R    G    B|  R   G   B|  R   G   B|  H   S   V   L|  H   S   V   L|             |             |")
@@ -71,9 +71,9 @@ class Parser():
                 return
 
             # > python -m e_drone request CardRange 10 0.2
-            elif    ((self.count == 4) and 
-                    (self.arguments[0] == "request") and
-                    (self.arguments[1] == "cardrange")):         # time interval
+            elif    ((self.count is 4) and 
+                    (self.arguments[0] is "request") and
+                    (self.arguments[1] is "cardrange")):         # time interval
                 #print("* CardRange       200  2000   200  2000   200  2000   200     0   200     0   200     0")
                 print ("               |Front                              |Rear                               |")
                 print ("               |Red        |Green      |Blue       |Red        |Green      |Blue       |")
@@ -84,8 +84,8 @@ class Parser():
             # 이륙
             #                   0
             # python -m e_drone Takeoff
-            elif    ((self.count == 1) and 
-                    (self.arguments[0] == "takeoff")):
+            elif    ((self.count is 1) and 
+                    (self.arguments[0] is "takeoff")):
                 print (Fore.YELLOW + "takeoff" + Style.RESET_ALL)
                 self.command(CommandType.FLIGHT_EVENT, FlightEvent.TAKEOFF.value)
                 return
@@ -93,8 +93,8 @@ class Parser():
             # 착륙
             #                   0
             # python -m e_drone Landing
-            elif    ((self.count == 1) and 
-                    (self.arguments[0] == "landing")):
+            elif    ((self.count is 1) and 
+                    (self.arguments[0] is "landing")):
                 print (Fore.YELLOW + "landing" + Style.RESET_ALL)
                 self.command(CommandType.FLIGHT_EVENT, FlightEvent.LANDING.value)
                 return
@@ -102,8 +102,8 @@ class Parser():
             # 정지
             #                   0
             # python -m e_drone Stop
-            elif    ((self.count == 1) and 
-                    (self.arguments[0] == "stop")):
+            elif    ((self.count is 1) and 
+                    (self.arguments[0] is "stop")):
                 print (Fore.YELLOW + "stop" + Style.RESET_ALL)
                 self.command(CommandType.FLIGHT_EVENT, FlightEvent.STOP.value)
                 return
@@ -113,8 +113,8 @@ class Parser():
             # python -m e_drone control [roll] [pitch] [yaw] [throttle] [time(ms)]
             # 지정한 시간이 종료되면 입력값을 모두 0으로 변경하고 멈춤
             # > python -m e_drone control 40 0 3
-            elif    ((self.count == 6) and 
-                    (self.arguments[0] == "control")):
+            elif    ((self.count is 6) and 
+                    (self.arguments[0] is "control")):
                 print (Fore.YELLOW + "control" + Style.RESET_ALL)
                 self.control(int(self.arguments[1]), int(self.arguments[2]), int(self.arguments[3]), int(self.arguments[4]), int(self.arguments[5]))
                 return
@@ -122,36 +122,36 @@ class Parser():
             # 이동(전체)
             #                   0         1   2   3   4          5         6
             # python -m e_drone position [x] [y] [z] [velocity] [heading] [rotational velocity]
-            elif    ((self.count == 7) and 
-                    (self.arguments[0] == "position")):
+            elif    ((self.count is 7) and 
+                    (self.arguments[0] is "position")):
                 print (Fore.YELLOW + "position" + Style.RESET_ALL)
-                self.control_Position(float(self.arguments[1]), float(self.arguments[2]), float(self.arguments[3]), float(self.arguments[4]), float(self.arguments[5]), float(self.arguments[6]))
+                self.control_position(float(self.arguments[1]), float(self.arguments[2]), float(self.arguments[3]), float(self.arguments[4]), float(self.arguments[5]), float(self.arguments[6]))
                 return
 
             # 이동(위치)
             #                   0         1   2   3   4
             # python -m e_drone position [x] [y] [z] [velocity]
-            elif    ((self.count == 5) and 
-                    (self.arguments[0] == "position")):
+            elif    ((self.count is 5) and 
+                    (self.arguments[0] is "position")):
                 print (Fore.YELLOW + "position" + Style.RESET_ALL)
-                self.control_Position(float(self.arguments[1]), float(self.arguments[2]), float(self.arguments[3]), float(self.arguments[4]), 0, 0)
+                self.control_position(float(self.arguments[1]), float(self.arguments[2]), float(self.arguments[3]), float(self.arguments[4]), 0, 0)
                 return
 
             # 이동(헤딩)
             #                   0        1         2
             # python -m e_drone heading [heading] [rotational velocity]
-            elif    ((self.count == 3) and 
-                    (self.arguments[0] == "heading")):
+            elif    ((self.count is 3) and 
+                    (self.arguments[0] is "heading")):
                 print (Fore.YELLOW + "heading" + Style.RESET_ALL)
-                self.control_Position(0, 0, 0, 0, float(self.arguments[1]), float(self.arguments[2]))
+                self.control_position(0, 0, 0, 0, float(self.arguments[1]), float(self.arguments[2]))
                 return
 
             # 버저
             #                   1       2    3
             # python -m e_drone buzzer [hz] [time(ms)]
             # > python -m e_drone buzzer 400 2000
-            elif    ((self.count == 3) and 
-                    (self.arguments[0] == "buzzer")):
+            elif    ((self.count is 3) and 
+                    (self.arguments[0] is "buzzer")):
                 print (Fore.WHITE + "Buzz Sound: " + Fore.YELLOW + "{0}".format(int(self.arguments[1])) + Fore.WHITE + "Hz, " + Fore.CYAN + "{0}".format(int(self.arguments[2])) + Fore.WHITE + "ms" + Style.RESET_ALL)
                 self.buzzer(DeviceType.CONTROLLER, int(self.arguments[1]), int(self.arguments[2]))
                 return
@@ -160,8 +160,8 @@ class Parser():
             #                   1         2          3           4
             # python -m e_drone vibrator [on(ms)] [off(ms)] [total(ms)]
             # > python -m e_drone vibrator 500 500 2000
-            elif    ((self.count == 4) and 
-                    (self.arguments[0] == "vibrator")):
+            elif    ((self.count is 4) and 
+                    (self.arguments[0] is "vibrator")):
                 print (Fore.WHITE + "Vibrator: on " + Fore.YELLOW + "{0}".format(int(self.arguments[1])) + Fore.WHITE + "ms, off " + Fore.CYAN + "{0}".format(int(self.arguments[2])) + Fore.WHITE + "ms, total " + Fore.CYAN + "{0}".format(int(self.arguments[3])) + Fore.WHITE + "ms" + Style.RESET_ALL)
                 self.vibrator(DeviceType.CONTROLLER, int(self.arguments[1]), int(self.arguments[2]), int(self.arguments[3]))
                 return
@@ -174,8 +174,8 @@ class Parser():
             # > python -m e_drone light body sunset 5 50 50 10
             # > python -m e_drone light body rainbow 8 50 50 10
             # > python -m e_drone light body rainbow2 8 50 50 10
-            elif    ((self.count == 7) and 
-                    (self.arguments[0] == "light")):
+            elif    ((self.count is 7) and 
+                    (self.arguments[0] is "light")):
                 print (Fore.WHITE + "Light: " + Fore.YELLOW + "{0}, {1}, {2}, ({3}, {4}, {5})".format(self.arguments[1], self.arguments[2], int(self.arguments[3]), int(self.arguments[4]), int(self.arguments[5]), int(self.arguments[6])) + Style.RESET_ALL)
                 self.light_mode_rgb(self.arguments[1], self.arguments[2], int(self.arguments[3]), int(self.arguments[4]), int(self.arguments[5]), int(self.arguments[6]))
                 return
@@ -185,8 +185,8 @@ class Parser():
             # > python -m e_drone light tail hold 100
             # > python -m e_drone light left hold 100
             # > python -m e_drone light right hold 100
-            elif    ((self.count == 4) and 
-                    (self.arguments[0] == "light")):
+            elif    ((self.count is 4) and 
+                    (self.arguments[0] is "light")):
                 print (Fore.WHITE + "Light: " + Fore.YELLOW + "{0}, {1}, {2}".format(self.arguments[1], self.arguments[2], int(self.arguments[3])) + Style.RESET_ALL)
                 self.light_mode_single(self.arguments[1], self.arguments[2], int(self.arguments[3]))
                 return
@@ -199,15 +199,15 @@ class Parser():
 
         #drone = Drone(True, True, True, True, True)
         drone = Drone()
-        if drone.open() == False:
+        if drone.open() is False:
             print(Fore.RED + "* Error : Unable to open serial port." + Style.RESET_ALL)
             sys.exit(1)
         
         # 이벤트 핸들링 함수 등록
-        drone.set_event_handler(DataType.STATE, self.eventState)
-        drone.set_event_handler(DataType.MOTION, self.eventMotion)
-        drone.set_event_handler(DataType.CARD_RAW, self.eventCardRaw)
-        drone.set_event_handler(DataType.CARD_RANGE, self.eventCardRange)
+        drone.set_event_handler(DataType.STATE, self.event_state)
+        drone.set_event_handler(DataType.MOTION, self.event_motion)
+        drone.set_event_handler(DataType.CARD_RAW, self.event_card_raw)
+        drone.set_event_handler(DataType.CARD_RANGE, self.event_card_range)
 
         # 데이터 요청
         for i in range(repeat):
@@ -219,7 +219,7 @@ class Parser():
 
         #drone = Drone(True, True, True, True, True)
         drone = Drone()
-        if drone.open() == False:
+        if drone.open() is False:
             print(Fore.RED + "* Error : Unable to open serial port." + Style.RESET_ALL)
             sys.exit(1)
 
@@ -231,20 +231,20 @@ class Parser():
 
         #drone = Drone(True, True, True, True, True)
         drone = Drone()
-        if drone.open() == False:
+        if drone.open() is False:
             print(Fore.RED + "* Error : Unable to open serial port." + Style.RESET_ALL)
             sys.exit(1)
 
         # 데이터 요청
-        drone.send_control_while(roll, pitch, yaw, throttle, time_ms)
-        drone.send_control_while(0, 0, 0, 0, 200)
+        drone.send_control_time(roll, pitch, yaw, throttle, time_ms)
+        drone.send_control_time(0, 0, 0, 0, 200)
 
 
     def control_position(self, x, y, z, velocity, heading, rotational_velocity):
 
         #drone = Drone(True, True, True, True, True)
         drone = Drone()
-        if drone.open() == False:
+        if drone.open() is False:
             print(Fore.RED + "* Error : Unable to open serial port." + Style.RESET_ALL)
             sys.exit(1)
 
@@ -257,7 +257,7 @@ class Parser():
 
         #drone = Drone(True, True, True, True, True)
         drone = Drone()
-        if drone.open() == False:
+        if drone.open() is False:
             print(Fore.RED + "* Error : Unable to open serial port." + Style.RESET_ALL)
             sys.exit(1)
         
@@ -269,37 +269,37 @@ class Parser():
 
         light_mode_high = LightModeDrone.NONE
 
-        if      str_light_part == "rear":
+        if      str_light_part is "rear":
             light_mode_high = LightModeDrone.REAR_NONE
-        elif    str_light_part == "body":
+        elif    str_light_part is "body":
             light_mode_high = LightModeDrone.BODY_NONE
-        elif    str_light_part == "a":
+        elif    str_light_part is "a":
             light_mode_high = LightModeDrone.A_NONE
-        elif    str_light_part == "b":
+        elif    str_light_part is "b":
             light_mode_high = LightModeDrone.B_NONE
 
         light_mode_low = LightModeDrone.NONE
 
-        if      str_light_mode == "hold":
+        if      str_light_mode is "hold":
             light_mode_low = LightModeDrone.BODY_HOLD
-        elif    str_light_mode == "flicker":
+        elif    str_light_mode is "flicker":
             light_mode_low = LightModeDrone.BODY_FLICKER
-        elif    str_light_mode == "flickerdouble":
+        elif    str_light_mode is "flickerdouble":
             light_mode_low = LightModeDrone.BODY_FLICKER_DOUBLE
-        elif    str_light_mode == "dimming":
+        elif    str_light_mode is "dimming":
             light_mode_low = LightModeDrone.BODY_DIMMING
-        elif    str_light_mode == "sunrise":
+        elif    str_light_mode is "sunrise":
             light_mode_low = LightModeDrone.BODY_SUNRISE
-        elif    str_light_mode == "sunset":
+        elif    str_light_mode is "sunset":
             light_mode_low = LightModeDrone.BODY_SUNSET
-        elif    str_light_mode == "rainbow":
+        elif    str_light_mode is "rainbow":
             light_mode_low = LightModeDrone.BODY_RAINBOW
-        elif    str_light_mode == "rainbow2":
+        elif    str_light_mode is "rainbow2":
             light_mode_low = LightModeDrone.BODY_RAINBOW2
 
         light_mode = LightModeDrone(light_mode_high.value + ((light_mode_low.value) & 0x0F))
 
-        if light_mode_high != LightModeDrone.NONE and light_mode_low != LightModeDrone.NONE:
+        if light_mode_high is not LightModeDrone.NONE and light_mode_low is not LightModeDrone.NONE:
             drone.send_light_mode_color(light_mode, interval, r, g, b)
 
 
@@ -307,7 +307,7 @@ class Parser():
 
         #drone = Drone(True, True, True, True, True)
         drone = Drone()
-        if drone.open() == False:
+        if drone.open() is False:
             print(Fore.RED + "* Error : Unable to open serial port." + Style.RESET_ALL)
             sys.exit(1)
         
@@ -316,37 +316,37 @@ class Parser():
 
         light_mode_high = LightModeDrone.NONE
 
-        if      str_light_part == "rear":
+        if      str_light_part is "rear":
             light_mode_high = LightModeDrone.REAR_NONE
-        elif    str_light_part == "body":
+        elif    str_light_part is "body":
             light_mode_high = LightModeDrone.BODY_NONE
-        elif    str_light_part == "a":
+        elif    str_light_part is "a":
             light_mode_high = LightModeDrone.A_NONE
-        elif    str_light_part == "b":
+        elif    str_light_part is "b":
             light_mode_high = LightModeDrone.B_NONE
 
         light_mode_low = LightModeDrone.NONE
 
-        if      str_light_mode == "hold":
+        if      str_light_mode is "hold":
             light_mode_low = LightModeDrone.BODY_HOLD
-        elif    str_light_mode == "flicker":
+        elif    str_light_mode is "flicker":
             light_mode_low = LightModeDrone.BODY_FLICKER
-        elif    str_light_mode == "flickerdouble":
+        elif    str_light_mode is "flickerdouble":
             light_mode_low = LightModeDrone.BODY_FLICKER_DOUBLE
-        elif    str_light_mode == "dimming":
+        elif    str_light_mode is "dimming":
             light_mode_low = LightModeDrone.BODY_DIMMING
-        elif    str_light_mode == "sunrise":
+        elif    str_light_mode is "sunrise":
             light_mode_low = LightModeDrone.BODY_SUNRISE
-        elif    str_light_mode == "sunset":
+        elif    str_light_mode is "sunset":
             light_mode_low = LightModeDrone.BODY_SUNSET
-        elif    str_light_mode == "rainbow":
+        elif    str_light_mode is "rainbow":
             light_mode_low = LightModeDrone.BODY_RAINBOW
-        elif    str_light_mode == "rainbow2":
+        elif    str_light_mode is "rainbow2":
             light_mode_low = LightModeDrone.BODY_RAINBOW2
 
         light_mode = LightModeDrone(light_mode_high.value + ((light_mode_low.value) & 0x0F))
 
-        if light_mode_high != LightModeDrone.NONE and light_mode_low != LightModeDrone.NONE:
+        if light_mode_high is not LightModeDrone.NONE and light_mode_low is not LightModeDrone.NONE:
             drone.send_light_mode(light_mode, interval)
 
 
@@ -354,7 +354,7 @@ class Parser():
 
         #drone = Drone(True, True, True, True, True)
         drone = Drone()
-        if drone.open() == False:
+        if drone.open() is False:
             print(Fore.RED + "* Error : Unable to open serial port." + Style.RESET_ALL)
             sys.exit(1)
         
@@ -382,7 +382,7 @@ class Parser():
 
         #drone = Drone(True, True, True, True, True)
         drone = Drone()
-        if drone.open() == False:
+        if drone.open() is False:
             print(Fore.RED + "* Error : Unable to open serial port." + Style.RESET_ALL)
             sys.exit(1)
         
