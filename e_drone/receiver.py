@@ -8,20 +8,20 @@ from e_drone.crc import Crc16
 # 데이터 수신 상태
 class StateLoading(Enum):
     
-    Ready           = 0x00      # 수신 대기
-    Receiving       = 0x01      # 수신중
-    Loaded          = 0x02      # 수신 완료 후 명령어 보관소에 대기중
-    Failure         = 0x03      # 수신 실패
+    READY           = 0x00      # 수신 대기
+    RECEIVING       = 0x01      # 수신중
+    LOADED          = 0x02      # 수신 완료 후 명령어 보관소에 대기중
+    FAILURE         = 0x03      # 수신 실패
 
 
 
 # 데이터 섹션 구분
 class Section(Enum):
 
-    Start           = 0x00      # 전송 시작 코드
-    Header          = 0x01      # 헤더
-    Data            = 0x02      # 데이터
-    End             = 0x03      # 데이터 확인
+    START           = 0x00      # 전송 시작 코드
+    HEADER          = 0x01      # 헤더
+    DATA            = 0x02      # 데이터
+    END             = 0x03      # 데이터 확인
 
 
 

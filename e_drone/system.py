@@ -5,123 +5,111 @@ class ModelNumber(Enum):
 
     NONE = 0x00000000
 
-    #                           AAAABBCC, AAAA(Project Number), BB(Device Type), CC(Revision)
-    # DRONE_3_DRONE_P1 (Lightrone / GD65 / HW2181 / Keil / 3.7v / barometer / RGB LED / Shaking binding)
-    DRONE_3_DRONE_P1 = 0x00031001
-    # DRONE_3_DRONE_P2 (Soccer Drone / HW2181 / Keil / 7.4v / barometer / RGB LED / Shaking binding)
-    DRONE_3_DRONE_P2 = 0x00031002
-    # DRONE_3_DRONE_P3 (GD240 / HW2181 / Keil / power button / u30 flow / 3.7v / geared motor / barometer)
-    DRONE_3_DRONE_P3 = 0x00031003
-    # DRONE_3_DRONE_P4 (GD50N / HW2181 / Keil / power button / 3.7v / barometer)
-    DRONE_3_DRONE_P4 = 0x00031004
-    # DRONE_3_DRONE_P5 (GD30 / HW2181 / Keil / 3.7v / nomal binding)
-    DRONE_3_DRONE_P5 = 0x00031005
-    # DRONE_3_DRONE_P6 (Soccer Drone 2 / HW2181 / Keil / 7.4v / barometer / RGB LED / Shaking binding)
-    DRONE_3_DRONE_P6 = 0x00031006
-    # DRONE_3_DRONE_P7 (SKYKICKV2 / SPI / HW2181 / Keil / 7.4v / barometer / RGB LED / Shaking binding)
-    DRONE_3_DRONE_P7 = 0x00031007
-    # DRONE_3_DRONE_P8 (GD65 / SPI / HW2181 / Keil / 3.7v / barometer / RGB LED / Shaking binding)
-    DRONE_3_DRONE_P8 = 0x00031008
-    # DRONE_3_DRONE_P9 (GD65 / SPI / HW2181 / Keil / 3.7v / barometer / RGB LED / Shaking binding / BladeType Power Connector)
-    DRONE_3_DRONE_P9 = 0x00031009
-    # DRONE_3_DRONE_P10 (Battle Drone / SPI / HW2181 / Keil / 3.7v / barometer / RGB LED / Shaking binding)
-    DRONE_3_DRONE_P10 = 0x0003100A
+    #                    AAAABBCC, AAAA(Project Number), BB(Device Type), CC(Revision)
+    DRONE_3_DRONE_P1 = 0x00031001       # Lightrone / GD65 / HW2181
+    DRONE_3_DRONE_P2 = 0x00031002       # Soccer Drone / HW2181
+    DRONE_3_DRONE_P3 = 0x00031003       # GD240 / HW2181
+    DRONE_3_DRONE_P4 = 0x00031004       # GD50N / HW2181
+    DRONE_3_DRONE_P5 = 0x00031005       # GD30 / HW2181
+    DRONE_3_DRONE_P6 = 0x00031006       # Soccer Drone 2 / HW2181
+    DRONE_3_DRONE_P7 = 0x00031007       # SKYKICKV2 / HW2181 
+    DRONE_3_DRONE_P8 = 0x00031008       # GD65 / HW2181
+    DRONE_3_DRONE_P9 = 0x00031009       # GD65 / HW2181
+    DRONE_3_DRONE_P10 = 0x0003100A      # Battle Drone / SPI / HW2181
 
-    # DRONE_3_CONTROLLER_P1 / GD65 Controller /small size
-    DRONE_3_CONTROLLER_P1 = 0x00032001
-    # DRONE_3_CONTROLLER_P2 / Skykick Controller /large size
-    DRONE_3_CONTROLLER_P2 = 0x00032002
-    # DRONE_3_CONTROLLER_P3 / GD65 Controller USB /small size + USB
-    DRONE_3_CONTROLLER_P3 = 0x00032003
-    # DRONE_3_CONTROLLER_P4 / Battle Drone Controller USB / small size + usb
+    DRONE_3_CONTROLLER_P1 = 0x00032001  # (obsolete)
+    DRONE_3_CONTROLLER_P2 = 0x00032002  # HW2000
+    DRONE_3_CONTROLLER_P3 = 0x00032003  # HW2000B
     DRONE_3_CONTROLLER_P4 = 0x00032004
-    # DRONE_3_CONTROLLER_P5 / E-Drone 4m Controller / USB / HW2181B / Keil
     DRONE_3_CONTROLLER_P5 = 0x00032005
 
-    DRONE_3_LINK_P0 = 0x00033000    # DRONE_3_LINK_P0
+    DRONE_3_LINK_P0 = 0x00033000
 
-    DRONE_3_TESTER_P4 = 0x0003A004    # DRONE_3_TESTER_P4 (obsolete)
-    DRONE_3_TESTER_P6 = 0x0003A006    # DRONE_3_TESTER_P6 - Battle Drone Tester
+    DRONE_3_ANALYZER_P0 = 0x00034100    # for soccer drone
 
-    DRONE_4_DRONE_P4 = 0x00041004    # DRONE_4_DRONE_P4 (obsolete)
-    # DRONE_4_DRONE_P5 (HW2000, 2m range sensor)
-    DRONE_4_DRONE_P5 = 0x00041005
-    # DRONE_4_DRONE_P6 (HW2000B, 4m range sensor)
-    DRONE_4_DRONE_P6 = 0x00041006
-    # DRONE_4_DRONE_P7 (HW2000B, 4m range sensor, BLDC Motor)
-    DRONE_4_DRONE_P7 = 0x00041007
+    DRONE_3_TESTER_P4 = 0x0003A004      # (obsolete)
+    DRONE_3_TESTER_P6 = 0x0003A006      # Battle Drone Tester
 
-    DRONE_4_CONTROLLER_P1 = 0x00042001    # DRONE_4_CONTROLLER_P1 (obsolete)
-    DRONE_4_CONTROLLER_P2 = 0x00042002    # DRONE_4_CONTROLLER_P2 (HW2000)
-    DRONE_4_CONTROLLER_P3 = 0x00042003    # DRONE_4_CONTROLLER_P3 (HW2000B)
-    # DRONE_4_CONTROLLER_P4 (HW2000B, Encrypt)
-    DRONE_4_CONTROLLER_P4 = 0x00042004
+    DRONE_4_DRONE_P4 = 0x00041004       # (obsolete)
+    DRONE_4_DRONE_P5 = 0x00041005       # HW2000, 2m range sensor
+    DRONE_4_DRONE_P6 = 0x00041006       # HW2000B, 4m range sensor
+    DRONE_4_DRONE_P7 = 0x00041007       # HW2000B, 4m range sensor, BLDC Motor
 
-    DRONE_4_LINK_P0 = 0x00043000    # DRONE_4_LINK_P0
+    DRONE_4_CONTROLLER_P1 = 0x00042001  # (obsolete)
+    DRONE_4_CONTROLLER_P2 = 0x00042002  # HW2000
+    DRONE_4_CONTROLLER_P3 = 0x00042003  # HW2000B
+    DRONE_4_CONTROLLER_P4 = 0x00042004  # HW2000B + PA
+    DRONE_4_CONTROLLER_P5 = 0x00042005  # HW2000B + PA
 
-    DRONE_4_TESTER_P4 = 0x0004A004    # DRONE_4_TESTER_P4 (obsolete)
-    DRONE_4_TESTER_P6 = 0x0004A006    # DRONE_4_TESTER_P6
-    DRONE_4_TESTER_P7 = 0x0004A007    # DRONE_4_TESTER_P7
+    DRONE_4_LINK_P0 = 0x00043000
 
-    DRONE_4_MONITOR_P4 = 0x0004A104    # DRONE_4_MONITOR_P4 (obsolete)
+    DRONE_4_TESTER_P4 = 0x0004A004      # (obsolete)
+    DRONE_4_TESTER_P6 = 0x0004A006
+    DRONE_4_TESTER_P7 = 0x0004A007
 
-    DRONE_7_DRONE_P1 = 0x00071001    # DRONE_7_DRONE_P1
-    DRONE_7_DRONE_P2 = 0x00071002    # DRONE_7_DRONE_P2 / Coding Car
+    DRONE_4_MONITOR_P4 = 0x0004A104     # (obsolete)
 
-    DRONE_7_BLE_CLIENT_P0 = 0x00073200    # DRONE_7_BLE_CLIENT_P0 / Coding Car Link
-    # DRONE_7_BLE_CLIENT_P5 / Coding Car Tester BLE
-    DRONE_7_BLE_CLIENT_P5 = 0x00073205
+    DRONE_7_DRONE_P1 = 0x00071001       # (obsolete)
+    DRONE_7_DRONE_P2 = 0x00071002       # Coding Car
 
-    # DRONE_7_BLE_SERVER_P2 / Coding Car Ble Module
-    DRONE_7_BLE_SERVER_P2 = 0x00073302
+    DRONE_7_BLE_CLIENT_P0 = 0x00073200  # Coding Car Link
+    DRONE_7_BLE_CLIENT_P5 = 0x00073205  # Coding Car Tester BLE
 
-    DRONE_7_TESTER_P4 = 0x0003A004    # DRONE_7_TESTER_P4 (obsolete)
-    DRONE_7_TESTER_P5 = 0x0003A005    # DRONE_7_TESTER_P5 (obsolete)
-    DRONE_7_TESTER_P6 = 0x0003A006    # DRONE_7_TESTER_P6
+    DRONE_7_BLE_SERVER_P2 = 0x00073302  # Coding Car Ble Module
 
-    DRONE_7_MONITOR_P4 = 0x0003A104    # DRONE_7_MONITOR_P4 (obsolete)
-    DRONE_7_MONITOR_P5 = 0x0003A105    # DRONE_7_MONITOR_P5
+    DRONE_7_TESTER_P4 = 0x0003A004      # (obsolete)
+    DRONE_7_TESTER_P5 = 0x0003A005      # (obsolete)
+    DRONE_7_TESTER_P6 = 0x0003A006
 
-    DRONE_8_DRONE_P0 = 0x00081000    # DRONE_8_DRONE_P0 (obsolete)
-    DRONE_8_DRONE_P1 = 0x00081001    # DRONE_8_DRONE_P1 / Coding Drone
+    DRONE_7_MONITOR_P4 = 0x0003A104     # (obsolete)
+    DRONE_7_MONITOR_P5 = 0x0003A105
 
-    DRONE_8_TESTER_P4 = 0x0008A004    # DRONE_8_TESTER_P4 (obsolete)
-    DRONE_8_TESTER_P6 = 0x0008A006    # DRONE_8_TESTER_P6
+    DRONE_8_DRONE_P0 = 0x00081000       # (obsolete)
+    DRONE_8_DRONE_P1 = 0x00081001       # Coding Drone
 
-    DRONE_8_MONITOR_P6 = 0x0008A106    # DRONE_8_MONITOR_P6
+    DRONE_8_TESTER_P4 = 0x0008A004      # (obsolete)
+    DRONE_8_TESTER_P6 = 0x0008A006
 
-    DRONE_9_DRONE_P0 = 0x00091000    # DRONE_9_DRONE_P0
-    DRONE_9_DRONE_P1 = 0x00091001    # DRONE_9_DRONE_P1
-    DRONE_9_DRONE_P2 = 0x00091002    # DRONE_9_DRONE_P2
+    DRONE_8_MONITOR_P6 = 0x0008A106
 
-    DRONE_9_TESTER_P6 = 0x0009A006    # DRONE_9_TESTER_P6
+    DRONE_9_DRONE_P0 = 0x00091000
+    DRONE_9_DRONE_P1 = 0x00091001
+    DRONE_9_DRONE_P2 = 0x00091002
+    DRONE_9_DRONE_P3 = 0x00091003
+    DRONE_9_DRONE_P4 = 0x00091004
+    DRONE_9_DRONE_P5 = 0x00091005
+    DRONE_9_DRONE_P6 = 0x00091006
+
+    DRONE_9_TESTER_P6 = 0x0009A006
+    DRONE_9_TESTER_P7 = 0x0009A007
 
 
 class DeviceType(Enum):
 
     NONE = 0x00
 
-    DRONE = 0x10      # 드론(Server)
+    DRONE = 0x10        # 드론(Server)
 
-    CONTROLLER = 0x20      # 조종기(Client)
+    CONTROLLER = 0x20   # 조종기(Client)
 
-    LINK = 0x30      # 링크 모듈(Client)
-    LINK_SERVER = 0x31      # 링크 모듈(Server, 링크 모듈이 서버로 동작하는 경우에만 통신 타입을 잠시 바꿈)
-    BLE_CLIENT = 0x32      # BLE 클라이언트
-    BLE_SERVER = 0x33      # BLE 서버
+    LINK = 0x30         # 링크 모듈(Client)
+    LINK_SERVER = 0x31  # 링크 모듈(Server, 링크 모듈이 서버로 동작하는 경우에만 통신 타입을 잠시 바꿈)
+    BLE_CLIENT = 0x32   # BLE 클라이언트
+    BLE_SERVER = 0x33   # BLE 서버
 
-    RANGE = 0x40      # 거리 센서 모듈
+    RANGE = 0x40        # 거리 센서 모듈
+    ANALYZER = 0x41     # 분석 모듈
 
-    BASE = 0x70      # 베이스
+    BASE = 0x70         # 베이스
 
-    BYSCRATCH = 0x80      # 바이스크래치
+    BYSCRATCH = 0x80    # 바이스크래치
     SCRATCH = 0x81      # 스크래치
-    ENTRY = 0x82      # 네이버 엔트리
+    ENTRY = 0x82        # 네이버 엔트리
 
-    TESTER = 0xA0      # 테스터
+    TESTER = 0xA0       # 테스터
     MONITOR = 0xA1      # 모니터
     UPDATER = 0xA2      # 펌웨어 업데이트 도구
-    ENCRYPTER = 0xA3      # 암호화 도구
+    ENCRYPTER = 0xA3    # 암호화 도구
 
     # 바로 인접한 장치까지만 전달(받은 장치는 자기 자신에게 보낸 것처럼 처리하고 타 장치에 전달하지 않음)
     WHISPERING = 0xFE
@@ -199,37 +187,43 @@ class ErrorFlagsForSensor(Enum):
 
     NONE = 0x00000000
 
-    MOTION_NO_ANSWER = 0x00000001    # Motion 센서 응답 없음
-    MOTION_WRONG_VALUE = 0x00000002    # Motion 센서 잘못된 값
-    MOTION_NOT_CALIBRATED = 0x00000004    # Gyro Bias 보정이 완료되지 않음
-    MOTION_CALIBRATING = 0x00000008    # Gyro Bias 보정 중
+    MOTION_NO_ANSWER = 0x00000001           # Motion 센서 응답 없음
+    MOTION_WRONG_VALUE = 0x00000002         # Motion 센서 잘못된 값
+    MOTION_NOT_CALIBRATED = 0x00000004      # Gyro Bias 보정이 완료되지 않음
+    MOTION_CALIBRATING = 0x00000008         # Gyro Bias 보정 중
 
-    PRESSURE_NO_ANSWER = 0x00000010    # 압력 센서 응답 없음
-    PRESSURE_WRONG_VALUE = 0x00000020    # 압력 센서 잘못된 값
+    PRESSURE_NO_ANSWER = 0x00000010         # 압력 센서 응답 없음
+    PRESSURE_WRONG_VALUE = 0x00000020       # 압력 센서 잘못된 값
 
-    RANGE_GROUND_NO_ANSWER = 0x00000100    # 바닥 거리 센서 응답 없음
-    RANGE_GROUND_WRONG_VALUE = 0x00000200    # 바닥 거리 센서 잘못된 값
+    RANGE_GROUND_NO_ANSWER = 0x00000100     # 바닥 거리 센서 응답 없음
+    RANGE_GROUND_WRONG_VALUE = 0x00000200   # 바닥 거리 센서 잘못된 값
+    RANGE_FRONT_NO_ANSWER = 0x00000400 	    # 정면 거리 센서 응답 없음
+    RANGE_FRONT_WRONG_VALUE = 0x00000800    # 정면 거리 센서 잘못된 값
 
-    FLOW_NO_ANSWER = 0x00001000    # Flow 센서 응답 없음
-    FLOW_WRONG_VALUE = 0x00002000    # Flow 잘못된 값
-    FLOW_CANNOT_RECOGNIZE_GROUND_IMAGE = 0x00004000    # 바닥 이미지를 인식할 수 없음
+    FLOW_NO_ANSWER = 0x00001000             # Flow 센서 응답 없음
+    FLOW_WRONG_VALUE = 0x00002000           # Flow 잘못된 값
+    FLOW_CANNOT_RECOGNIZE_GROUND_IMAGE = 0x00004000     # 바닥 이미지를 인식할 수 없음
+
+    RF_NO_ANSWER = 0x10000000   # RF 응답 없음
+    RF_PAIRED = 0x20000000      # RF 페어링 완료
+    RF_CONNECTED = 0x40000000   # RF 연결됨
 
 
 class ErrorFlagsForState(Enum):
 
     NONE = 0x00000000
 
-    NOT_REGISTERED = 0x00000001    # 장치 등록이 안됨
-    FLASH_READ_LOCK_UNLOCKED = 0x00000002    # 플래시 메모리 읽기 Lock이 안 걸림
-    BOOTLOADER_WRITE_LOCK_UNLOCKED = 0x00000004    # 부트로더 영역 쓰기 Lock이 안 걸림
-    LOW_BATTERY = 0x00000008    # Low Battery
+    NOT_REGISTERED = 0x00000001                     # 장치 등록이 안됨
+    FLASH_READ_LOCK_UNLOCKED = 0x00000002           # 플래시 메모리 읽기 Lock이 안 걸림
+    BOOTLOADER_WRITE_LOCK_UNLOCKED = 0x00000004     # 부트로더 영역 쓰기 Lock이 안 걸림
+    LOW_BATTERY = 0x00000008                        # Low Battery
 
-    TAKEOFF_FAILURE_CHECK_PROPELLER_AND_MOTOR = 0x00000010    # 이륙 실패
-    CHECK_PROPELLER_VIBRATION = 0x00000020    # 프로펠러 진동발생
-    ATTITUDE_NOT_STABLE = 0x00000040    # 자세가 많이 기울어져 있거나 뒤집어져 있을때
+    TAKEOFF_FAILURE_CHECK_PROPELLER_AND_MOTOR = 0x00000010  # 이륙 실패
+    CHECK_PROPELLER_VIBRATION = 0x00000020      # 프로펠러 진동발생
+    ATTITUDE_NOT_STABLE = 0x00000040            # 자세가 많이 기울어져 있거나 뒤집어져 있을때
 
-    CANNOT_FLIP_LOW_BATTERY = 0x00000100    # 배터리가 30이하
-    CANNOT_FLIP_TOO_HEAVY = 0x00000200    # 기체가 무거움
+    CANNOT_FLIP_LOW_BATTERY = 0x00000100        # 배터리가 30이하
+    CANNOT_FLIP_TOO_HEAVY = 0x00000200          # 기체가 무거움
 
 
 class FlightEvent(Enum):
@@ -247,7 +241,7 @@ class FlightEvent(Enum):
     FLIP_LEFT = 0x16
     FLIP_RIGHT = 0x17
 
-    RETURN = 0x18
+    RETURN_HOME = 0x18
 
     SHOT = 0x90
     UNDER_ATTACK = 0x91

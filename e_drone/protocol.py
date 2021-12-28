@@ -1040,7 +1040,7 @@ class ControlQuad8AndRequestData(ISerializable):
 
 
 
-class ControlPosition16(ISerializable):
+class ControlPositionShort(ISerializable):
 
     def __init__(self):
         self.position_x          = 0
@@ -1064,7 +1064,7 @@ class ControlPosition16(ISerializable):
 
     @classmethod
     def parse(cls, data_array):
-        data = ControlPosition16()
+        data = ControlPositionShort()
         
         if len(data_array) != cls.get_size():
             return None
@@ -1923,7 +1923,7 @@ class DisplayDrawStringAlign(ISerializable):
         self.x_start    = 0
         self.x_end      = 0
         self.y          = 0
-        self.align      = DisplayAlign.Center
+        self.align      = DisplayAlign.CENTER
         self.font       = DisplayFont.LIBERATION_MONO_5X8
         self.pixel      = DisplayPixel.WHITE
         self.message    = ""
@@ -2919,6 +2919,35 @@ class MotorSingle(ISerializable):
 
     def __init__(self):
         self.target     = 0
+        self.value      = 0
+
+
+    @classmethod
+    def get_size(cls):
+        return 3
+
+
+    def to_array(self):
+        return pack('<Bh', self.target, self.value)
+
+
+    @classmethod
+    def parse(cls, data_array):
+        data = MotorSingle()
+        
+        if len(data_array) != cls.get_size():
+            return None
+        
+        data.target, data.value = unpack('<Bh', data_array)
+        
+        return data
+
+
+
+class MotorSingleRotation(ISerializable):
+
+    def __init__(self):
+        self.target     = 0
         self.rotation   = Rotation.NONE
         self.value      = 0
 
@@ -2934,42 +2963,13 @@ class MotorSingle(ISerializable):
 
     @classmethod
     def parse(cls, data_array):
-        data = MotorSingle()
+        data = MotorSingleRotation()
         
         if len(data_array) != cls.get_size():
             return None
         
         data.target, data.rotation, data.value = unpack('<BBh', data_array)
         data.rotation = Rotation(data.rotation)
-        
-        return data
-
-
-
-class MotorSingleV(ISerializable):
-
-    def __init__(self):
-        self.target     = 0
-        self.value      = 0
-
-
-    @classmethod
-    def get_size(cls):
-        return 3
-
-
-    def to_array(self):
-        return pack('<Bh', self.target, self.value)
-
-
-    @classmethod
-    def parse(cls, data_array):
-        data = MotorSingleV()
-        
-        if len(data_array) != cls.get_size():
-            return None
-        
-        data.target, data.value = unpack('<Bh', data_array)
         
         return data
 
