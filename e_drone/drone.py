@@ -88,8 +88,8 @@ class Drone:
             self._buffer_queue.put(self._serialport.read())
 
             # 수신 데이터 백그라운드 확인이 활성화 된 경우 데이터 자동 업데이트
-            if self._flag_check_background is True:
-                while self.check() is not DataType.NONE:
+            if self._flag_check_background == True:
+                while self.check() != DataType.NONE:
                     pass
 
             #sleep(0.001)
@@ -103,7 +103,7 @@ class Drone:
 
 
     def is_connected(self):
-        if self.is_open() is False:
+        if self.is_open() == False:
             return False
         else:
             return self._flag_connected
@@ -150,7 +150,7 @@ class Drone:
 
         self._print_log("Thread Flag False.")
 
-        if self._flag_thread_run is True:
+        if self._flag_thread_run == True:
             self._flag_thread_run = False
             sleep(0.1)
         
@@ -161,7 +161,7 @@ class Drone:
 
         self._print_log("Port Close.")
 
-        if self.is_open() is True:
+        if self.is_open() == True:
             self._serialport.close()
             sleep(0.2)
 
@@ -203,7 +203,7 @@ class Drone:
 
 
     def check(self):
-        while self._buffer_queue.empty() is False:
+        while self._buffer_queue.empty() == False:
             data_array = self._buffer_queue.get_nowait()
             self._buffer_queue.task_done()
 
@@ -217,7 +217,7 @@ class Drone:
             state_loading = self._receiver.call(self._buffer_handler.pop(0))
 
             # 오류 출력
-            if state_loading is StateLoading.FAILURE:
+            if state_loading == StateLoading.FAILURE:
                 # 수신 데이터 출력(줄넘김)
                 self._print_receive_data_end()
 
@@ -226,14 +226,14 @@ class Drone:
                 
 
             # 로그 출력
-            if state_loading is StateLoading.LOADED:
+            if state_loading == StateLoading.LOADED:
                 # 수신 데이터 출력(줄넘김)
                 self._print_receive_data_end()
 
                 # 로그 출력
                 self._print_log(self._receiver.message)
 
-            if self._receiver.state is StateLoading.LOADED:
+            if self._receiver.state == StateLoading.LOADED:
                 self._handler(self._receiver.header, self._receiver.data)
                 return self._receiver.header.data_type
 
@@ -241,7 +241,7 @@ class Drone:
 
 
     def check_detail(self):
-        while self._buffer_queue.empty() is False:
+        while self._buffer_queue.empty() == False:
             data_array = self._buffer_queue.get_nowait()
             self._buffer_queue.task_done()
 
@@ -255,7 +255,7 @@ class Drone:
             state_loading = self._receiver.call(self._buffer_handler.pop(0))
 
             # 오류 출력
-            if state_loading is StateLoading.FAILURE:
+            if state_loading == StateLoading.FAILURE:
                 # 수신 데이터 출력(줄넘김)
                 self._print_receive_data_end()
 
@@ -264,14 +264,14 @@ class Drone:
                 
 
             # 로그 출력
-            if state_loading is StateLoading.LOADED:
+            if state_loading == StateLoading.LOADED:
                 # 수신 데이터 출력(줄넘김)
                 self._print_receive_data_end()
 
                 # 로그 출력
                 self._print_log(self._receiver.message)
 
-            if self._receiver.state is StateLoading.LOADED:
+            if self._receiver.state == StateLoading.LOADED:
                 self._handler(self._receiver.header, self._receiver.data)
                 return self._receiver.header, self._receiver.data
 
@@ -315,15 +315,15 @@ class Drone:
         
         # Monitor 데이터 처리
         # 수신 받은 데이터를 파싱하여 self.monitor_data[] 배열에 데이터를 넣음
-        if header.data_type is DataType.MONITOR:
+        if header.data_type == DataType.MONITOR:
             
             monitor_header_type = MonitorHeaderType(data_array[0])
 
-            if monitor_header_type is MonitorHeaderType.MONITOR_0:
+            if monitor_header_type == MonitorHeaderType.MONITOR_0:
                 
                 monitor0 = Monitor0.parse(data_array[1:1 + Monitor0.get_size()])
 
-                if monitor0.monitor_dataType is monitor_dataType.F32:
+                if monitor0.monitor_dataType == monitor_dataType.F32:
                     
                     data_count = (data_array.len() - 1 - Monitor0.get_size()) / 4
 
@@ -334,11 +334,11 @@ class Drone:
                             index = 1 + Monitor0.get_size() + (i * 4)
                             self.monitor_data[monitor0.index + i], = unpack('<f', data_array[index:index + 4])
 
-            elif monitor_header_type is MonitorHeaderType.MONITOR_4:
+            elif monitor_header_type == MonitorHeaderType.MONITOR_4:
                 
                 monitor4 = Monitor4.parse(data_array[1:1 + Monitor4.get_size()])
 
-                if monitor4.monitor_dataType is monitor_dataType.F32:
+                if monitor4.monitor_dataType == monitor_dataType.F32:
                     
                     self.system_time_monitor_data = monitor4.system_time
                     
@@ -351,11 +351,11 @@ class Drone:
                             index = 1 + Monitor4.get_size() + (i * 4)
                             self.monitor_data[monitor4.index + i], = unpack('<f', data_array[index:index + 4])
 
-            elif monitor_header_type is MonitorHeaderType.MONITOR_8:
+            elif monitor_header_type == MonitorHeaderType.MONITOR_8:
                 
                 monitor8 = Monitor8.parse(data_array[1:1 + Monitor8.get_size()])
 
-                if monitor8.monitor_dataType is monitor_dataType.F32:
+                if monitor8.monitor_dataType == monitor_dataType.F32:
                     
                     self.system_time_monitor_data = monitor8.system_time
                     

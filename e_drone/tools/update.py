@@ -37,7 +37,7 @@ class FirmwareHeader():
     def parse(cls, data_array):
         data = FirmwareHeader()
         
-        if len(data_array) is not cls.get_size():
+        if len(data_array) != cls.get_size():
             return None
         
         data.model_number, data.version, data.length, data.year, data.month, data.day = unpack('<IIIHBB', data_array)
@@ -118,7 +118,7 @@ class Updater:
         self.model_number        = information.model_number
         self.device_type         = DeviceType(((self.model_number.value >> 8) & 0xFF))
         
-        if information.mode_update is ModeUpdate.COMPLETE:
+        if information.mode_update == ModeUpdate.COMPLETE:
             self.flag_update_complete = True
         else:
             print(Fore.YELLOW + "* Connected Device : {0}".format(self.device_type) + Style.RESET_ALL)
@@ -152,7 +152,7 @@ class Updater:
         firmware.append(Firmware("https://s3.ap-northeast-2.amazonaws.com/byrobot/fw_drone_4_controller_p2_latest.eb"))
 
         drone = Drone()
-        if drone.open() is False:
+        if drone.open() == False:
             print(Fore.RED + "* Error : Unable to open serial port." + Style.RESET_ALL)
             sys.exit(1)
 
@@ -201,26 +201,26 @@ class Updater:
         # 펌웨어 업데이트
         for fw in firmware:
 
-            if self.model_number is fw.header.model_number:
+            if self.model_number == fw.header.model_number:
 
                 # 펌웨어의 모델 번호와 일치하는 드론이 있는 경우
 
-                if self.mode_update is ModeUpdate.READY or self.mode_update is ModeUpdate.UPDATE:
+                if self.mode_update == ModeUpdate.READY or self.mode_update == ModeUpdate.UPDATE:
 
                     while flag_run:
 
                         sleep(0.001)
                         now = time.perf_counter() * 1000
 
-                        if (self.flag_updated is True) or (time_transfer_next < now):
+                        if (self.flag_updated == True) or (time_transfer_next < now):
 
-                            if self.index_block_next is 0:
+                            if self.index_block_next == 0:
                                 time_transfer_next = now + 2400
                             else:
                                 time_transfer_next = now + 100
 
                             # 에러 카운트
-                            if self.flag_updated is False:
+                            if self.flag_updated == False:
 
                                 count_error = count_error + 1
 
@@ -242,7 +242,7 @@ class Updater:
                                 break
 
                             # 업데이트가 완료된 경우 종료
-                            if self.flag_update_complete is True:
+                            if self.flag_update_complete == True:
                                 sleep(1)
                                 print("\n\n" + Fore.GREEN + "  Update Complete." + Style.RESET_ALL)
                                 flag_run = False
@@ -278,7 +278,7 @@ class Updater:
 # Main Start
 
 
-if __name__ is '__main__':
+if __name__ == '__main__':
 
     updater = Updater()
 
