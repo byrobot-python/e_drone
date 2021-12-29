@@ -858,7 +858,7 @@ class Drone:
 
         data = Command()
 
-        data.command_type   = CommandType.ModeControlFlight
+        data.command_type   = CommandType.MODE_CONTROL_FLIGHT
         data.option         = mode_control_flight.value
 
         return self.transfer(header, data)
@@ -878,7 +878,7 @@ class Drone:
 
         data = Command()
 
-        data.command_type   = CommandType.Headless
+        data.command_type   = CommandType.HEADLESS
         data.option         = headless.value
 
         return self.transfer(header, data)
