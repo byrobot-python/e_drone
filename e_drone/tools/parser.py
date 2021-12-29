@@ -398,7 +398,7 @@ class Parser():
         
         data = Vibrator()
 
-        data.mode       = VibratorMode.INSTANTALLY
+        data.mode       = VibratorMode.INSTANTLY
         data.on         = on
         data.off        = off
         data.total      = total

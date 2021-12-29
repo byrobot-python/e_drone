@@ -352,7 +352,7 @@ class RequestOption(ISerializable):
 
     def __init__(self):
         self.data_type   = DataType.NONE
-        self.option     = 0
+        self.option      = 0
 
 
     @classmethod
@@ -1013,7 +1013,7 @@ class ControlQuad8AndRequestData(ISerializable):
         self.pitch      = 0
         self.yaw        = 0
         self.throttle   = 0
-        self.data_type   = DataType.NONE
+        self.data_type  = DataType.NONE
 
 
     @classmethod
@@ -1077,14 +1077,14 @@ class ControlPositionShort(ISerializable):
 class ControlPosition(ISerializable):
 
     def __init__(self):
-        self.position_x          = 0
-        self.position_y          = 0
-        self.position_z          = 0
+        self.position_x             = 0
+        self.position_y             = 0
+        self.position_z             = 0
 
-        self.velocity           = 0
+        self.velocity               = 0
 
-        self.heading            = 0
-        self.rotational_velocity = 0
+        self.heading                = 0
+        self.rotational_velocity    = 0
 
 
     @classmethod
@@ -2045,7 +2045,7 @@ class BuzzerScale(Enum):
 class Buzzer(ISerializable):
 
     def __init__(self):
-        self.mode       = BuzzerMode.Stop
+        self.mode       = BuzzerMode.STOP
         self.value      = 0
         self.time       = 0
 
@@ -2082,12 +2082,12 @@ class Buzzer(ISerializable):
 
 class VibratorMode(Enum):
 
-    STOP                = 0     # 정지
+    STOP            = 0     # 정지
 
-    INSTANTALLY         = 1     # 즉시 적용
-    CONTINUALLY         = 2     # 예약
+    INSTANTLY       = 1     # 즉시 적용
+    CONTINUALLY     = 2     # 예약
 
-    END_OF_TYPE         = 3
+    END_OF_TYPE     = 3
 
 
 
@@ -2132,31 +2132,31 @@ class Vibrator(ISerializable):
 
 class ButtonFlagController(Enum):
 
-    NONE               = 0x0000
-    
-    FRONT_LEFT_TOP     = 0x0001
-    FRONT_LEFT_BOTTOM  = 0x0002
-    FRONT_RIGHT_TOP    = 0x0004
-    FRONT_RIGHT_BOTTOM = 0x0008
-    
-    TOP_LEFT           = 0x0010
-    TOP_RIGHT          = 0x0020    # POWER ON/OFF
-    
-    MID_UP             = 0x0040
-    MID_LEFT           = 0x0080
-    MID_RIGHT          = 0x0100
-    MID_DOWN           = 0x0200
-    
-    BOTTOM_LEFT        = 0x0400
-    BOTTOM_RIGHT       = 0x0800
+    NONE                = 0x0000
+
+    FRONT_LEFT_TOP      = 0x0001
+    FRONT_LEFT_BOTTOM   = 0x0002
+    FRONT_RIGHT_TOP     = 0x0004
+    FRONT_RIGHT_BOTTOM  = 0x0008
+
+    TOP_LEFT            = 0x0010
+    TOP_RIGHT           = 0x0020    # POWER ON/OFF
+
+    MID_UP              = 0x0040
+    MID_LEFT            = 0x0080
+    MID_RIGHT           = 0x0100
+    MID_DOWN            = 0x0200
+
+    BOTTOM_LEFT         = 0x0400
+    BOTTOM_RIGHT        = 0x0800
 
 
 
 class ButtonFlagDrone(Enum):
 
-    NONE               = 0x0000
+    NONE        = 0x0000
     
-    RESET               = 0x0001
+    RESET       = 0x0001
 
 
 
@@ -2811,7 +2811,7 @@ class MotorBlock(ISerializable):
 class Motor(ISerializable):
 
     def __init__(self):
-        self.motor      = []
+        self.motor = []
         self.motor.append(MotorBlock())
         self.motor.append(MotorBlock())
         self.motor.append(MotorBlock())

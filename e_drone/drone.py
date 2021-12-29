@@ -1256,7 +1256,7 @@ class Drone:
         return self.transfer(header, data)
 
 
-    def send_light_event_color(self, light_event, interval, repeat):
+    def send_light_event(self, light_event, interval, repeat):
         
         if ((not isinstance(interval, int)) or
             (not isinstance(repeat, int))):
@@ -1812,7 +1812,7 @@ class Drone:
         
         data = Vibrator()
 
-        data.mode       = VibratorMode.INSTANTALLY
+        data.mode       = VibratorMode.INSTANTLY
         data.on         = on
         data.off        = off
         data.total      = total

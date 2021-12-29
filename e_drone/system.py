@@ -134,11 +134,11 @@ class ModeControlFlight(Enum):
 
     NONE = 0x00
 
-    ATTITUDE = 0x10      # 자세 - X, Y는 각도(deg)로 입력받음, Z, Yaw는 속도(m/s)로 입력 받음
-    POSITION = 0x11      # 위치 - X, Y, Z, Yaw는 속도(m/s)로 입력 받음
-    MANUAL = 0x12      # 고도를 수동으로 조종함
-    RATE = 0x13      # Rate - X, Y는 각속도(deg/s)로 입력받음, Z, Yaw는 속도(m/s)로 입력 받음
-    FUNCTION = 0x14      # 기능
+    ATTITUDE = 0x10     # 자세 - X, Y는 각도(deg)로 입력받음, Z, Yaw는 속도(m/s)로 입력 받음
+    POSITION = 0x11     # 위치 - X, Y, Z, Yaw는 속도(m/s)로 입력 받음
+    MANUAL = 0x12       # 고도를 수동으로 조종함
+    RATE = 0x13         # Rate - X, Y는 각속도(deg/s)로 입력받음, Z, Yaw는 속도(m/s)로 입력 받음
+    FUNCTION = 0x14     # 기능
 
     END_OF_TYPE = 0x15
 
@@ -170,15 +170,15 @@ class ModeUpdate(Enum):
 
     NONE = 0x00
 
-    READY = 0x01      # 업데이트 가능 상태
-    UPDATE = 0x02      # 업데이트 중
-    COMPLETE = 0x03      # 업데이트 완료
+    READY = 0x01            # 업데이트 가능 상태
+    UPDATE = 0x02           # 업데이트 중
+    COMPLETE = 0x03         # 업데이트 완료
 
-    FAILED = 0x04      # 업데이트 실패(업데이트 완료까지 갔으나 body의 Crc16이 일치하지 않는 경우 등)
+    FAILED = 0x04           # 업데이트 실패(업데이트 완료까지 갔으나 body의 Crc16이 일치하지 않는 경우 등)
 
-    NOT_AVAILABLE = 0x05      # 업데이트 불가능 상태(Debug 모드 등)
-    RUN_APPLICATION = 0x06      # 어플리케이션 동작 중
-    NOT_REGISTERED = 0x07      # 등록되지 않음
+    NOT_AVAILABLE = 0x05    # 업데이트 불가능 상태(Debug 모드 등)
+    RUN_APPLICATION = 0x06  # 어플리케이션 동작 중
+    NOT_REGISTERED = 0x07   # 등록되지 않음
 
     END_OF_TYPE = 0x08
 
@@ -204,9 +204,9 @@ class ErrorFlagsForSensor(Enum):
     FLOW_WRONG_VALUE = 0x00002000           # Flow 잘못된 값
     FLOW_CANNOT_RECOGNIZE_GROUND_IMAGE = 0x00004000     # 바닥 이미지를 인식할 수 없음
 
-    RF_NO_ANSWER = 0x10000000   # RF 응답 없음
-    RF_PAIRED = 0x20000000      # RF 페어링 완료
-    RF_CONNECTED = 0x40000000   # RF 연결됨
+    RF_NO_ANSWER = 0x10000000               # RF 응답 없음
+    RF_PAIRED = 0x20000000                  # RF 페어링 완료
+    RF_CONNECTED = 0x40000000               # RF 연결됨
 
 
 class ErrorFlagsForState(Enum):
@@ -219,11 +219,11 @@ class ErrorFlagsForState(Enum):
     LOW_BATTERY = 0x00000008                        # Low Battery
 
     TAKEOFF_FAILURE_CHECK_PROPELLER_AND_MOTOR = 0x00000010  # 이륙 실패
-    CHECK_PROPELLER_VIBRATION = 0x00000020      # 프로펠러 진동발생
-    ATTITUDE_NOT_STABLE = 0x00000040            # 자세가 많이 기울어져 있거나 뒤집어져 있을때
+    CHECK_PROPELLER_VIBRATION = 0x00000020          # 프로펠러 진동발생
+    ATTITUDE_NOT_STABLE = 0x00000040                # 자세가 많이 기울어져 있거나 뒤집어져 있을때
 
-    CANNOT_FLIP_LOW_BATTERY = 0x00000100        # 배터리가 30이하
-    CANNOT_FLIP_TOO_HEAVY = 0x00000200          # 기체가 무거움
+    CANNOT_FLIP_LOW_BATTERY = 0x00000100            # 배터리가 30이하
+    CANNOT_FLIP_TOO_HEAVY = 0x00000200              # 기체가 무거움
 
 
 class FlightEvent(Enum):
