@@ -1058,16 +1058,9 @@ class Drone:
 
         data = Motor()
 
-        data.motor[0].rotation  = Rotation.CLOCKWISE
         data.motor[0].value     = motor_0
-
-        data.motor[1].rotation  = Rotation.COUNTERCLOCKWISE
         data.motor[1].value     = motor_1
-
-        data.motor[2].rotation  = Rotation.CLOCKWISE
         data.motor[2].value     = motor_2
-
-        data.motor[3].rotation  = Rotation.COUNTERCLOCKWISE
         data.motor[3].value     = motor_3
 
         return self.transfer(header, data)
@@ -1089,29 +1082,6 @@ class Drone:
         data = MotorSingle()
 
         data.target     = target
-        data.value      = value
-
-        return self.transfer(header, data)
-
-
-    def send_motor_single_rotation(self, target, rotation, value):
-        
-        if ((not isinstance(target, int)) or
-            (not isinstance(rotation, Rotation)) or
-            (not isinstance(value, int))):
-            return None
-
-        header = Header()
-        
-        header.data_type = DataType.MOTOR_SINGLE
-        header.length    = MotorSingleRotation.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.DRONE
-
-        data = MotorSingleRotation()
-
-        data.target     = target
-        data.rotation   = rotation
         data.value      = value
 
         return self.transfer(header, data)

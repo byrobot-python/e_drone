@@ -2781,17 +2781,16 @@ class LostConnection(ISerializable):
 class MotorBlock(ISerializable):
 
     def __init__(self):
-        self.rotation   = Rotation.NONE
         self.value      = 0
 
 
     @classmethod
     def get_size(cls):
-        return 3
+        return 2
 
 
     def to_array(self):
-        return pack('<Bh', self.rotation.value, self.value)
+        return pack('<h', self.value)
 
 
     @classmethod
@@ -2801,8 +2800,7 @@ class MotorBlock(ISerializable):
         if len(data_array) != cls.get_size():
             return None
         
-        data.rotation, data.value = unpack('<Bh', data_array)
-        data.rotation = Rotation(data.rotation)
+        data.value, = unpack('<h', data_array)
         
         return data
 
@@ -2811,7 +2809,7 @@ class MotorBlock(ISerializable):
 class Motor(ISerializable):
 
     def __init__(self):
-        self.motor = []
+        self.motor      = []
         self.motor.append(MotorBlock())
         self.motor.append(MotorBlock())
         self.motor.append(MotorBlock())
@@ -2847,47 +2845,49 @@ class Motor(ISerializable):
         return data
 
 
-class MotorBlockV(ISerializable):
+class MotorBlockRotationValue(ISerializable):
 
     def __init__(self):
+        self.rotation   = Rotation.NONE
         self.value      = 0
 
 
     @classmethod
     def get_size(cls):
-        return 2
+        return 3
 
 
     def to_array(self):
-        return pack('<h', self.value)
+        return pack('<Bh', self.rotation.value, self.value)
 
 
     @classmethod
     def parse(cls, data_array):
-        data = MotorBlockV()
+        data = MotorBlockRotationValue()
         
         if len(data_array) != cls.get_size():
             return None
         
-        data.value, = unpack('<h', data_array)
+        data.rotation, data.value = unpack('<Bh', data_array)
+        data.rotation = Rotation(data.rotation)
         
         return data
 
 
 
-class MotorV(ISerializable):
+class MotorRotationValue(ISerializable):
 
     def __init__(self):
-        self.motor      = []
-        self.motor.append(MotorBlockV())
-        self.motor.append(MotorBlockV())
-        self.motor.append(MotorBlockV())
-        self.motor.append(MotorBlockV())
+        self.motor = []
+        self.motor.append(MotorBlockRotationValue())
+        self.motor.append(MotorBlockRotationValue())
+        self.motor.append(MotorBlockRotationValue())
+        self.motor.append(MotorBlockRotationValue())
 
 
     @classmethod
     def get_size(cls):
-        return MotorBlockV.get_size() * 4
+        return MotorBlockRotationValue.get_size() * 4
 
 
     def to_array(self):
@@ -2901,15 +2901,15 @@ class MotorV(ISerializable):
 
     @classmethod
     def parse(cls, data_array):
-        data = MotorV()
+        data = MotorRotationValue()
         
         if len(data_array) != cls.get_size():
             return None
         
-        index_start = 0;         index_end  = MotorBlockV.get_size();    data.motor[0]   = MotorBlockV.parse(data_array[index_start:index_end])
-        index_start = index_end; index_end += MotorBlockV.get_size();    data.motor[1]   = MotorBlockV.parse(data_array[index_start:index_end])
-        index_start = index_end; index_end += MotorBlockV.get_size();    data.motor[2]   = MotorBlockV.parse(data_array[index_start:index_end])
-        index_start = index_end; index_end += MotorBlockV.get_size();    data.motor[3]   = MotorBlockV.parse(data_array[index_start:index_end])
+        index_start = 0;         index_end  = MotorBlockRotationValue.get_size();    data.motor[0]   = MotorBlockRotationValue.parse(data_array[index_start:index_end])
+        index_start = index_end; index_end += MotorBlockRotationValue.get_size();    data.motor[1]   = MotorBlockRotationValue.parse(data_array[index_start:index_end])
+        index_start = index_end; index_end += MotorBlockRotationValue.get_size();    data.motor[2]   = MotorBlockRotationValue.parse(data_array[index_start:index_end])
+        index_start = index_end; index_end += MotorBlockRotationValue.get_size();    data.motor[3]   = MotorBlockRotationValue.parse(data_array[index_start:index_end])
         
         return data
 
@@ -2944,7 +2944,7 @@ class MotorSingle(ISerializable):
 
 
 
-class MotorSingleRotation(ISerializable):
+class MotorSingleRotationValue(ISerializable):
 
     def __init__(self):
         self.target     = 0
@@ -2963,7 +2963,7 @@ class MotorSingleRotation(ISerializable):
 
     @classmethod
     def parse(cls, data_array):
-        data = MotorSingleRotation()
+        data = MotorSingleRotationValue()
         
         if len(data_array) != cls.get_size():
             return None
