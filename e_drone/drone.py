@@ -605,10 +605,10 @@ class Drone:
 
         data = ControlQuad8()
 
-        data.roll       = roll
-        data.pitch      = pitch
-        data.yaw        = yaw
-        data.throttle   = throttle
+        data.roll       = int(roll)
+        data.pitch      = int(pitch)
+        data.yaw        = int(yaw)
+        data.throttle   = int(throttle)
 
         return self.transfer(header, data)
 
@@ -633,14 +633,12 @@ class Drone:
 
     def send_control_position_short(self, position_x, position_y, position_z, velocity, heading, rotational_velocity):
         
-        if ((not isinstance(position_x, int)) or
-            (not isinstance(position_y, int)) or
-            (not isinstance(position_z, int)) or
-            (not isinstance(velocity, int))):
-            return None
-
-        if ((not isinstance(heading, int)) or
-            (not isinstance(rotational_velocity, int))):
+        if ((not (isinstance(position_x, float) or isinstance(position_x, int))) or
+            (not (isinstance(position_y, float) or isinstance(position_y, int))) or
+            (not (isinstance(position_z, float) or isinstance(position_z, int))) or
+            (not (isinstance(velocity, float) or isinstance(velocity, int))) or
+            (not (isinstance(heading, float) or isinstance(heading, int))) or
+            (not (isinstance(rotational_velocity, float) or isinstance(rotational_velocity, int)))):
             return None
 
         header = Header()
@@ -652,31 +650,24 @@ class Drone:
 
         data = ControlPositionShort()
 
-        data.position_x     = position_x
-        data.position_y     = position_y
-        data.position_z     = position_z
-        data.velocity       = velocity
-        data.heading        = heading
-        data.rotational_velocity = rotational_velocity
+        data.position_x             = int(position_x)
+        data.position_y             = int(position_y)
+        data.position_z             = int(position_z)
+        data.velocity               = int(velocity)
+        data.heading                = int(heading)
+        data.rotational_velocity    = int(rotational_velocity)
 
         return self.transfer(header, data)
 
 
     def send_control_position(self, position_x, position_y, position_z, velocity, heading, rotational_velocity):
         
-        if  (not (isinstance(position_x, float) or isinstance(position_x, int))):
-            return None
-
-        if  (not (isinstance(position_y, float) or isinstance(position_y, int))):
-            return None
-
-        if  (not (isinstance(position_z, float) or isinstance(position_z, int))):
-            return None
-
-        if  (not (isinstance(velocity, float) or isinstance(velocity, int))):
-            return None
-
-        if  ( (not isinstance(heading, int)) or (not isinstance(rotational_velocity, int)) ):
+        if ((not (isinstance(position_x, float) or isinstance(position_x, int))) or
+            (not (isinstance(position_y, float) or isinstance(position_y, int))) or
+            (not (isinstance(position_z, float) or isinstance(position_z, int))) or
+            (not (isinstance(velocity, float) or isinstance(velocity, int))) or
+            (not (isinstance(heading, float) or isinstance(heading, int))) or
+            (not (isinstance(rotational_velocity, float) or isinstance(rotational_velocity, int)))):
             return None
 
         header = Header()
@@ -688,12 +679,12 @@ class Drone:
 
         data = ControlPosition()
 
-        data.position_x     = float(position_x)
-        data.position_y     = float(position_y)
-        data.position_z     = float(position_z)
-        data.velocity       = float(velocity)
-        data.heading        = heading
-        data.rotational_velocity = rotational_velocity
+        data.position_x             = float(position_x)
+        data.position_y             = float(position_y)
+        data.position_z             = float(position_z)
+        data.velocity               = float(velocity)
+        data.heading                = int(heading)
+        data.rotational_velocity    = int(rotational_velocity)
 
         return self.transfer(header, data)
 
