@@ -47,7 +47,7 @@ class Parser():
                     (self.arguments[1] == "state")):         # time interval
                 #print("* State - Ready     Blue    Red     Black   Black   NONE             1830   1631   2230      76      ")    
                 print ("         |ModeSystem   |ModeFlight |ModeControlFlight |ModeMovement |Headless |ControlSpeed |SensorOrientation |Battery |")
-                self.request(DeviceType.DRONE, DataType.STATE, int(self.arguments[2]), float(self.arguments[3]))
+                self.send_request(DeviceType.DRONE, DataType.STATE, int(self.arguments[2]), float(self.arguments[3]))
                 return
 
             # > python -m e_drone request Motion 10 0.2
@@ -57,7 +57,7 @@ class Parser():
                 #print("* Motion      -38      64     -32     457     -40    -400      16       0   20500")    
                 print ("         |Accel                  |Gyro                   |Angle                  |")
                 print ("         |      X|      Y|      Z|   Roll|  Pitch|    Yaw|   Roll|  Pitch|    Yaw|")
-                self.request(DeviceType.DRONE, DataType.MOTION, int(self.arguments[2]), float(self.arguments[3]))
+                self.send_request(DeviceType.DRONE, DataType.MOTION, int(self.arguments[2]), float(self.arguments[3]))
                 return
 
             # > python -m e_drone request CardRaw 10 0.2
@@ -67,7 +67,7 @@ class Parser():
                 #print("* CardRaw   335  503  766  692  309  395 100  39  96  40   9  17 303  61  39 344  77  15   Magenta         Red")
                 print ("          |Front Raw     |Rear Raw      |Front RGB  |Rear RGB   |Front HSVL      |Rear HSVL       |Front Color  |Rear Color   |")
                 print ("          |   R    G    B|   R    G    B|  R   G   B|  R   G   B|  H   S   V   L|  H   S   V   L|             |             |")
-                self.request(DeviceType.DRONE, DataType.CARD_RAW, int(self.arguments[2]), float(self.arguments[3]))
+                self.send_request(DeviceType.DRONE, DataType.CARD_RAW, int(self.arguments[2]), float(self.arguments[3]))
                 return
 
             # > python -m e_drone request CardRange 10 0.2
@@ -78,7 +78,7 @@ class Parser():
                 print ("               |Front                              |Rear                               |")
                 print ("               |Red        |Green      |Blue       |Red        |Green      |Blue       |")
                 print ("               |  Min|  Max|  Min|  Max|  Min|  Max|  Min|  Max|  Min|  Max|  Min|  Max|")
-                self.request(DeviceType.DRONE, DataType.CARD_RANGE, int(self.arguments[2]), float(self.arguments[3]))
+                self.send_request(DeviceType.DRONE, DataType.CARD_RANGE, int(self.arguments[2]), float(self.arguments[3]))
                 return
 
             # 이륙
@@ -87,7 +87,7 @@ class Parser():
             elif    ((self.count == 1) and 
                     (self.arguments[0] == "takeoff")):
                 print (Fore.YELLOW + "takeoff" + Style.RESET_ALL)
-                self.command(CommandType.FLIGHT_EVENT, FlightEvent.TAKEOFF.value)
+                self.send_flight_event(FlightEvent.TAKEOFF)
                 return
 
             # 착륙
@@ -96,7 +96,7 @@ class Parser():
             elif    ((self.count == 1) and 
                     (self.arguments[0] == "landing")):
                 print (Fore.YELLOW + "landing" + Style.RESET_ALL)
-                self.command(CommandType.FLIGHT_EVENT, FlightEvent.LANDING.value)
+                self.send_flight_event(FlightEvent.LANDING)
                 return
 
             # 정지
@@ -105,7 +105,7 @@ class Parser():
             elif    ((self.count == 1) and 
                     (self.arguments[0] == "stop")):
                 print (Fore.YELLOW + "stop" + Style.RESET_ALL)
-                self.command(CommandType.FLIGHT_EVENT, FlightEvent.STOP.value)
+                self.send_flight_event(FlightEvent.STOP)
                 return
 
             # 조종
@@ -116,7 +116,7 @@ class Parser():
             elif    ((self.count == 6) and 
                     (self.arguments[0] == "control")):
                 print (Fore.YELLOW + "control" + Style.RESET_ALL)
-                self.control(int(self.arguments[1]), int(self.arguments[2]), int(self.arguments[3]), int(self.arguments[4]), int(self.arguments[5]))
+                self.send_control(int(self.arguments[1]), int(self.arguments[2]), int(self.arguments[3]), int(self.arguments[4]), int(self.arguments[5]))
                 return
 
             # 이동(전체)
@@ -125,7 +125,7 @@ class Parser():
             elif    ((self.count == 7) and 
                     (self.arguments[0] == "position")):
                 print (Fore.YELLOW + "position" + Style.RESET_ALL)
-                self.control_position(float(self.arguments[1]), float(self.arguments[2]), float(self.arguments[3]), float(self.arguments[4]), float(self.arguments[5]), float(self.arguments[6]))
+                self.send_control_position(float(self.arguments[1]), float(self.arguments[2]), float(self.arguments[3]), float(self.arguments[4]), float(self.arguments[5]), float(self.arguments[6]))
                 return
 
             # 이동(위치)
@@ -134,7 +134,7 @@ class Parser():
             elif    ((self.count == 5) and 
                     (self.arguments[0] == "position")):
                 print (Fore.YELLOW + "position" + Style.RESET_ALL)
-                self.control_position(float(self.arguments[1]), float(self.arguments[2]), float(self.arguments[3]), float(self.arguments[4]), 0, 0)
+                self.send_control_position(float(self.arguments[1]), float(self.arguments[2]), float(self.arguments[3]), float(self.arguments[4]), 0, 0)
                 return
 
             # 이동(헤딩)
@@ -143,7 +143,7 @@ class Parser():
             elif    ((self.count == 3) and 
                     (self.arguments[0] == "heading")):
                 print (Fore.YELLOW + "heading" + Style.RESET_ALL)
-                self.control_position(0, 0, 0, 0, float(self.arguments[1]), float(self.arguments[2]))
+                self.send_control_position(0, 0, 0, 0, float(self.arguments[1]), float(self.arguments[2]))
                 return
 
             # 버저
@@ -153,7 +153,7 @@ class Parser():
             elif    ((self.count == 3) and 
                     (self.arguments[0] == "buzzer")):
                 print (Fore.WHITE + "Buzz Sound: " + Fore.YELLOW + "{0}".format(int(self.arguments[1])) + Fore.WHITE + "Hz, " + Fore.CYAN + "{0}".format(int(self.arguments[2])) + Fore.WHITE + "ms" + Style.RESET_ALL)
-                self.buzzer(DeviceType.CONTROLLER, int(self.arguments[1]), int(self.arguments[2]))
+                self.send_buzzer(DeviceType.CONTROLLER, int(self.arguments[1]), int(self.arguments[2]))
                 return
 
             # 진동
@@ -163,7 +163,7 @@ class Parser():
             elif    ((self.count == 4) and 
                     (self.arguments[0] == "vibrator")):
                 print (Fore.WHITE + "Vibrator: on " + Fore.YELLOW + "{0}".format(int(self.arguments[1])) + Fore.WHITE + "ms, off " + Fore.CYAN + "{0}".format(int(self.arguments[2])) + Fore.WHITE + "ms, total " + Fore.CYAN + "{0}".format(int(self.arguments[3])) + Fore.WHITE + "ms" + Style.RESET_ALL)
-                self.vibrator(DeviceType.CONTROLLER, int(self.arguments[1]), int(self.arguments[2]), int(self.arguments[3]))
+                self.send_vibrator(DeviceType.CONTROLLER, int(self.arguments[1]), int(self.arguments[2]), int(self.arguments[3]))
                 return
 
 
@@ -177,7 +177,7 @@ class Parser():
             elif    ((self.count == 7) and 
                     (self.arguments[0] == "light")):
                 print (Fore.WHITE + "Light: " + Fore.YELLOW + "{0}, {1}, {2}, ({3}, {4}, {5})".format(self.arguments[1], self.arguments[2], int(self.arguments[3]), int(self.arguments[4]), int(self.arguments[5]), int(self.arguments[6])) + Style.RESET_ALL)
-                self.light_mode_rgb(self.arguments[1], self.arguments[2], int(self.arguments[3]), int(self.arguments[4]), int(self.arguments[5]), int(self.arguments[6]))
+                self.send_light_mode_color(self.arguments[1], self.arguments[2], int(self.arguments[3]), int(self.arguments[4]), int(self.arguments[5]), int(self.arguments[6]))
                 return
 
             # > python -m e_drone light front hold 100
@@ -188,14 +188,14 @@ class Parser():
             elif    ((self.count == 4) and 
                     (self.arguments[0] == "light")):
                 print (Fore.WHITE + "Light: " + Fore.YELLOW + "{0}, {1}, {2}".format(self.arguments[1], self.arguments[2], int(self.arguments[3])) + Style.RESET_ALL)
-                self.light_mode_single(self.arguments[1], self.arguments[2], int(self.arguments[3]))
+                self.send_light_mode_single(self.arguments[1], self.arguments[2], int(self.arguments[3]))
                 return
 
         # 아무것도 실행되지 않은 경우
         self.help()
 
 
-    def request(self, device_type, data_type, repeat, interval):
+    def send_request(self, device_type, data_type, repeat, interval):
 
         #drone = Drone(True, True, True, True, True)
         drone = Drone()
@@ -215,7 +215,7 @@ class Parser():
             sleep(interval)
 
 
-    def command(self, command_type, option = 0):
+    def send_command(self, device_type, command_type, option = 0):
 
         #drone = Drone(True, True, True, True, True)
         drone = Drone()
@@ -224,10 +224,22 @@ class Parser():
             sys.exit(1)
 
         # 데이터 요청
-        drone.send_command(command_type, option);
+        drone.send_command(device_type, command_type, option);
 
 
-    def control(self, roll, pitch, yaw, throttle, time_ms):
+    def send_flight_event(self, flight_event):
+
+        #drone = Drone(True, True, True, True, True)
+        drone = Drone()
+        if drone.open() == False:
+            print(Fore.RED + "* Error : Unable to open serial port." + Style.RESET_ALL)
+            sys.exit(1)
+
+        # 데이터 요청
+        drone.send_flight_event(flight_event);
+
+
+    def send_control(self, roll, pitch, yaw, throttle, time_ms):
 
         #drone = Drone(True, True, True, True, True)
         drone = Drone()
@@ -240,7 +252,7 @@ class Parser():
         drone.send_control_time(0, 0, 0, 0, 200)
 
 
-    def control_position(self, x, y, z, velocity, heading, rotational_velocity):
+    def send_control_position(self, x, y, z, velocity, heading, rotational_velocity):
 
         #drone = Drone(True, True, True, True, True)
         drone = Drone()
@@ -253,7 +265,7 @@ class Parser():
         sleep(0.1)
 
 
-    def light_mode_rgb(self, str_light_part, str_light_mode, interval, r, g, b):
+    def send_light_mode_color(self, str_light_part, str_light_mode, interval, r, g, b):
 
         #drone = Drone(True, True, True, True, True)
         drone = Drone()
@@ -300,10 +312,10 @@ class Parser():
         light_mode = LightModeDrone(light_mode_high.value + ((light_mode_low.value) & 0x0F))
 
         if light_mode_high != LightModeDrone.NONE and light_mode_low != LightModeDrone.NONE:
-            drone.send_light_mode_color(light_mode, interval, r, g, b)
+            drone.send_light_mode_color(DeviceType.DRONE, light_mode, interval, r, g, b)
 
 
-    def light_mode_single(self, str_light_part, str_light_mode, interval):
+    def send_light_mode_single(self, str_light_part, str_light_mode, interval):
 
         #drone = Drone(True, True, True, True, True)
         drone = Drone()
@@ -347,10 +359,10 @@ class Parser():
         light_mode = LightModeDrone(light_mode_high.value + ((light_mode_low.value) & 0x0F))
 
         if light_mode_high != LightModeDrone.NONE and light_mode_low != LightModeDrone.NONE:
-            drone.send_light_mode(light_mode, interval)
+            drone.send_light_mode(DeviceType.DRONE, light_mode, interval)
 
 
-    def buzzer(self, target, hz, time):
+    def send_buzzer(self, target, hz, time):
 
         #drone = Drone(True, True, True, True, True)
         drone = Drone()
@@ -378,7 +390,7 @@ class Parser():
         sleep(time / 1000)
 
 
-    def vibrator(self, target, on, off, total):
+    def send_vibrator(self, target, on, off, total):
 
         #drone = Drone(True, True, True, True, True)
         drone = Drone()
