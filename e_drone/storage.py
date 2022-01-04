@@ -67,6 +67,7 @@ class Parser:
         self.d[DataType.ALTITUDE]           = Altitude.parse
         self.d[DataType.MOTION]             = Motion.parse
         self.d[DataType.RANGE]              = Range.parse
+        self.d[DataType.FLOW]               = Flow.parse
 
         self.d[DataType.COUNT]              = Count.parse
         self.d[DataType.BIAS]               = Bias.parse

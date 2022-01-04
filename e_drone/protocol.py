@@ -77,6 +77,7 @@ class DataType(Enum):
     ALTITUDE                    = 0x43      # 높이, 고도
     MOTION                      = 0x44      # Motion 센서 데이터 처리한 값(IMU)
     RANGE                       = 0x45      # 거리센서 데이터
+    FLOW                        = 0x46      # optical flow 센서 데이터
 
     # 설정
     COUNT                       = 0x50      # 카운트
@@ -2577,6 +2578,36 @@ class Range(ISerializable):
             return None
         
         data.left, data.front, data.right, data.rear, data.top, data.bottom = unpack('<hhhhhh', data_array)
+        
+        return data
+        
+
+
+class Flow(ISerializable):
+
+    def __init__(self):
+        self.x      = 0
+        self.y      = 0
+        self.z      = 0
+
+
+    @classmethod
+    def get_size(cls):
+        return 12
+
+
+    def to_array(self):
+        return pack('<fff', self.x, self.y, self.z)
+
+
+    @classmethod
+    def parse(cls, data_array):
+        data = Flow()
+        
+        if len(data_array) != cls.get_size():
+            return None
+        
+        data.x, data.y, data.z = unpack('<fff', data_array)
         
         return data
 

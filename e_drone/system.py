@@ -293,8 +293,8 @@ class Headless(Enum):
 
     NONE = 0x00
 
-    HEADLESS = 0x01      # Headless
-    NORMAL = 0x02      # Normal
+    HEADLESS = 0x01     # Headless
+    NORMAL = 0x02       # Normal
 
     END_OF_TYPE = 0x03
 
@@ -303,16 +303,16 @@ class TrimDirection(Enum):
 
     NONE = 0x00  # 없음
 
-    ROLL_INCREASE = 0x01  # ROLL 증가
-    ROLL_DECREASE = 0x02  # ROLL 감소
-    PITCH_INCREASE = 0x03  # PITCH 증가
-    PITCH_DECREASE = 0x04  # PITCH 감소
-    YAW_INCREASE = 0x05  # YAW 증가
-    YAW_DECREASE = 0x06  # YAW 감소
-    THROTTLE_INCREASE = 0x07  # THROTTLE 증가
-    THROTTLE_DECREASE = 0x08  # THROTTLE 감소
+    ROLL_INCREASE = 0x01    # ROLL 증가
+    ROLL_DECREASE = 0x02    # ROLL 감소
+    PITCH_INCREASE = 0x03   # PITCH 증가
+    PITCH_DECREASE = 0x04   # PITCH 감소
+    YAW_INCREASE = 0x05     # YAW 증가
+    YAW_DECREASE = 0x06     # YAW 감소
+    THROTTLE_INCREASE = 0x07    # THROTTLE 증가
+    THROTTLE_DECREASE = 0x08    # THROTTLE 감소
 
-    RESET = 0x09  # 전체 트림 리셋
+    RESET = 0x09            # 전체 트림 리셋
 
     END_OF_TYPE = 0x0A
 
@@ -321,10 +321,10 @@ class ModeMovement(Enum):
 
     NONE = 0x00
 
-    READY = 0x01      # Ready
-    HOVERING = 0x02      # Hovering
-    MOVING = 0x03      # Moving
-    RETURN_HOME = 0x04      # Return Home
+    READY = 0x01        # Ready
+    HOVERING = 0x02     # Hovering
+    MOVING = 0x03       # Moving
+    RETURN_HOME = 0x04  # Return Home
 
     END_OF_TYPE = 0x05
 
