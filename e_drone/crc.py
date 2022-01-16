@@ -28,7 +28,8 @@
 """
 
 
-class Crc16:
+
+class CRC16:
 
     table = (
         0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
@@ -65,17 +66,19 @@ class Crc16:
         0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0
     )
 
+
     @classmethod
     def calc(cls, data, crc):
-
+        
         crc2 = None
         if type(data) == int:
-            index = ((crc >> 8) ^ data) & 0x00FF
-            crc2 = ((crc << 8) ^ cls.table[index]) & 0xFFFF
+            index   = ((crc >> 8) ^ data) & 0x00FF
+            crc2    = ((crc << 8) ^ cls.table[index]) & 0xFFFF
         elif hasattr(data, "__len__"):
             crc2 = crc
             for i in range(0, len(data)):
-                index = ((crc2 >> 8) ^ data[i]) & 0x00FF
-                crc2 = ((crc2 << 8) ^ cls.table[index]) & 0xFFFF
-
+                index   = ((crc2 >> 8) ^ data[i]) & 0x00FF
+                crc2    = ((crc2 << 8) ^ cls.table[index]) & 0xFFFF
+        
         return crc2
+

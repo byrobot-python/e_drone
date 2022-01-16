@@ -20,61 +20,65 @@ from e_drone.system import *
 from e_drone.crc import *
 
 
-def convert_byte_array_to_string(data_array):
 
-    if data_array is None:
+def convertByteArrayToString(dataArray):
+
+    if dataArray == None:
         return ""
 
     string = ""
 
-    if (isinstance(data_array, bytes)) or (isinstance(data_array, bytearray)) or (not isinstance(data_array, list)):
-        for data in data_array:
+    if (isinstance(dataArray, bytes)) or (isinstance(dataArray, bytearray)) or (not isinstance(dataArray, list)):
+        for data in dataArray:
             string += "{0:02X} ".format(data)
 
     return string
 
 
+
 class Drone:
 
-    # BaseFunctions Start
-    def __init__(self, flag_check_background=True, flag_show_error_message=False, flag_show_log_message=False, flag_show_transfer_data=False, flag_show_receive_data=False):
+# BaseFunctions Start
+
+    def __init__(self, flagCheckBackground = True, flagShowErrorMessage = False, flagShowLogMessage = False, flagShowTransferData = False, flagShowReceiveData = False):
         
-        self._serialport = None
-        self._buffer_queue = Queue(4096)
-        self._buffer_handler = bytearray()
-        self._index = 0
+        self._serialport                = None
+        self._bufferQueue               = Queue(4096)
+        self._bufferHandler             = bytearray()
+        self._index                     = 0
 
-        self._thread = None
-        self._flag_thread_run = False
+        self._thread                    = None
+        self._flagThreadRun             = False
 
-        self._receiver = Receiver()
+        self._receiver                  = Receiver()
 
-        self._flag_check_background = flag_check_background
+        self._flagCheckBackground       = flagCheckBackground
 
-        self._flag_show_error_message = flag_show_error_message
-        self._flag_show_log_message = flag_show_log_message
-        self._flag_show_transfer_data = flag_show_transfer_data
-        self._flag_show_receive_data = flag_show_receive_data
+        self._flagShowErrorMessage      = flagShowErrorMessage
+        self._flagShowLogMessage        = flagShowLogMessage
+        self._flagShowTransferData      = flagShowTransferData
+        self._flagShowReceiveData       = flagShowReceiveData
 
-        self._event_handler = EventHandler()
-        self._storage_header = StorageHeader()
-        self._storage = Storage()
-        self._storage_count = StorageCount()
-        self._parser = Parser()
+        self._eventHandler              = EventHandler()
+        self._storageHeader             = StorageHeader()
+        self._storage                   = Storage()
+        self._storageCount              = StorageCount()
+        self._parser                    = Parser()
 
-        self._devices = []            # 자동 연결 시 검색된 장치 목록을 저장
-        self._flag_discover = False         # 자동 연결 시 장치를 검색중인지를 표시
-        self._flag_connected = False         # 자동 연결 시 장치와 연결되었는지를 알려줌
+        self._devices                   = []            # 자동 연결 시 검색된 장치 목록을 저장
+        self._flagDiscover              = False         # 자동 연결 시 장치를 검색중인지를 표시
+        self._flagConnected             = False         # 자동 연결 시 장치와 연결되었는지를 알려줌
 
-        self.time_start_program = time.time()           # 프로그램 시작 시각 기록
+        self.timeStartProgram           = time.time()           # 프로그램 시작 시각 기록
 
-        self.system_time_monitor_data = 0
-        self.monitor_data = []
+        self.systemTimeMonitorData      = 0
+        self.monitorData                = []
 
         for i in range(0, 36):
-            self.monitor_data.append(i)
+            self.monitorData.append(i)
 
         colorama.init()
+
 
 
     def __del__(self):
@@ -82,357 +86,382 @@ class Drone:
         self.close()
 
 
+
     def _receiving(self):
-        while self._flag_thread_run:
+        while self._flagThreadRun:
             
-            self._buffer_queue.put(self._serialport.read())
+            self._bufferQueue.put(self._serialport.read())
 
             # 수신 데이터 백그라운드 확인이 활성화 된 경우 데이터 자동 업데이트
-            if self._flag_check_background == True:
-                while self.check() != DataType.NONE:
+            if self._flagCheckBackground == True:
+                while self.check() != DataType.None_:
                     pass
 
             #sleep(0.001)
 
 
-    def is_open(self):
-        if self._serialport is not None:
-            return self._serialport.is_open
+
+    def isOpen(self):
+        if self._serialport != None:
+            return self._serialport.isOpen()
         else:
             return False
 
 
-    def is_connected(self):
-        if self.is_open() == False:
+
+    def isConnected(self):
+        if self.isOpen() == False:
             return False
         else:
-            return self._flag_connected
+            return self._flagConnected
 
 
-    def open(self, port_name="None"):
-        if eq(port_name, "None"):
+
+    def open(self, portname = "None"):
+        if eq(portname, "None"):
             nodes = comports()
             size = len(nodes)
             if size > 0:
-                port_name = nodes[size - 1].device
+                portname = nodes[size - 1].device
             else:
                 return False
 
         try:
-            self._serialport = serial.Serial(port=port_name, baudrate=57600)
 
-            if(self.is_open()):
-                self._flag_thread_run = True
+            self._serialport = serial.Serial(
+                port        = portname,
+                baudrate    = 57600)
+
+            if( self.isOpen() ):
+                self._flagThreadRun = True
                 self._thread = Thread(target=self._receiving, args=(), daemon=True)
                 self._thread.start()
 
                 # 로그 출력
-                self._print_log("Connected.({0})".format(port_name))
+                self._printLog("Connected.({0})".format(portname))
 
                 return True
             else:
                 # 오류 메세지 출력
-                self._print_error("Could not connect to device.")
+                self._printError("Could not connect to device.")
 
                 return False
 
         except:
-            # 오류 메세지 출력
-            self._print_error("Could not connect to device.")
+                # 오류 메세지 출력
+                self._printError("Could not connect to device.")
 
-            return False
+                return False
+
 
 
     def close(self):
         # 로그 출력
-        if self.is_open():
-            self._print_log("Closing serial port.")
+        if self.isOpen():
+            self._printLog("Closing serial port.")
 
-        self._print_log("Thread Flag False.")
+        self._printLog("Thread Flag False.")
 
-        if self._flag_thread_run == True:
-            self._flag_thread_run = False
+        if self._flagThreadRun == True:
+            self._flagThreadRun = False
             sleep(0.1)
         
-        self._print_log("Thread Join.")
+        self._printLog("Thread Join.")
 
-        if self._thread is not None:
-            self._thread.join(timeout = 1)
+        if self._thread != None:
+            self._thread.join(timeout=1)
 
-        self._print_log("Port Close.")
+        self._printLog("Port Close.")
 
-        if self.is_open() == True:
+        if self.isOpen() == True:
             self._serialport.close()
             sleep(0.2)
 
 
-    def make_transfer_data_array(self, header, data):
-        if (header is None) or (data is None):
+
+    def makeTransferDataArray(self, header, data):
+        if (header == None) or (data == None):
             return None
 
         if (not isinstance(header, Header)):
             return None
 
         if (isinstance(data, ISerializable)):
-            data = data.to_array()
+            data = data.toArray()
 
-        crc16 = Crc16.calc(header.to_array(), 0)
-        crc16 = Crc16.calc(data, crc16)
+        crc16 = CRC16.calc(header.toArray(), 0)
+        crc16 = CRC16.calc(data, crc16)
 
-        data_array = bytearray()
-        data_array.extend((0x0A, 0x55))
-        data_array.extend(header.to_array())
-        data_array.extend(data)
-        data_array.extend(pack('H', crc16))
+        dataArray = bytearray()
+        dataArray.extend((0x0A, 0x55))
+        dataArray.extend(header.toArray())
+        dataArray.extend(data)
+        dataArray.extend(pack('H', crc16))
 
-        return data_array
+        return dataArray
+
 
 
     def transfer(self, header, data):
-        if not self.is_open():
+        if not self.isOpen():
             return
 
-        data_array = self.make_transfer_data_array(header, data)
+        dataArray = self.makeTransferDataArray(header, data)
 
-        self._serialport.write(data_array)
+        self._serialport.write(dataArray)
 
         # 송신 데이터 출력
-        self._print_transfer_data(data_array)
+        self._printTransferData(dataArray)
 
-        return data_array
+        return dataArray
+
 
 
     def check(self):
-        while self._buffer_queue.empty() == False:
-            data_array = self._buffer_queue.get_nowait()
-            self._buffer_queue.task_done()
+        while self._bufferQueue.empty() == False:
+            dataArray = self._bufferQueue.get_nowait()
+            self._bufferQueue.task_done()
 
-            if (data_array is not None) and (len(data_array) > 0):
+            if (dataArray != None) and (len(dataArray) > 0):
                 # 수신 데이터 출력
-                self._print_receive_data(data_array)
+                self._printReceiveData(dataArray)
 
-                self._buffer_handler.extend(data_array)
+                self._bufferHandler.extend(dataArray)
 
-        while len(self._buffer_handler) > 0:
-            state_loading = self._receiver.call(self._buffer_handler.pop(0))
+        while len(self._bufferHandler) > 0:
+            stateLoading = self._receiver.call(self._bufferHandler.pop(0))
 
             # 오류 출력
-            if state_loading == StateLoading.FAILURE:
+            if stateLoading == StateLoading.Failure:
                 # 수신 데이터 출력(줄넘김)
-                self._print_receive_data_end()
+                self._printReceiveDataEnd()
 
                 # 오류 메세지 출력
-                self._print_error(self._receiver.message)
+                self._printError(self._receiver.message)
                 
 
             # 로그 출력
-            if state_loading == StateLoading.LOADED:
+            if stateLoading == StateLoading.Loaded:
                 # 수신 데이터 출력(줄넘김)
-                self._print_receive_data_end()
+                self._printReceiveDataEnd()
 
                 # 로그 출력
-                self._print_log(self._receiver.message)
+                self._printLog(self._receiver.message)
 
-            if self._receiver.state == StateLoading.LOADED:
+            if self._receiver.state == StateLoading.Loaded:
                 self._handler(self._receiver.header, self._receiver.data)
-                return self._receiver.header.data_type
+                return self._receiver.header.dataType
 
-        return DataType.NONE
+        return DataType.None_
 
 
-    def check_detail(self):
-        while self._buffer_queue.empty() == False:
-            data_array = self._buffer_queue.get_nowait()
-            self._buffer_queue.task_done()
 
-            if (data_array is not None) and (len(data_array) > 0):
+    def checkDetail(self):
+        while self._bufferQueue.empty() == False:
+            dataArray = self._bufferQueue.get_nowait()
+            self._bufferQueue.task_done()
+
+            if (dataArray != None) and (len(dataArray) > 0):
                 # 수신 데이터 출력
-                self._print_receive_data(data_array)
+                self._printReceiveData(dataArray)
 
-                self._buffer_handler.extend(data_array)
+                self._bufferHandler.extend(dataArray)
 
-        while len(self._buffer_handler) > 0:
-            state_loading = self._receiver.call(self._buffer_handler.pop(0))
+        while len(self._bufferHandler) > 0:
+            stateLoading = self._receiver.call(self._bufferHandler.pop(0))
 
             # 오류 출력
-            if state_loading == StateLoading.FAILURE:
+            if stateLoading == StateLoading.Failure:
                 # 수신 데이터 출력(줄넘김)
-                self._print_receive_data_end()
+                self._printReceiveDataEnd()
 
                 # 오류 메세지 출력
-                self._print_error(self._receiver.message)
+                self._printError(self._receiver.message)
                 
 
             # 로그 출력
-            if state_loading == StateLoading.LOADED:
+            if stateLoading == StateLoading.Loaded:
                 # 수신 데이터 출력(줄넘김)
-                self._print_receive_data_end()
+                self._printReceiveDataEnd()
 
                 # 로그 출력
-                self._print_log(self._receiver.message)
+                self._printLog(self._receiver.message)
 
-            if self._receiver.state == StateLoading.LOADED:
+            if self._receiver.state == StateLoading.Loaded:
                 self._handler(self._receiver.header, self._receiver.data)
                 return self._receiver.header, self._receiver.data
 
         return None, None
 
 
-    def _handler(self, header, data_array):
+
+    def _handler(self, header, dataArray):
 
         # 들어오는 데이터를 저장
-        self._run_handler(header, data_array)
+        self._runHandler(header, dataArray)
 
         # 콜백 이벤트 실행
-        self._run_event_handler(header.data_type)
+        self._runEventHandler(header.dataType)
 
         # Monitor 데이터 처리
-        self._run_handler_for_monitor(header, data_array)
+        self._runHandlerForMonitor(header, dataArray)
 
         # 데이터 처리 완료 확인
         self._receiver.checked()
 
-        return header.data_type
+        return header.dataType
 
 
-    def _run_handler(self, header, data_array):
+
+    def _runHandler(self, header, dataArray):
         
         # 일반 데이터 처리
-        if self._parser.d[header.data_type] is not None:
-            self._storage_header.d[header.data_type]   = header
-            self._storage.d[header.data_type]          = self._parser.d[header.data_type](data_array)
-            self._storage_count.d[header.data_type]    += 1
+        if self._parser.d[header.dataType] != None:
+            self._storageHeader.d[header.dataType]   = header
+            self._storage.d[header.dataType]         = self._parser.d[header.dataType](dataArray)
+            self._storageCount.d[header.dataType]    += 1
 
 
-    def _run_event_handler(self, data_type):
-        if (isinstance(data_type, DataType)) and (self._event_handler.d[data_type] is not None) and (self._storage.d[data_type] is not None):
-            return self._event_handler.d[data_type](self._storage.d[data_type])
+
+    def _runEventHandler(self, dataType):
+        if (isinstance(dataType, DataType)) and (self._eventHandler.d[dataType] != None) and (self._storage.d[dataType] != None):
+            return self._eventHandler.d[dataType](self._storage.d[dataType])
         else:
             return None
 
 
-    def _run_handler_for_monitor(self, header, data_array):
+
+    def _runHandlerForMonitor(self, header, dataArray):
         
         # Monitor 데이터 처리
-        # 수신 받은 데이터를 파싱하여 self.monitor_data[] 배열에 데이터를 넣음
-        if header.data_type == DataType.MONITOR:
+        # 수신 받은 데이터를 파싱하여 self.monitorData[] 배열에 데이터를 넣음
+        if header.dataType == DataType.Monitor:
             
-            monitor_header_type = MonitorHeaderType(data_array[0])
+            monitorHeaderType = MonitorHeaderType(dataArray[0])
 
-            if monitor_header_type == MonitorHeaderType.MONITOR_0:
+            if monitorHeaderType == MonitorHeaderType.Monitor0:
                 
-                monitor0 = Monitor0.parse(data_array[1:1 + Monitor0.get_size()])
+                monitor0 = Monitor0.parse(dataArray[1:1 + Monitor0.getSize()])
 
-                if monitor0.monitor_dataType == monitor_dataType.F32:
+                if monitor0.monitorDataType == MonitorDataType.F32:
                     
-                    data_count = (data_array.len() - 1 - Monitor0.get_size()) / 4
+                    dataCount = (dataArray.len() - 1 - Monitor0.getSize()) / 4
 
-                    for i in range(0, data_count):
+                    for i in range(0, dataCount):
                         
-                        if monitor0.index + i < len(self.monitor_data):
+                        if monitor0.index + i < len(self.monitorData):
                             
-                            index = 1 + Monitor0.get_size() + (i * 4)
-                            self.monitor_data[monitor0.index + i], = unpack('<f', data_array[index:index + 4])
+                            index = 1 + Monitor0.getSize() + (i * 4)
+                            self.monitorData[monitor0.index + i], = unpack('<f', dataArray[index:index + 4])
 
-            elif monitor_header_type == MonitorHeaderType.MONITOR_4:
+            elif monitorHeaderType == MonitorHeaderType.Monitor4:
                 
-                monitor4 = Monitor4.parse(data_array[1:1 + Monitor4.get_size()])
+                monitor4 = Monitor4.parse(dataArray[1:1 + Monitor4.getSize()])
 
-                if monitor4.monitor_dataType == monitor_dataType.F32:
+                if monitor4.monitorDataType == MonitorDataType.F32:
                     
-                    self.system_time_monitor_data = monitor4.system_time
+                    self.systemTimeMonitorData = monitor4.systemTime
                     
-                    data_count = (data_array.len() - 1 - Monitor4.get_size()) / 4
+                    dataCount = (dataArray.len() - 1 - Monitor4.getSize()) / 4
 
-                    for i in range(0, data_count):
+                    for i in range(0, dataCount):
                         
-                        if monitor4.index + i < len(self.monitor_data):
+                        if monitor4.index + i < len(self.monitorData):
                             
-                            index = 1 + Monitor4.get_size() + (i * 4)
-                            self.monitor_data[monitor4.index + i], = unpack('<f', data_array[index:index + 4])
+                            index = 1 + Monitor4.getSize() + (i * 4)
+                            self.monitorData[monitor4.index + i], = unpack('<f', dataArray[index:index + 4])
 
-            elif monitor_header_type == MonitorHeaderType.MONITOR_8:
+            elif monitorHeaderType == MonitorHeaderType.Monitor8:
                 
-                monitor8 = Monitor8.parse(data_array[1:1 + Monitor8.get_size()])
+                monitor8 = Monitor8.parse(dataArray[1:1 + Monitor8.getSize()])
 
-                if monitor8.monitor_dataType == monitor_dataType.F32:
+                if monitor8.monitorDataType == MonitorDataType.F32:
                     
-                    self.system_time_monitor_data = monitor8.system_time
+                    self.systemTimeMonitorData = monitor8.systemTime
                     
-                    data_count = (data_array.len() - 1 - Monitor8.get_size()) / 4
+                    dataCount = (dataArray.len() - 1 - Monitor8.getSize()) / 4
 
-                    for i in range(0, data_count):
+                    for i in range(0, dataCount):
                         
-                        if monitor8.index + i < len(self.monitor_data):
+                        if monitor8.index + i < len(self.monitorData):
                             
-                            index = 1 + Monitor8.get_size() + (i * 4)
-                            self.monitor_data[monitor8.index + i], = unpack('<f', data_array[index:index + 4])
+                            index = 1 + Monitor8.getSize() + (i * 4)
+                            self.monitorData[monitor8.index + i], = unpack('<f', dataArray[index:index + 4])
 
 
-    def set_event_handler(self, data_type, eventHandler):
+
+    def setEventHandler(self, dataType, eventHandler):
         
-        if (not isinstance(data_type, DataType)):
+        if (not isinstance(dataType, DataType)):
             return
 
-        self._event_handler.d[data_type] = eventHandler
+        self._eventHandler.d[dataType] = eventHandler
 
 
-    def get_header(self, data_type):
+
+    def getHeader(self, dataType):
     
-        if (not isinstance(data_type, DataType)):
+        if (not isinstance(dataType, DataType)):
             return None
 
-        return self._storage_header.d[data_type]
+        return self._storageHeader.d[dataType]
 
 
-    def get_data(self, data_type):
 
-        if (not isinstance(data_type, DataType)):
+    def getData(self, dataType):
+
+        if (not isinstance(dataType, DataType)):
             return None
 
-        return self._storage.d[data_type]
+        return self._storage.d[dataType]
 
 
-    def get_count(self, data_type):
 
-        if (not isinstance(data_type, DataType)):
+    def getCount(self, dataType):
+
+        if (not isinstance(dataType, DataType)):
             return None
 
-        return self._storage_count.d[data_type]
+        return self._storageCount.d[dataType]
 
 
-    def _print_log(self, message):
+
+    def _printLog(self, message):
         
         # 로그 출력
-        if self._flag_show_log_message and message is not None:
-            print(Fore.GREEN + "[{0:10.03f}] {1}".format((time.time() - self.time_start_program), message) + Style.RESET_ALL)
+        if self._flagShowLogMessage and message != None:
+            print(Fore.GREEN + "[{0:10.03f}] {1}".format((time.time() - self.timeStartProgram), message) + Style.RESET_ALL)
 
 
-    def _print_error(self, message):
+
+    def _printError(self, message):
     
         # 오류 메세지 출력
-        if self._flag_show_error_message and message is not None:
-            print(Fore.RED + "[{0:10.03f}] {1}".format((time.time() - self.time_start_program), message) + Style.RESET_ALL)
+        if self._flagShowErrorMessage and message != None:
+            print(Fore.RED + "[{0:10.03f}] {1}".format((time.time() - self.timeStartProgram), message) + Style.RESET_ALL)
 
 
-    def _print_transfer_data(self, data_array):
+
+    def _printTransferData(self, dataArray):
     
         # 송신 데이터 출력
-        if (self._flag_show_transfer_data) and (data_array is not None) and (len(data_array) > 0):
-            print(Back.YELLOW + Fore.BLACK + convert_byte_array_to_string(data_array) + Style.RESET_ALL)
+        if (self._flagShowTransferData) and (dataArray != None) and (len(dataArray) > 0):
+            print(Back.YELLOW + Fore.BLACK + convertByteArrayToString(dataArray) + Style.RESET_ALL)
 
 
-    def _print_receive_data(self, data_array):
+
+    def _printReceiveData(self, dataArray):
         
         # 수신 데이터 출력
-        if (self._flag_show_receive_data) and (data_array is not None) and (len(data_array) > 0):
-            print(Back.CYAN + Fore.BLACK + convert_byte_array_to_string(data_array) + Style.RESET_ALL, end = '')
+        if (self._flagShowReceiveData) and (dataArray != None) and (len(dataArray) > 0):
+            print(Back.CYAN + Fore.BLACK + convertByteArrayToString(dataArray) + Style.RESET_ALL, end='')
 
 
-    def _print_receive_data_end(self):
+
+    def _printReceiveDataEnd(self):
         
         # 수신 데이터 출력(줄넘김)
-        if self._flag_show_receive_data:
+        if self._flagShowReceiveData:
             print("")
 
 
@@ -445,75 +474,76 @@ class Drone:
 # Common Start
 
 
-    def send_ping(self, device_type):
+    def sendPing(self, deviceType):
         
-        if  ( not isinstance(device_type, DeviceType) ):
+        if  ( not isinstance(deviceType, DeviceType) ):
             return None
 
         header = Header()
         
-        header.data_type = DataType.PING
-        header.length    = Ping.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
+        header.dataType = DataType.Ping
+        header.length   = Ping.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = deviceType
 
         data = Ping()
 
-        data.system_time = 0
+        data.systemTime = 0
 
         return self.transfer(header, data)
 
 
-    def send_request(self, device_type, data_type):
+
+    def sendRequest(self, deviceType, dataType):
     
-        if ((not isinstance(device_type, DeviceType)) or 
-            (not isinstance(data_type, DataType)) ):
+        if  ( (not isinstance(deviceType, DeviceType)) or (not isinstance(dataType, DataType)) ):
             return None
 
         header = Header()
         
-        header.data_type = DataType.REQUEST
-        header.length    = Request.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
+        header.dataType = DataType.Request
+        header.length   = Request.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = deviceType
 
         data = Request()
 
-        data.data_type   = data_type
+        data.dataType   = dataType
 
         return self.transfer(header, data)
 
 
-    def send_pairing(self, device_type, address_0, address_1, address_2, scramble, channel_0, channel_1, channel_2, channel_3):
+
+    def sendPairing(self, deviceType, address0, address1, address2, scramble, channel0, channel1, channel2, channel3):
     
-        if ((not isinstance(device_type, DeviceType)) or
-            (not isinstance(address_0, int)) or
-            (not isinstance(address_1, int)) or
-            (not isinstance(address_2, int)) or
+        if  ( (not isinstance(deviceType, DeviceType)) or
+            (not isinstance(address0, int)) or
+            (not isinstance(address1, int)) or
+            (not isinstance(address2, int)) or
             (not isinstance(scramble, int)) or
-            (not isinstance(channel_0, int)) or
-            (not isinstance(channel_1, int)) or
-            (not isinstance(channel_2, int)) or
-            (not isinstance(channel_3, int)) ):
+            (not isinstance(channel0, int)) or
+            (not isinstance(channel1, int)) or
+            (not isinstance(channel2, int)) or
+            (not isinstance(channel3, int)) ):
             return None
 
         header = Header()
         
-        header.data_type = DataType.PAIRING
-        header.length    = Pairing.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
+        header.dataType = DataType.Pairing
+        header.length   = Pairing.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = deviceType
 
         data = Pairing()
 
-        data.address_0  = address_0
-        data.address_1  = address_1
-        data.address_2  = address_2
+        data.address0   = address0
+        data.address1   = address1
+        data.address2   = address2
         data.scramble   = scramble
-        data.channel_0  = channel_0
-        data.channel_1  = channel_1
-        data.channel_2  = channel_2
-        data.channel_3  = channel_3
+        data.channel0   = channel0
+        data.channel1   = channel1
+        data.channel2   = channel2
+        data.channel3   = channel3
 
         return self.transfer(header, data)
 
@@ -525,95 +555,84 @@ class Drone:
 # Control Start
 
 
-    def send_takeoff(self):
+    def sendTakeOff(self):
         
-        '''
         header = Header()
         
-        header.data_type = DataType.COMMAND
-        header.length    = Command.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.DRONE
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Drone
 
         data = Command()
 
-        data.command_type   = CommandType.FLIGHT_EVENT
-        data.option         = FlightEvent.TAKEOFF.value
+        data.commandType    = CommandType.FlightEvent
+        data.option         = FlightEvent.TakeOff.value
 
         return self.transfer(header, data)
-        '''
-
-        return self.send_flight_event(FlightEvent.TAKEOFF)
 
 
-    def send_landing(self):
+
+    def sendLanding(self):
         
-        '''
         header = Header()
         
-        header.data_type = DataType.COMMAND
-        header.length    = Command.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.DRONE
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Drone
 
         data = Command()
 
-        data.command_type   = CommandType.FLIGHT_EVENT
-        data.option         = FlightEvent.LANDING.value
+        data.commandType    = CommandType.FlightEvent
+        data.option         = FlightEvent.Landing.value
 
         return self.transfer(header, data)
-        '''
-        
-        return self.send_flight_event(FlightEvent.LANDING)
 
 
-    def send_stop(self):
+
+    def sendStop(self):
         
-        '''
         header = Header()
         
-        header.data_type = DataType.COMMAND
-        header.length   = Command.get_size()
-        header.from_    = DeviceType.BASE
-        header.to_      = DeviceType.DRONE
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Drone
 
         data = Command()
 
-        data.command_type   = CommandType.STOP
+        data.commandType    = CommandType.Stop
         data.option         = 0
 
         return self.transfer(header, data)
-        '''
-        
-        return self.send_flight_event(FlightEvent.STOP)
 
 
-    def send_control(self, roll, pitch, yaw, throttle):
+
+    def sendControl(self, roll, pitch, yaw, throttle):
         
-        if ((not isinstance(roll, int)) or
-            (not isinstance(pitch, int)) or
-            (not isinstance(yaw, int)) or
-            (not isinstance(throttle, int)) ):
+        if  ( (not isinstance(roll, int)) or (not isinstance(pitch, int)) or (not isinstance(yaw, int)) or (not isinstance(throttle, int)) ):
             return None
 
         header = Header()
         
-        header.data_type = DataType.CONTROL
-        header.length    = ControlQuad8.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.DRONE
+        header.dataType = DataType.Control
+        header.length   = ControlQuad8.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Drone
 
         data = ControlQuad8()
 
-        data.roll       = int(roll)
-        data.pitch      = int(pitch)
-        data.yaw        = int(yaw)
-        data.throttle   = int(throttle)
+        data.roll       = roll
+        data.pitch      = pitch
+        data.yaw        = yaw
+        data.throttle   = throttle
 
         return self.transfer(header, data)
 
 
-    def send_control_time(self, roll, pitch, yaw, throttle, time_ms):
+
+    def sendControlWhile(self, roll, pitch, yaw, throttle, timeMs):
         
         if ((not isinstance(roll, int))     or
             (not isinstance(pitch, int))    or
@@ -621,70 +640,81 @@ class Drone:
             (not isinstance(throttle, int)) ):
             return None
 
-        time_sec     = time_ms / 1000
-        time_start   = time.perf_counter()
+        timeSec     = timeMs / 1000
+        timeStart   = time.perf_counter()
 
-        while ((time.perf_counter() - time_start) < time_sec):
-            self.send_control(roll, pitch, yaw, throttle)
+        while ((time.perf_counter() - timeStart) < timeSec):
+            self.sendControl(roll, pitch, yaw, throttle)
             sleep(0.02)
 
-        return self.send_control(roll, pitch, yaw, throttle)
+        return self.sendControl(roll, pitch, yaw, throttle)
 
 
-    def send_control_position_short(self, position_x, position_y, position_z, velocity, heading, rotational_velocity):
+
+    def sendControlPosition16(self, positionX, positionY, positionZ, velocity, heading, rotationalVelocity):
         
-        if ((not (isinstance(position_x, float) or isinstance(position_x, int))) or
-            (not (isinstance(position_y, float) or isinstance(position_y, int))) or
-            (not (isinstance(position_z, float) or isinstance(position_z, int))) or
-            (not (isinstance(velocity, float) or isinstance(velocity, int))) or
-            (not (isinstance(heading, float) or isinstance(heading, int))) or
-            (not (isinstance(rotational_velocity, float) or isinstance(rotational_velocity, int)))):
+        if ((not isinstance(positionX, int)) or
+            (not isinstance(positionY, int)) or
+            (not isinstance(positionZ, int)) or
+            (not isinstance(velocity, int))):
+            return None
+
+        if ((not isinstance(heading, int)) or
+            (not isinstance(rotationalVelocity, int))):
             return None
 
         header = Header()
         
-        header.data_type = DataType.CONTROL
-        header.length    = ControlPositionShort.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.DRONE
+        header.dataType = DataType.Control
+        header.length   = ControlPosition16.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Drone
 
-        data = ControlPositionShort()
+        data = ControlPosition16()
 
-        data.position_x             = int(position_x)
-        data.position_y             = int(position_y)
-        data.position_z             = int(position_z)
-        data.velocity               = int(velocity)
-        data.heading                = int(heading)
-        data.rotational_velocity    = int(rotational_velocity)
+        data.positionX          = positionX
+        data.positionY          = positionY
+        data.positionZ          = positionZ
+        data.velocity           = velocity
+        data.heading            = heading
+        data.rotationalVelocity = rotationalVelocity
 
         return self.transfer(header, data)
 
 
-    def send_control_position(self, position_x, position_y, position_z, velocity, heading, rotational_velocity):
+
+    def sendControlPosition(self, positionX, positionY, positionZ, velocity, heading, rotationalVelocity):
         
-        if ((not (isinstance(position_x, float) or isinstance(position_x, int))) or
-            (not (isinstance(position_y, float) or isinstance(position_y, int))) or
-            (not (isinstance(position_z, float) or isinstance(position_z, int))) or
-            (not (isinstance(velocity, float) or isinstance(velocity, int))) or
-            (not (isinstance(heading, float) or isinstance(heading, int))) or
-            (not (isinstance(rotational_velocity, float) or isinstance(rotational_velocity, int)))):
+        if  (not (isinstance(positionX, float) or isinstance(positionX, int))):
+            return None
+
+        if  (not (isinstance(positionY, float) or isinstance(positionY, int))):
+            return None
+
+        if  (not (isinstance(positionZ, float) or isinstance(positionZ, int))):
+            return None
+
+        if  (not (isinstance(velocity, float) or isinstance(velocity, int))):
+            return None
+
+        if  ( (not isinstance(heading, int)) or (not isinstance(rotationalVelocity, int)) ):
             return None
 
         header = Header()
         
-        header.data_type = DataType.CONTROL
-        header.length    = ControlPosition.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.DRONE
+        header.dataType = DataType.Control
+        header.length   = ControlPosition.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Drone
 
         data = ControlPosition()
 
-        data.position_x             = float(position_x)
-        data.position_y             = float(position_y)
-        data.position_z             = float(position_z)
-        data.velocity               = float(velocity)
-        data.heading                = int(heading)
-        data.rotational_velocity    = int(rotational_velocity)
+        data.positionX          = float(positionX)
+        data.positionY          = float(positionY)
+        data.positionZ          = float(positionZ)
+        data.velocity           = float(velocity)
+        data.heading            = heading
+        data.rotationalVelocity = rotationalVelocity
 
         return self.transfer(header, data)
 
@@ -696,32 +726,31 @@ class Drone:
 # Setup Start
 
 
-    def send_command(self, device_type, command_type, option = 0):
+    def sendCommand(self, commandType, option = 0):
         
-        if ((not isinstance(device_type, DeviceType)) or
-            (not isinstance(command_type, CommandType)) or
+        if ((not isinstance(commandType, CommandType)) or
             (not isinstance(option, int)) ):
             return None
 
         header = Header()
         
-        header.data_type = DataType.COMMAND
-        header.length    = Command.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Drone
 
         data = Command()
 
-        data.command_type   = command_type
+        data.commandType    = commandType
         data.option         = option
 
         return self.transfer(header, data)
 
 
-    def send_command_light_event(self, device_type, command_type, option, light_event, interval, repeat):
+
+    def sendCommandLightEvent(self, commandType, option, lightEvent, interval, repeat):
         
-        if ((not isinstance(device_type, DeviceType)) or
-            (not isinstance(command_type, CommandType)) or
+        if ((not isinstance(commandType, CommandType)) or
             (not isinstance(option, int)) or
             (not isinstance(interval, int)) or
             (not isinstance(repeat, int))):
@@ -729,22 +758,28 @@ class Drone:
 
         header = Header()
         
-        header.data_type = DataType.COMMAND
-        header.length    = CommandLightEvent.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
+        header.dataType = DataType.Command
+        header.length   = CommandLightEvent.getSize()
+        header.from_    = DeviceType.Base
 
         data = CommandLightEvent()
 
-        if ((isinstance(light_event, LightModeDrone)) or
-            (isinstance(light_event, LightModeController))):
-            data.event.event    = light_event.value
-        elif isinstance(light_event, int):
-            data.event.event    = light_event
+        if      isinstance(lightEvent, LightModeDrone):
+            header.to_          = DeviceType.Drone
+            data.event.event    = lightEvent.value
+
+        elif    isinstance(lightEvent, LightModeController):
+            header.to_          = DeviceType.Controller
+            data.event.event    = lightEvent.value
+
+        elif    isinstance(lightEvent, int):
+            header.to_          = DeviceType.Drone
+            data.event.event    = lightEvent
+
         else:
             return None
 
-        data.command.command_type   = command_type
+        data.command.commandType    = commandType
         data.command.option         = option
 
         data.event.interval = interval
@@ -753,10 +788,10 @@ class Drone:
         return self.transfer(header, data)
 
 
-    def send_command_light_event_color(self, device_type, command_type, option, light_event, interval, repeat, r, g, b):
+
+    def sendCommandLightEventColor(self, commandType, option, lightEvent, interval, repeat, r, g, b):
         
-        if ((not isinstance(device_type, DeviceType)) or
-            (not isinstance(command_type, CommandType)) or
+        if ((not isinstance(commandType, CommandType)) or
             (not isinstance(option, int)) or
             (not isinstance(interval, int)) or
             (not isinstance(repeat, int)) or
@@ -767,22 +802,28 @@ class Drone:
 
         header = Header()
         
-        header.data_type = DataType.COMMAND
-        header.length    = CommandLightEventColor.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
+        header.dataType = DataType.Command
+        header.length   = CommandLightEventColor.getSize()
+        header.from_    = DeviceType.Base
 
         data = CommandLightEventColor()
 
-        if ((isinstance(light_event, LightModeDrone)) or
-            (isinstance(light_event, LightModeController))):
-            data.event.event    = light_event.value
-        elif isinstance(light_event, int):
-            data.event.event    = light_event
+        if        isinstance(lightEvent, LightModeDrone):
+            header.to_          = DeviceType.Drone
+            data.event.event    = lightEvent.value
+
+        elif    isinstance(lightEvent, LightModeController):
+            header.to_          = DeviceType.Controller
+            data.event.event    = lightEvent.value
+
+        elif    isinstance(lightEvent, int):
+            header.to_          = DeviceType.Drone
+            data.event.event    = lightEvent
+
         else:
             return None
 
-        data.command.command_type   = command_type
+        data.command.commandType    = commandType
         data.command.option         = option
 
         data.event.interval         = interval
@@ -795,10 +836,10 @@ class Drone:
         return self.transfer(header, data)
 
 
-    def send_command_light_event_colors(self, device_type, command_type, option, light_event, interval, repeat, colors):
+
+    def sendCommandLightEventColors(self, commandType, option, lightEvent, interval, repeat, colors):
         
-        if ((not isinstance(device_type, DeviceType)) or
-            (not isinstance(command_type, CommandType)) or
+        if ((not isinstance(commandType, CommandType)) or
             (not isinstance(option, int)) or
             (not isinstance(interval, int))  or
             (not isinstance(repeat, int)) or
@@ -807,22 +848,29 @@ class Drone:
 
         header = Header()
         
-        header.data_type = DataType.COMMAND
-        header.length    = CommandLightEventColors.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
+        header.dataType = DataType.Command
+        header.length   = CommandLightEventColors.getSize()
+        header.from_    = DeviceType.Base
 
         data = CommandLightEventColors()
 
-        if ((isinstance(light_event, LightModeDrone)) or
-            (isinstance(light_event, LightModeController))):
-            data.event.event    = light_event.value
-        elif isinstance(light_event, int):
-            data.event.event    = light_event
+        if        isinstance(lightEvent, LightModeDrone):
+            header.to_          = DeviceType.Drone
+            data.event.event    = lightEvent.value
+
+        elif    isinstance(lightEvent, LightModeController):
+            header.to_          = DeviceType.Controller
+            data.event.event    = lightEvent.value
+
+        elif    isinstance(lightEvent, int):
+            header.to_          = DeviceType.Drone
+            data.event.event    = lightEvent
+
         else:
             return None
 
-        data.command.command_type   = command_type
+
+        data.command.commandType    = commandType
         data.command.option         = option
 
         data.event.interval         = interval
@@ -833,63 +881,60 @@ class Drone:
         return self.transfer(header, data)
 
 
-    def send_mode_control_flight(self, mode_control_flight):
+
+    def sendModeControlFlight(self, modeControlFlight):
         
-        if  ( not isinstance(mode_control_flight, ModeControlFlight) ):
+        if  ( not isinstance(modeControlFlight, ModeControlFlight) ):
             return None
 
-        '''
         header = Header()
         
-        header.data_type = DataType.COMMAND
-        header.length    = Command.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.DRONE
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Drone
 
         data = Command()
 
-        data.command_type   = CommandType.MODE_CONTROL_FLIGHT
-        data.option         = mode_control_flight.value
+        data.commandType    = CommandType.ModeControlFlight
+        data.option         = modeControlFlight.value
 
         return self.transfer(header, data)
-        '''
-        return self.send_command(DeviceType.DRONE, CommandType.MODE_CONTROL_FLIGHT, mode_control_flight.value)
 
 
-    def send_headless(self, headless):
+
+    def sendHeadless(self, headless):
         
         if  ( not isinstance(headless, Headless) ):
             return None
 
-        '''
         header = Header()
         
-        header.data_type = DataType.COMMAND
-        header.length    = Command.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.DRONE
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Drone
 
         data = Command()
 
-        data.command_type   = CommandType.HEADLESS
+        data.commandType    = CommandType.Headless
         data.option         = headless.value
 
         return self.transfer(header, data)
-        '''
-        return self.send_command(DeviceType.DRONE, CommandType.HEADLESS, headless.value)
 
 
-    def send_trim(self, roll, pitch, yaw, throttle):
+
+    def sendTrim(self, roll, pitch, yaw, throttle):
         
         if  ( (not isinstance(roll, int)) or (not isinstance(pitch, int)) or (not isinstance(yaw, int)) or (not isinstance(throttle, int)) ):
             return None
 
         header = Header()
         
-        header.data_type = DataType.TRIM
-        header.length    = Trim.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.DRONE
+        header.dataType = DataType.Trim
+        header.length   = Trim.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Drone
 
         data = Trim()
 
@@ -901,14 +946,15 @@ class Drone:
         return self.transfer(header, data)
 
 
-    def send_weight(self, weight):
+
+    def sendWeight(self, weight):
         
         header = Header()
         
-        header.data_type = DataType.WEIGHT
-        header.length    = Weight.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.DRONE
+        header.dataType = DataType.Weight
+        header.length   = Weight.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Drone
 
         data = Weight()
 
@@ -917,136 +963,122 @@ class Drone:
         return self.transfer(header, data)
 
 
-    def send_lost_connection(self, time_neutral, time_landing, time_stop):
+
+    def sendLostConnection(self, timeNeutral, timeLanding, timeStop):
         
         header = Header()
         
-        header.data_type = DataType.LOST_CONNECTION
-        header.length    = LostConnection.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.DRONE
+        header.dataType = DataType.LostConnection
+        header.length   = LostConnection.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Drone
 
         data = LostConnection()
 
-        data.time_neutral    = time_neutral
-        data.time_landing    = time_landing
-        data.time_stop       = time_stop
+        data.timeNeutral    = timeNeutral
+        data.timeLanding    = timeLanding
+        data.timeStop       = timeStop
 
         return self.transfer(header, data)
 
 
-    def send_flight_event(self, flight_event):
+
+    def sendFlightEvent(self, flightEvent):
         
-        if  ( (not isinstance(flight_event, FlightEvent)) ):
+        if  ( (not isinstance(flightEvent, FlightEvent)) ):
             return None
 
-        '''
         header = Header()
         
-        header.data_type = DataType.COMMAND
-        header.length    = Command.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.DRONE
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Drone
 
         data = Command()
 
-        data.command_type   = CommandType.FLIGHT_EVENT
-        data.option         = flight_event.value
+        data.commandType    = CommandType.FlightEvent
+        data.option         = flightEvent.value
 
         return self.transfer(header, data)
-        '''
-        return self.send_command(DeviceType.DRONE, CommandType.FLIGHT_EVENT, flight_event.value)
 
 
-    def send_clear_bias(self):
+
+    def sendClearBias(self):
         
-        '''
         header = Header()
         
-        header.data_type = DataType.COMMAND
-        header.length    = Command.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.DRONE
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Drone
 
         data = Command()
 
-        data.command_type   = CommandType.CLEAR_BIAS
+        data.commandType    = CommandType.ClearBias
         data.option         = 0
 
         return self.transfer(header, data)
-        '''
-        return self.send_command(DeviceType.DRONE, CommandType.CLEAR_BIAS)
 
 
-    def send_clear_trim(self):
+
+    def sendClearTrim(self):
         
-        '''
         header = Header()
         
-        header.data_type = DataType.COMMAND
-        header.length    = Command.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.DRONE
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Tester
+        header.to_      = DeviceType.Drone
 
         data = Command()
 
-        data.command_type   = CommandType.CLEAR_TRIM
+        data.commandType    = CommandType.ClearTrim
         data.option         = 0
 
         return self.transfer(header, data)
-        '''
-        return self.send_command(DeviceType.DRONE, CommandType.CLEAR_TRIM)
 
 
-    def send_set_default(self, device_type):
+
+    def sendSetDefault(self, deviceType):
         
-        if ((not isinstance(device_type, DeviceType))):
+        if ((not isinstance(deviceType, DeviceType))):
             return None
 
-        '''
         header = Header()
         
-        header.data_type = DataType.COMMAND
-        header.length    = Command.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = deviceType
 
         data = Command()
 
-        data.command_type   = CommandType.SET_DEFAULT
+        data.commandType    = CommandType.SetDefault
         data.option         = 0
 
         return self.transfer(header, data)
-        '''
-        return self.send_command(device_type, CommandType.SET_DEFAULT)
 
 
-    def send_backlight_on(self):
+
+    def sendBacklight(self, flagPower):
         
-        '''
         if ((not isinstance(flagPower, bool))):
             return None
 
         header = Header()
         
-        header.data_type = DataType.COMMAND
-        header.length    = Command.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.CONTROLLER
+        header.dataType = DataType.Command
+        header.length   = Command.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Controller
 
         data = Command()
 
-        data.command_type   = CommandType.BACKLIGHT
+        data.commandType    = CommandType.Backlight
         data.option         = int(flagPower)
 
         return self.transfer(header, data)
-        '''
-        return self.send_command(DeviceType.CONTROLLER, CommandType.BACKLIGHT, 1)
-
-
-    def send_backlight_off(self):
-        
-        return self.send_command(DeviceType.CONTROLLER, CommandType.BACKLIGHT, 0)
 
 
 # Setup End
@@ -1056,47 +1088,56 @@ class Drone:
 # Device Start
 
 
-    def send_motor(self, motor_0, motor_1, motor_2, motor_3):
+    def sendMotor(self, motor0, motor1, motor2, motor3):
         
-        if ((not isinstance(motor_0, int)) or
-            (not isinstance(motor_1, int)) or
-            (not isinstance(motor_2, int)) or
-            (not isinstance(motor_3, int))):
+        if ((not isinstance(motor0, int)) or
+            (not isinstance(motor1, int)) or
+            (not isinstance(motor2, int)) or
+            (not isinstance(motor3, int))):
             return None
 
         header = Header()
         
-        header.data_type = DataType.MOTOR
-        header.length    = Motor.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.DRONE
+        header.dataType = DataType.Motor
+        header.length   = Motor.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Drone
 
         data = Motor()
 
-        data.motor[0].value     = motor_0
-        data.motor[1].value     = motor_1
-        data.motor[2].value     = motor_2
-        data.motor[3].value     = motor_3
+        data.motor[0].rotation  = Rotation.Clockwise
+        data.motor[0].value     = motor0
+
+        data.motor[1].rotation  = Rotation.Counterclockwise
+        data.motor[1].value     = motor1
+
+        data.motor[2].rotation  = Rotation.Clockwise
+        data.motor[2].value     = motor2
+
+        data.motor[3].rotation  = Rotation.Counterclockwise
+        data.motor[3].value     = motor3
 
         return self.transfer(header, data)
 
 
-    def send_motor_single(self, target, value):
+    def sendMotorSingle(self, target, rotation, value):
         
         if ((not isinstance(target, int)) or
+            (not isinstance(rotation, Rotation)) or
             (not isinstance(value, int))):
             return None
 
         header = Header()
         
-        header.data_type = DataType.MOTOR_SINGLE
-        header.length    = MotorSingle.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.DRONE
+        header.dataType = DataType.MotorSingle
+        header.length   = MotorSingle.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Drone
 
         data = MotorSingle()
 
         data.target     = target
+        data.rotation   = rotation
         data.value      = value
 
         return self.transfer(header, data)
@@ -1109,19 +1150,19 @@ class Drone:
 # Light Start
 
 
-    def send_light_manual(self, device_type, flags, brightness):
+    def sendLightManual(self, deviceType, flags, brightness):
         
-        if ((not isinstance(device_type, DeviceType)) or
+        if ((not isinstance(deviceType, DeviceType)) or
             (not isinstance(flags, int)) or
             (not isinstance(brightness, int))):
             return None
 
         header = Header()
         
-        header.data_type = DataType.LIGHT_MANUAL
-        header.length    = LightManual.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
+        header.dataType = DataType.LightManual
+        header.length   = LightManual.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = deviceType
 
         data = LightManual()
 
@@ -1131,37 +1172,10 @@ class Drone:
         return self.transfer(header, data)
 
 
-    def send_light_mode(self, device_type, light_mode, interval):
+
+    def sendLightModeColor(self, lightMode, interval, r, g, b):
         
-        if ((not isinstance(device_type, DeviceType)) or
-            (not isinstance(interval, int))):
-            return None
-
-        header = Header()
-        
-        header.data_type = DataType.LIGHT_MODE
-        header.length    = LightMode.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
-
-        data = LightMode()
-
-        if ((isinstance(light_mode, LightModeDrone)) or
-            (isinstance(light_mode, LightModeController))):
-            data.mode  = light_mode.value
-        elif isinstance(light_mode, int):
-            data.mode  = light_mode
-        else:
-            return None
-
-        data.interval  = interval
-
-        return self.transfer(header, data)
-
-
-    def send_light_mode_color(self, device_type, light_mode, interval, r, g, b):
-        
-        if ((not isinstance(device_type, DeviceType)) or
+        if ((not isinstance(lightMode, int)) or
             (not isinstance(interval, int)) or
             (not isinstance(r, int)) or
             (not isinstance(g, int)) or
@@ -1170,18 +1184,24 @@ class Drone:
 
         header = Header()
         
-        header.data_type = DataType.LIGHT_MODE
-        header.length    = LightModeColor.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
+        header.dataType = DataType.LightMode
+        header.length   = LightModeColor.getSize()
+        header.from_    = DeviceType.Base
 
         data = LightModeColor()
 
-        if ((isinstance(light_mode, LightModeDrone)) or
-            (isinstance(light_mode, LightModeController))):
-            data.mode.mode  = light_mode.value
-        elif isinstance(light_mode, int):
-            data.mode.mode  = light_mode
+        if        isinstance(lightMode, LightModeDrone):
+            header.to_         = DeviceType.Drone
+            data.mode.mode  = lightMode.value
+
+        elif    isinstance(lightMode, LightModeController):
+            header.to_         = DeviceType.Controller
+            data.mode.mode  = lightMode.value
+
+        elif    isinstance(lightMode, int):
+            header.to_         = DeviceType.Drone
+            data.mode.mode  = lightMode
+
         else:
             return None
 
@@ -1194,27 +1214,33 @@ class Drone:
         return self.transfer(header, data)
 
 
-    def send_light_mode_colors(self, device_type, light_mode, interval, colors):
+
+    def sendLightModeColors(self, lightMode, interval, colors):
         
-        if ((not isinstance(device_type, DeviceType)) or
-            (not isinstance(interval, int)) or
+        if ((not isinstance(interval, int)) or
             (not isinstance(colors, Colors))):
             return None
 
         header = Header()
         
-        header.data_type = DataType.LIGHT_MODE
-        header.length    = LightModeColors.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
+        header.dataType = DataType.LightMode
+        header.length   = LightModeColors.getSize()
+        header.from_    = DeviceType.Base
 
         data = LightModeColors()
 
-        if ((isinstance(light_mode, LightModeDrone)) or
-            (isinstance(light_mode, LightModeController))):
-            data.mode.mode  = light_mode.value
-        elif isinstance(light_mode, int):
-            data.mode.mode  = light_mode
+        if        isinstance(lightMode, LightModeDrone):
+            header.to_         = DeviceType.Drone
+            data.mode.mode  = lightMode.value
+
+        elif    isinstance(lightMode, LightModeController):
+            header.to_         = DeviceType.Controller
+            data.mode.mode  = lightMode.value
+
+        elif    isinstance(lightMode, int):
+            header.to_         = DeviceType.Drone
+            data.mode.mode  = lightMode
+
         else:
             return None
 
@@ -1224,40 +1250,10 @@ class Drone:
         return self.transfer(header, data)
 
 
-    def send_light_event(self, device_type, light_event, interval, repeat):
+
+    def sendLightEventColor(self, lightEvent, interval, repeat, r, g, b):
         
-        if ((not isinstance(device_type, DeviceType)) or
-            (not isinstance(interval, int)) or
-            (not isinstance(repeat, int))):
-            return None
-
-        header = Header()
-        
-        header.data_type = DataType.LIGHT_EVENT
-        header.length    = LightEvent.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
-
-        data = LightEvent()
-
-        if ((isinstance(light_event, LightModeDrone)) or
-            (isinstance(light_event, LightModeController))):
-            data.event    = light_event.value
-        elif isinstance(light_event, int):
-            data.event    = light_event
-        else:
-            return None
-
-        data.interval = interval
-        data.repeat   = repeat
-
-        return self.transfer(header, data)
-
-
-    def send_light_event_color(self, device_type, light_event, interval, repeat, r, g, b):
-        
-        if ((not isinstance(device_type, DeviceType)) or
-            (not isinstance(interval, int)) or
+        if ((not isinstance(interval, int)) or
             (not isinstance(repeat, int)) or
             (not isinstance(r, int)) or
             (not isinstance(g, int)) or
@@ -1266,18 +1262,24 @@ class Drone:
 
         header = Header()
         
-        header.data_type = DataType.LIGHT_EVENT
-        header.length    = LightEventColor.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
+        header.dataType = DataType.LightEvent
+        header.length   = LightEventColor.getSize()
+        header.from_    = DeviceType.Base
 
         data = LightEventColor()
 
-        if ((isinstance(light_event, LightModeDrone)) or
-            (isinstance(light_event, LightModeController))):
-            data.event.event    = light_event.value
-        elif isinstance(light_event, int):
-            data.event.event    = light_event
+        if        isinstance(lightEvent, LightModeDrone):
+            header.to_             = DeviceType.Drone
+            data.event.event    = lightEvent.value
+
+        elif    isinstance(lightEvent, LightModeController):
+            header.to_             = DeviceType.Controller
+            data.event.event    = lightEvent.value
+
+        elif    isinstance(lightEvent, int):
+            header.to_             = DeviceType.Drone
+            data.event.event    = lightEvent
+
         else:
             return None
 
@@ -1291,28 +1293,34 @@ class Drone:
         return self.transfer(header, data)
 
 
-    def send_light_event_colors(self, device_type, light_event, interval, repeat, colors):
+
+    def sendLightEventColors(self, lightEvent, interval, repeat, colors):
         
-        if ((not isinstance(device_type, DeviceType)) or
-            (not isinstance(interval, int)) or
+        if ((not isinstance(interval, int)) or
             (not isinstance(repeat, int)) or
             (not isinstance(colors, Colors))):
             return None
 
         header = Header()
         
-        header.data_type = DataType.LIGHT_EVENT
-        header.length    = LightEventColors.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
+        header.dataType = DataType.LightEvent
+        header.length   = LightEventColors.getSize()
+        header.from_    = DeviceType.Base
 
         data = LightEventColors()
 
-        if ((isinstance(light_event, LightModeDrone)) or
-            (isinstance(light_event, LightModeController))):
-            data.event.event    = light_event.value
-        elif isinstance(light_event, int):
-            data.event.event    = light_event
+        if        isinstance(lightEvent, LightModeDrone):
+            header.to_             = DeviceType.Drone
+            data.event.event    = lightEvent.value
+
+        elif    isinstance(lightEvent, LightModeController):
+            header.to_             = DeviceType.Controller
+            data.event.event    = lightEvent.value
+
+        elif    isinstance(lightEvent, int):
+            header.to_             = DeviceType.Drone
+            data.event.event    = lightEvent
+
         else:
             return None
 
@@ -1324,10 +1332,10 @@ class Drone:
         return self.transfer(header, data)
 
 
-    def send_light_default_color(self, device_type, light_mode, interval, r, g, b):
+
+    def sendLightDefaultColor(self, lightMode, interval, r, g, b):
         
-        if ((not isinstance(device_type, DeviceType)) or
-            (not isinstance(interval, int)) or
+        if ((not isinstance(interval, int)) or
             (not isinstance(r, int)) or
             (not isinstance(g, int)) or
             (not isinstance(b, int))):
@@ -1335,18 +1343,24 @@ class Drone:
 
         header = Header()
         
-        header.data_type = DataType.LIGHT_DEFAULT
-        header.length    = LightModeColor.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
+        header.dataType = DataType.LightDefault
+        header.length   = LightModeColor.getSize()
+        header.from_    = DeviceType.Base
 
         data = LightModeColor()
 
-        if ((isinstance(light_mode, LightModeDrone)) or
-            (isinstance(light_mode, LightModeController))):
-            data.mode.mode    = light_mode.value
-        elif isinstance(light_mode, int):
-            data.mode.mode    = light_mode
+        if        isinstance(lightMode, LightModeDrone):
+            header.to_         = DeviceType.Drone
+            data.mode.mode  = lightMode.value
+
+        elif    isinstance(lightMode, LightModeController):
+            header.to_         = DeviceType.Controller
+            data.mode.mode  = lightMode.value
+
+        elif    isinstance(lightMode, int):
+            header.to_         = DeviceType.Drone
+            data.mode.mode  = lightMode
+
         else:
             return None
 
@@ -1357,6 +1371,7 @@ class Drone:
         data.color.b        = b
 
         return self.transfer(header, data)
+
 
 
 # Light End
@@ -1366,36 +1381,37 @@ class Drone:
 # Display Start
 
 
-    def send_display_clear_all(self, pixel = DisplayPixel.BLACK):
+    def sendDisplayClearAll(self, pixel = DisplayPixel.Black):
         
         if ( not isinstance(pixel, DisplayPixel) ):
             return None
 
         header = Header()
         
-        header.data_type = DataType.DISPLAY_CLEAR
-        header.length    = DisplayClearAll.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.CONTROLLER
+        header.dataType = DataType.DisplayClear
+        header.length   = DisplayClearAll.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Controller
         
         data = DisplayClearAll()
 
         data.pixel      = pixel
 
         return self.transfer(header, data)
+    
 
 
-    def send_display_clear(self, x, y, width, height, pixel = DisplayPixel.BLACK):
+    def sendDisplayClear(self, x, y, width, height, pixel = DisplayPixel.Black):
         
         if ( not isinstance(pixel, DisplayPixel) ):
             return None
 
         header = Header()
         
-        header.data_type = DataType.DISPLAY_CLEAR
-        header.length    = DisplayClear.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.CONTROLLER
+        header.dataType = DataType.DisplayClear
+        header.length   = DisplayClear.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Controller
         
         data = DisplayClear()
 
@@ -1408,14 +1424,15 @@ class Drone:
         return self.transfer(header, data)
 
 
-    def send_display_invert(self, x, y, width, height):
+
+    def sendDisplayInvert(self, x, y, width, height):
         
         header = Header()
         
-        header.data_type = DataType.DISPLAY_INVERT
-        header.length    = DisplayInvert.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.CONTROLLER
+        header.dataType = DataType.DisplayInvert
+        header.length   = DisplayInvert.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Controller
         
         data = DisplayInvert()
 
@@ -1427,17 +1444,18 @@ class Drone:
         return self.transfer(header, data)
 
 
-    def send_display_draw_point(self, x, y, pixel = DisplayPixel.WHITE):
+
+    def sendDisplayDrawPoint(self, x, y, pixel = DisplayPixel.White):
         
         if ( not isinstance(pixel, DisplayPixel) ):
             return None
 
         header = Header()
         
-        header.data_type = DataType.DISPLAY_DRAW_POINT
-        header.length    = DisplayDrawPoint.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.CONTROLLER
+        header.dataType = DataType.DisplayDrawPoint
+        header.length   = DisplayDrawPoint.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Controller
         
         data = DisplayDrawPoint()
 
@@ -1448,18 +1466,18 @@ class Drone:
         return self.transfer(header, data)
 
 
-    def send_display_draw_line(self, x1, y1, x2, y2, pixel = DisplayPixel.WHITE, line = DisplayLine.SOLID):
+
+    def sendDisplayDrawLine(self, x1, y1, x2, y2, pixel = DisplayPixel.White, line = DisplayLine.Solid):
         
-        if ((not isinstance(pixel, DisplayPixel)) or
-            (not isinstance(line, DisplayLine)) ):
+        if ( (not isinstance(pixel, DisplayPixel)) or (not isinstance(line, DisplayLine)) ):
             return None
 
         header = Header()
         
-        header.data_type = DataType.DISPLAY_DRAW_LINE
-        header.length    = DisplayDrawLine.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.CONTROLLER
+        header.dataType = DataType.DisplayDrawLine
+        header.length   = DisplayDrawLine.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Controller
         
         data = DisplayDrawLine()
 
@@ -1473,19 +1491,18 @@ class Drone:
         return self.transfer(header, data)
 
 
-    def send_display_draw_rect(self, x, y, width, height, pixel = DisplayPixel.WHITE, flag_fill = False, line = DisplayLine.SOLID):
+
+    def sendDisplayDrawRect(self, x, y, width, height, pixel = DisplayPixel.White, flagFill = False, line = DisplayLine.Solid):
         
-        if ((not isinstance(pixel, DisplayPixel)) or
-            (not isinstance(flag_fill, bool)) or
-            (not isinstance(line, DisplayLine)) ):
+        if ( (not isinstance(pixel, DisplayPixel)) or (not isinstance(flagFill, bool)) or (not isinstance(line, DisplayLine)) ):
             return None
 
         header = Header()
         
-        header.data_type = DataType.DISPLAY_DRAW_RECT
-        header.length    = DisplayDrawRect.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.CONTROLLER
+        header.dataType = DataType.DisplayDrawRect
+        header.length   = DisplayDrawRect.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Controller
         
         data = DisplayDrawRect()
 
@@ -1494,24 +1511,24 @@ class Drone:
         data.width      = width
         data.height     = height
         data.pixel      = pixel
-        data.flag_fill  = flag_fill
+        data.flagFill   = flagFill
         data.line       = line
 
         return self.transfer(header, data)
 
 
-    def send_display_draw_circle(self, x, y, radius, pixel = DisplayPixel.WHITE, flag_fill = True):
+
+    def sendDisplayDrawCircle(self, x, y, radius, pixel = DisplayPixel.White, flagFill = True):
         
-        if ((not isinstance(pixel, DisplayPixel)) or
-            (not isinstance(flag_fill, bool))):
+        if ( (not isinstance(pixel, DisplayPixel)) or (not isinstance(flagFill, bool)) ):
             return None
 
         header = Header()
         
-        header.data_type = DataType.DISPLAY_DRAW_CIRCLE
-        header.length    = DisplayDrawCircle.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.CONTROLLER
+        header.dataType = DataType.DisplayDrawCircle
+        header.length   = DisplayDrawCircle.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Controller
         
         data = DisplayDrawCircle()
 
@@ -1519,24 +1536,23 @@ class Drone:
         data.y          = y
         data.radius     = radius
         data.pixel      = pixel
-        data.flag_fill  = flag_fill
+        data.flagFill   = flagFill
 
         return self.transfer(header, data)
 
 
-    def send_display_draw_string(self, x, y, message, font = DisplayFont.LIBERATION_MONO_5X8, pixel = DisplayPixel.WHITE):
+
+    def sendDisplayDrawString(self, x, y, message, font = DisplayFont.LiberationMono5x8, pixel = DisplayPixel.White):
         
-        if ((not isinstance(font, DisplayFont)) or
-            (not isinstance(pixel, DisplayPixel)) or
-            (not isinstance(message, str))):
+        if ( (not isinstance(font, DisplayFont)) or (not isinstance(pixel, DisplayPixel)) or (not isinstance(message, str)) ):
             return None
 
         header = Header()
         
-        header.data_type = DataType.DISPLAY_DRAW_STRING
-        header.length    = DisplayDrawString.get_size() + len(message)
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.CONTROLLER
+        header.dataType = DataType.DisplayDrawString
+        header.length   = DisplayDrawString.getSize() + len(message)
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Controller
         
         data = DisplayDrawString()
 
@@ -1549,20 +1565,18 @@ class Drone:
         return self.transfer(header, data)
 
 
-    def send_display_draw_string_align(self, x_start, x_end, y, message, align = DisplayAlign.CENTER, font = DisplayFont.LIBERATION_MONO_5X8, pixel = DisplayPixel.WHITE):
+
+    def sendDisplayDrawStringAlign(self, x_start, x_end, y, message, align = DisplayAlign.Center, font = DisplayFont.LiberationMono5x8, pixel = DisplayPixel.White):
         
-        if ((not isinstance(align, DisplayAlign)) or
-            (not isinstance(font, DisplayFont)) or
-            (not isinstance(pixel, DisplayPixel)) or
-            (not isinstance(message, str))):
+        if ( (not isinstance(align, DisplayAlign)) or (not isinstance(font, DisplayFont)) or (not isinstance(pixel, DisplayPixel)) or (not isinstance(message, str)) ):
             return None
 
         header = Header()
         
-        header.data_type = DataType.DISPLAY_DRAW_STRING_ALIGN
-        header.length    = DisplayDrawStringAlign.get_size() + len(message)
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.CONTROLLER
+        header.dataType = DataType.DisplayDrawStringAlign
+        header.length   = DisplayDrawStringAlign.getSize() + len(message)
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Controller
         
         data = DisplayDrawStringAlign()
 
@@ -1584,20 +1598,19 @@ class Drone:
 # Buzzer Start
 
 
-    def send_buzzer(self, device_type, mode, value, time):
+    def sendBuzzer(self, mode, value, time):
         
-        if ((not isinstance(device_type, DeviceType)) or
-            (not isinstance(mode, BuzzerMode)) or
+        if ((not isinstance(mode, BuzzerMode)) or
             (not isinstance(value, int)) or
             (not isinstance(time, int))):
             return None
 
         header = Header()
         
-        header.data_type = DataType.BUZZER
-        header.length    = Buzzer.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
+        header.dataType = DataType.Buzzer
+        header.length   = Buzzer.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Controller
         
         data = Buzzer()
 
@@ -1608,136 +1621,136 @@ class Drone:
         return self.transfer(header, data)
 
 
-    def send_buzzer_mute(self, device_type, time):
+
+    def sendBuzzerMute(self, time):
         
-        if ((not isinstance(device_type, DeviceType)) or
-            (not isinstance(time, int))):
+        if (not isinstance(time, int)):
             return None
 
         header = Header()
         
-        header.data_type = DataType.BUZZER
-        header.length    = Buzzer.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
+        header.dataType = DataType.Buzzer
+        header.length   = Buzzer.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Controller
         
         data = Buzzer()
 
-        data.mode       = BuzzerMode.MUTE
-        data.value      = BuzzerScale.MUTE.value
+        data.mode       = BuzzerMode.Mute
+        data.value      = BuzzerScale.Mute.value
         data.time       = time
 
         return self.transfer(header, data)
 
 
-    def send_buzzer_mute_reserve(self, device_type, time):
+
+    def sendBuzzerMuteReserve(self, time):
         
-        if ((not isinstance(device_type, DeviceType)) or
-            (not isinstance(time, int))):
+        if (not isinstance(time, int)):
             return None
 
         header = Header()
         
-        header.data_type = DataType.BUZZER
-        header.length    = Buzzer.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
+        header.dataType = DataType.Buzzer
+        header.length   = Buzzer.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Controller
         
         data = Buzzer()
 
-        data.mode       = BuzzerMode.MUTE_RESERVE
-        data.value      = BuzzerScale.MUTE.value
+        data.mode       = BuzzerMode.MuteReserve
+        data.value      = BuzzerScale.Mute.value
         data.time       = time
 
         return self.transfer(header, data)
 
 
-    def send_buzzer_scale(self, device_type, scale, time):
+
+    def sendBuzzerScale(self, scale, time):
         
-        if ((not isinstance(device_type, DeviceType)) or
-            (not isinstance(scale, BuzzerScale)) or
+        if ((not isinstance(scale, BuzzerScale)) or
             (not isinstance(time, int))):
             return None
 
         header = Header()
         
-        header.data_type = DataType.BUZZER
-        header.length    = Buzzer.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
+        header.dataType = DataType.Buzzer
+        header.length   = Buzzer.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Controller
         
         data = Buzzer()
 
-        data.mode       = BuzzerMode.SCALE
+        data.mode       = BuzzerMode.Scale
         data.value      = scale.value
         data.time       = time
 
         return self.transfer(header, data)
 
 
-    def send_buzzer_scale_reserve(self, device_type, scale, time):
+
+    def sendBuzzerScaleReserve(self, scale, time):
         
-        if ((not isinstance(device_type, DeviceType)) or
-            (not isinstance(scale, BuzzerScale)) or
+        if ((not isinstance(scale, BuzzerScale)) or
             (not isinstance(time, int))):
             return None
 
         header = Header()
         
-        header.data_type = DataType.BUZZER
-        header.length    = Buzzer.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
+        header.dataType = DataType.Buzzer
+        header.length   = Buzzer.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Controller
         
         data = Buzzer()
 
-        data.mode       = BuzzerMode.SCALE_RESERVE
+        data.mode       = BuzzerMode.ScaleReserve
         data.value      = scale.value
         data.time       = time
 
         return self.transfer(header, data)
 
 
-    def send_buzzer_hz(self, device_type, hz, time):
+
+    def sendBuzzerHz(self, hz, time):
         
-        if ((not isinstance(device_type, DeviceType)) or
-            (not isinstance(hz, int)) or
+        if ((not isinstance(hz, int)) or
             (not isinstance(time, int))):
             return None
 
         header = Header()
         
-        header.data_type = DataType.BUZZER
-        header.length    = Buzzer.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
+        header.dataType = DataType.Buzzer
+        header.length   = Buzzer.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Controller
         
         data = Buzzer()
 
-        data.mode       = BuzzerMode.HZ
+        data.mode       = BuzzerMode.Hz
         data.value      = hz
         data.time       = time
 
         return self.transfer(header, data)
 
 
-    def send_buzzer_hz_reserve(self, device_type, hz, time):
+
+    def sendBuzzerHzReserve(self, hz, time):
         
-        if ((not isinstance(device_type, DeviceType)) or
-            (not isinstance(hz, int)) or
+        if ((not isinstance(hz, int)) or
             (not isinstance(time, int))):
             return None
 
         header = Header()
         
-        header.data_type = DataType.BUZZER
-        header.length    = Buzzer.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = device_type
+        header.dataType = DataType.Buzzer
+        header.length   = Buzzer.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Controller
         
         data = Buzzer()
 
-        data.mode       = BuzzerMode.HZ_RESERVE
+        data.mode       = BuzzerMode.HzReserve
         data.value      = hz
         data.time       = time
 
@@ -1751,7 +1764,7 @@ class Drone:
 # Vibrator Start
 
 
-    def send_vibrator(self, on, off, total):
+    def sendVibrator(self, on, off, total):
         
         if ((not isinstance(on, int)) or
             (not isinstance(off, int)) or
@@ -1760,14 +1773,14 @@ class Drone:
 
         header = Header()
         
-        header.data_type = DataType.VIBRATOR
-        header.length    = Vibrator.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.CONTROLLER
+        header.dataType = DataType.Vibrator
+        header.length   = Vibrator.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Controller
         
         data = Vibrator()
 
-        data.mode       = VibratorMode.INSTANTLY
+        data.mode       = VibratorMode.Instantally
         data.on         = on
         data.off        = off
         data.total      = total
@@ -1775,7 +1788,8 @@ class Drone:
         return self.transfer(header, data)
 
 
-    def send_vibrator_reserve(self, on, off, total):
+
+    def sendVibratorReserve(self, on, off, total):
         
         if ((not isinstance(on, int)) or
             (not isinstance(off, int)) or
@@ -1784,14 +1798,14 @@ class Drone:
 
         header = Header()
         
-        header.data_type = DataType.VIBRATOR
-        header.length    = Vibrator.get_size()
-        header.from_     = DeviceType.BASE
-        header.to_       = DeviceType.CONTROLLER
+        header.dataType = DataType.Vibrator
+        header.length   = Vibrator.getSize()
+        header.from_    = DeviceType.Base
+        header.to_      = DeviceType.Controller
         
         data = Vibrator()
 
-        data.mode       = VibratorMode.CONTINUALLY
+        data.mode       = VibratorMode.Continually
         data.on         = on
         data.off        = off
         data.total      = total
