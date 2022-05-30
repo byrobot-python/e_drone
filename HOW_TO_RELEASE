@@ -1,3 +1,9 @@
+패키지 모듈 설치
+> pip install setuptools
+> pip install wheel
+> pip install twine
+
+
 빌드
 > python setup.py sdist
 

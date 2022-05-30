@@ -100,6 +100,12 @@ class Drone:
             #sleep(0.001)
 
 
+    # 다른 장치와 연결되지 않은 상태에서 데이터를 업데이트(라이브러리에서 시리얼 포트를 사용하지 않을 때)
+    def push(self, dataArray):
+        
+        if len(dataArray) > 0:
+            self._bufferQueue.put(dataArray)
+
 
     def isOpen(self):
         if self._serialport != None:
@@ -203,12 +209,10 @@ class Drone:
 
 
     def transfer(self, header, data):
-        if not self.isOpen():
-            return
-
         dataArray = self.makeTransferDataArray(header, data)
 
-        self._serialport.write(dataArray)
+        if  self.isOpen():
+            self._serialport.write(dataArray)
 
         # 송신 데이터 출력
         self._printTransferData(dataArray)
