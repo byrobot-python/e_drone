@@ -1,5 +1,6 @@
 import os
 import abc 
+from numpy import array
 from struct import *
 from enum import Enum
 
@@ -134,7 +135,12 @@ class DataType(Enum):
     GpsRtkNavigationState               = 0xDA      # RTK RAW 데이터 전송
     GpsRtkExtendedRawMeasurementData    = 0xDB      # RTK RAW 데이터 전송
 
-    EndOfType                           = 0xDC
+    # for Project P
+    UwbPosition                         = 0xE0      # UWB 위치 데이터
+    TagData                             = 0xE1      # Tag 데이터
+    LidarData                           = 0xE2      # Lidar 데이터
+
+    EndOfType                           = 0xFF
 
 
 # DataType End
@@ -3067,6 +3073,97 @@ class InformationAssembledForEntry(ISerializable):
 
 
 # Device End
+
+
+
+
+# External Device Start
+
+
+
+class TagData(ISerializable):
+
+    def __init__(self):
+        self.x          = 0
+        self.y          = 0
+        self.width      = 0
+        self.height     = 0
+        self.id         = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 10
+
+
+    def toArray(self):
+        return pack('<hhhhH', self.x, self.y, self.width, self.height, self.id)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        
+        
+        if len(dataArray) == cls.getSize():
+            data = TagData()
+            (data.x, data.y, data.width, data.height, data.id) = unpack('<hhhhH', dataArray)
+            return data
+
+        elif len(dataArray) > 0 and len(dataArray) % cls.getSize() == 0:
+            data_list = []
+            length = len(dataArray) / cls.getSize()
+            for i in range(0, length):
+                data = TagData()
+                (data.x, data.y, data.width, data.height, data.id) = unpack('<hhhhH', dataArray[(i*cls.getSize()):((i+ 1)*cls.getSize())])
+                data_list.append(data)
+            return data_list
+
+        else:
+            return None
+        
+        
+        
+
+
+
+class LidarData(ISerializable):
+
+    def __init__(self):
+        self.angle_radian_x1000   = 0
+        self.distance_mm          = 0
+
+
+    @classmethod
+    def getSize(cls):
+        return 18
+
+
+    def toArray(self):
+        return pack('<HH', self.angle_radian_x1000, self.distance_mm)
+
+
+    @classmethod
+    def parse(cls, dataArray):
+        
+        if len(dataArray) == cls.getSize():
+            data = LidarData()    
+            (data.angle_radian_x1000, data.distance_mm) = unpack('<HH', dataArray)
+            return data
+
+        elif len(dataArray) > 0 and len(dataArray) % cls.getSize() == 0:
+            data_list = []
+            length = len(dataArray) / cls.getSize()
+            for i in range(0, length):
+                data = LidarData()
+                (data.angle_radian_x1000, data.distance_mm) = unpack('<HH', dataArray[(i*cls.getSize()):((i+ 1)*cls.getSize())])
+                data_list.append(data)
+            return data_list
+
+        else:
+            return None
+
+
+# External Device End
 
 
 

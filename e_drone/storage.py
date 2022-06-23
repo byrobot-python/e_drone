@@ -83,6 +83,9 @@ class Parser:
         self.d[DataType.CardList]           = CardList.parse
         self.d[DataType.CardFunctionList]   = CardList.parse
 
+        self.d[DataType.TagData]            = TagData.parse
+        self.d[DataType.LidarData]          = LidarData.parse
+
         self.d[DataType.InformationAssembledForController]  = InformationAssembledForController.parse
         self.d[DataType.InformationAssembledForEntry]       = InformationAssembledForEntry.parse
 
